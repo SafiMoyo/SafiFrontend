@@ -1,30 +1,32 @@
-import { Geist, Geist_Mono, Nunito_Sans } from "next/font/google"
-
+import type { Metadata } from "next"
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@/lib/utils";
 
-const nunitoSans = Nunito_Sans({variable:'--font-sans'})
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
+export const metadata: Metadata = {
+  title: "Safimoyo",
+  description:
+    "Safi teaches students how artificial intelligence works and how to use it productively through real-world, practical learning.",
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
+}) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", nunitoSans.variable)}
-    >
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
-      </body>
+    <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin=""
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="font-nunito bg-gray-100 antialiased">{children}</body>
     </html>
   )
 }
