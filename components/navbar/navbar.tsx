@@ -1,25 +1,58 @@
 "use client"
 
 import Image from "next/image"
-import React, { useState } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { Button } from "../ui/button"
-import { usePathname } from "next/navigation"
-import { Menu, X } from "lucide-react"
+import { usePathname, useRouter } from "next/navigation"
+import { ArrowLeft, Menu, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ROUTE_KEYS } from "@/lib/constants"
+import { AuthModal } from "@/components/modals/auth"
+import { ENUM_AUTH } from "@/lib/enum"
 
 const Navbar = () => {
   const pathname = usePathname()
+  const router = useRouter()
   const [open, setOpen] = useState(false)
+  const [authOpen, setAuthOpen] = useState(false)
+  const [authTab, setAuthTab] = useState<ENUM_AUTH>(ENUM_AUTH.LOGIN)
+  const [hidden, setHidden] = useState(false)
+  const lastScrollY = useRef(0)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY
+      if (currentY > 60 && currentY > lastScrollY.current) {
+        setHidden(true)
+        setOpen(false)
+      } else {
+        setHidden(false)
+      }
+      lastScrollY.current = currentY
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  const openAuth = (tab: ENUM_AUTH) => {
+    setAuthTab(tab)
+    setAuthOpen(true)
+    setOpen(false)
+  }
 
   const navItems = [
     { label: "About Safi", href: ROUTE_KEYS.ABOUT },
     { label: "How it works", href: "" },
     { label: "Pricing", href: "" },
   ]
+  const isModulesScreen = pathname.includes("/modules")
 
   return (
-    <div className="relative bg-white py-4">
+    <motion.div
+      animate={{ y: hidden ? "-100%" : "0%" }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="sticky top-0 z-50 bg-white py-4"
+    >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6">
         {/* LOGO */}
         <Button variant={"ghost"} href="/">
@@ -49,14 +82,36 @@ const Navbar = () => {
 
         {/* DESKTOP AUTH */}
         <div className="hidden gap-4 md:flex">
-          <Button
-            variant="outline"
-            className="border-primary/60 bg-transparent px-6 shadow-xs"
-          >
-            Log in
-          </Button>
+          {!isModulesScreen ? (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                className="border-primary/60 bg-transparent px-6 shadow-xs"
+                onClick={() => openAuth(ENUM_AUTH.LOGIN)}
+              >
+                Log in
+              </Button>
 
-          <Button className="px-6">Sign in</Button>
+              <Button
+                type="button"
+                className="px-6"
+                onClick={() => openAuth(ENUM_AUTH.SIGNUP)}
+              >
+                Sign up
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.back()}
+              className="gap-1.5 rounded-full border-gray-300 px-4 text-sm font-semibold"
+            >
+              <ArrowLeft size={15} />
+              Back
+            </Button>
+          )}
         </div>
 
         {/* MOBILE MENU BUTTON */}
@@ -94,19 +149,27 @@ const Navbar = () => {
 
               <div className="flex flex-col gap-3 pt-4">
                 <Button
+                  type="button"
                   variant="outline"
                   className="border-primary/60 bg-transparent"
+                  onClick={() => openAuth(ENUM_AUTH.LOGIN)}
                 >
                   Log in
                 </Button>
 
-                <Button>Sign in</Button>
+                <Button
+                  type="button"
+                  onClick={() => openAuth(ENUM_AUTH.SIGNUP)}
+                >
+                  Sign up
+                </Button>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+      <AuthModal open={authOpen} onOpenChange={setAuthOpen} authTab={authTab} />
+    </motion.div>
   )
 }
 

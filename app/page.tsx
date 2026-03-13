@@ -61,7 +61,7 @@ export default function SafiLandingPage() {
         <div className="grid gap-6 md:grid-cols-3">
           {whyCards.map((card, i) => (
             <ScrollFadeIn delay={i * 0.1} key={i}>
-              <div className="h-full rounded-xl bg-[#e6d6b6] shadow-sm">
+              <div className="h-full rounded-xl bg-[#e6d6b6] shadow-xs">
                 <div className="p-6">
                   <h3 className="font-bold">{card.title}</h3>
                   <p className="mt-3 text-sm text-gray-700">{card.desc}</p>
@@ -120,7 +120,7 @@ export default function SafiLandingPage() {
         <div className="grid gap-6 md:grid-cols-3">
           {difference.map((item, i) => (
             <ScrollFadeIn delay={i * 0.15} key={i} direction="right">
-              <div className="h-full rounded-xl border-none bg-[#e6d6b6] shadow-sm">
+              <div className="h-full rounded-xl border-none bg-[#e6d6b6] shadow-xs">
                 <div className="p-6">
                   <h3 className="mb-3 font-bold">{item.title}</h3>
                   <p className="text-sm text-gray-700">{item.desc}</p>
