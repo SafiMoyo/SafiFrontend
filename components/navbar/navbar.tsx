@@ -4,20 +4,24 @@ import Image from "next/image"
 import React, { useState, useEffect, useRef } from "react"
 import { Button } from "../ui/button"
 import { usePathname, useRouter } from "next/navigation"
-import { ArrowLeft, Menu, X } from "lucide-react"
+import { LayoutDashboard, LogOut, Menu, Settings, User, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ROUTE_KEYS } from "@/lib/constants"
 import { AuthModal } from "@/components/modals/auth"
 import { ENUM_AUTH } from "@/lib/enum"
+import { useAuthContext } from "@/context"
 
 const Navbar = () => {
   const pathname = usePathname()
   const router = useRouter()
+  const { activeUser, isAuthenticated, logout } = useAuthContext()
   const [open, setOpen] = useState(false)
   const [authOpen, setAuthOpen] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
   const [authTab, setAuthTab] = useState<ENUM_AUTH>(ENUM_AUTH.LOGIN)
   const [hidden, setHidden] = useState(false)
   const lastScrollY = useRef(0)
+  const profileRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,18 +38,44 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!profileRef.current) return
+      if (!profileRef.current.contains(event.target as Node)) {
+        setProfileOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
   const openAuth = (tab: ENUM_AUTH) => {
     setAuthTab(tab)
     setAuthOpen(true)
     setOpen(false)
   }
 
+  const handleLogout = () => {
+    setProfileOpen(false)
+    setOpen(false)
+    logout()
+    router.push("/")
+  }
+
+  const navigate = (path: string) => {
+    setProfileOpen(false)
+    setOpen(false)
+    router.push(path)
+  }
+
+  const displayName = activeUser?.first_name || "User"
+  const initials = displayName.slice(0, 1).toUpperCase()
+
   const navItems = [
     { label: "About Safi", href: ROUTE_KEYS.ABOUT },
     { label: "How it works", href: "" },
     { label: "Pricing", href: "" },
   ]
-  const isModulesScreen = pathname.includes("/modules")
 
   return (
     <motion.div
@@ -64,11 +94,12 @@ const Navbar = () => {
             className="w-20"
           />
         </Button>
-        {/* DESKTOP NAV */}
+
+        {/* DESKTOP NAV LINKS */}
         <div className="hidden gap-10 font-semibold md:flex">
           {navItems.map((item) => (
             <Button
-              key={item.href}
+              key={item.label}
               variant="link"
               href={item.href}
               className={
@@ -80,9 +111,70 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* DESKTOP AUTH */}
+        {/* DESKTOP AUTH — two modes */}
         <div className="hidden gap-4 md:flex">
-          {!isModulesScreen ? (
+          {isAuthenticated ? (
+            <div className="relative" ref={profileRef}>
+              <button
+                type="button"
+                onClick={() => setProfileOpen((prev) => !prev)}
+                className="flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-2 py-1 pr-3 transition-colors hover:bg-purple-100"
+              >
+                <span className="flex size-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
+                  {initials}
+                </span>
+                <span className="text-sm font-semibold text-gray-800">
+                  {displayName}
+                </span>
+              </button>
+
+              <AnimatePresence>
+                {profileOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 z-40 mt-2 w-52 rounded-xl border border-gray-200 bg-white p-2 shadow-lg"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => navigate(ROUTE_KEYS.DASHBOARD)}
+                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-100"
+                    >
+                      <LayoutDashboard size={16} />
+                      Dashboard
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => navigate(ROUTE_KEYS.SETTINGS)}
+                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-100"
+                    >
+                      <User size={16} />
+                      Edit Profile
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => navigate(ROUTE_KEYS.SETTINGS)}
+                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-100"
+                    >
+                      <Settings size={16} />
+                      Settings
+                    </button>
+                    <div className="my-1 border-t border-gray-100" />
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                    >
+                      <LogOut size={16} />
+                      Logout
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
             <>
               <Button
                 type="button"
@@ -92,7 +184,6 @@ const Navbar = () => {
               >
                 Log in
               </Button>
-
               <Button
                 type="button"
                 className="px-6"
@@ -101,21 +192,15 @@ const Navbar = () => {
                 Sign up
               </Button>
             </>
-          ) : (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => router.back()}
-              className="gap-1.5 rounded-full border-gray-300 px-4 text-sm font-semibold"
-            >
-              <ArrowLeft size={15} />
-              Back
-            </Button>
           )}
         </div>
 
         {/* MOBILE MENU BUTTON */}
-        <button onClick={() => setOpen(!open)} className="md:hidden">
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+          className="md:hidden"
+        >
           {open ? <X size={28} /> : <Menu size={28} />}
         </button>
       </nav>
@@ -133,7 +218,7 @@ const Navbar = () => {
             <div className="flex flex-col gap-6 px-6 py-6">
               {navItems.map((item) => (
                 <Button
-                  key={item.href}
+                  key={item.label}
                   variant="link"
                   href={item.href}
                   className={
@@ -147,27 +232,55 @@ const Navbar = () => {
                 </Button>
               ))}
 
-              <div className="flex flex-col gap-3 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="border-primary/60 bg-transparent"
-                  onClick={() => openAuth(ENUM_AUTH.LOGIN)}
-                >
-                  Log in
-                </Button>
-
-                <Button
-                  type="button"
-                  onClick={() => openAuth(ENUM_AUTH.SIGNUP)}
-                >
-                  Sign up
-                </Button>
+              <div className="flex flex-col gap-3 border-t border-gray-100 pt-4">
+                {isAuthenticated ? (
+                  <>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => navigate(ROUTE_KEYS.DASHBOARD)}
+                    >
+                      Dashboard
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => navigate(ROUTE_KEYS.SETTINGS)}
+                    >
+                      Settings
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="border-primary/60 bg-transparent"
+                      onClick={() => openAuth(ENUM_AUTH.LOGIN)}
+                    >
+                      Log in
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => openAuth(ENUM_AUTH.SIGNUP)}
+                    >
+                      Sign up
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
       <AuthModal open={authOpen} onOpenChange={setAuthOpen} authTab={authTab} />
     </motion.div>
   )

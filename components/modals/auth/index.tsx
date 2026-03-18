@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { ENUM_AUTH } from "@/lib/enum"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { SignUpForm } from "./signup-form"
 import { LogInForm } from "./login-form"
 import { ForgotPasswordModal } from "./forgot-password-modal"
+import { useAuthContext } from "@/context"
 
 type Props = {
   open: boolean
@@ -16,11 +18,20 @@ type Props = {
 }
 
 export function AuthModal({ open, onOpenChange, authTab }: Props) {
+  const router = useRouter()
+  const { isAuthenticated } = useAuthContext()
   const [tab, setTab] = useState<ENUM_AUTH>(authTab)
   const [forgotOpen, setForgotOpen] = useState(false)
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setTab(authTab), [authTab])
+
+  useEffect(() => {
+    if (open && isAuthenticated) {
+      onOpenChange(false)
+      router.push("/dashboard")
+    }
+  }, [isAuthenticated, onOpenChange, open, router])
 
   function handleForgotPassword() {
     onOpenChange(false)
@@ -33,10 +44,14 @@ export function AuthModal({ open, onOpenChange, authTab }: Props) {
     onOpenChange(true)
   }
 
+  function handleSignupSuccess() {
+    setTab(ENUM_AUTH.LOGIN)
+  }
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="w-full max-w-lg gap-0 overflow-y-auto bg-white p-6">
+        <DialogContent className="w-full max-w-lg gap-0 overflow-hidden bg-white p-6">
           <div className="mb-4 flex justify-center">
             <Image
               src="/images/logo.svg"
@@ -93,7 +108,7 @@ export function AuthModal({ open, onOpenChange, authTab }: Props) {
           </div>
 
           {tab === ENUM_AUTH.SIGNUP ? (
-            <SignUpForm />
+            <SignUpForm onSignedUp={handleSignupSuccess} />
           ) : (
             <LogInForm onForgotPassword={handleForgotPassword} />
           )}

@@ -5,4 +5,5 @@ export const ROUTE_KEYS = {
   PRIVACY: "/privacy",
   DASHBOARD: "/dashboard",
   MODULES: "/modules",
+  SETTINGS: "/settings",
 }

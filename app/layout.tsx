@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import "./globals.css"
+import Providers from "./providers"
 
 export const metadata: Metadata = {
   title: "Safimoyo",
@@ -26,7 +27,9 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-nunito bg-gray-100 antialiased">{children}</body>
+      <body className="font-nunito bg-gray-100 antialiased">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   )
 }
