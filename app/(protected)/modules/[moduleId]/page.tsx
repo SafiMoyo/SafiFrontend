@@ -64,7 +64,7 @@ export default function ModulePage({
 
   const isEnrolled = enrolledData?.data?.is_enrolled ?? false
 
-  const { mutate: enrolModule, isPending: enrolling } = useMutateEnrolModule()
+  const { mutate: enrolModule, isPending: enrolling } = useMutateEnrolModule({})
 
   if (!modulesLoading && !lessonModule) return notFound()
 
@@ -103,9 +103,7 @@ export default function ModulePage({
                 )
               ) : (
                 <Button
-                  onClick={() =>
-                    enrolModule({ module_id: moduleId } as never)
-                  }
+                  onClick={() => enrolModule({ module_id: moduleId } as never)}
                   disabled={enrolling}
                   className="px-5"
                 >
