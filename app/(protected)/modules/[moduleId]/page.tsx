@@ -64,7 +64,9 @@ export default function ModulePage({
 
   const isEnrolled = enrolledData?.data?.is_enrolled ?? false
 
-  const { mutate: enrolModule, isPending: enrolling } = useMutateEnrolModule({})
+  const { mutate: enrolModule, isPending: enrolling } = useMutateEnrolModule({
+    queryParams: { module_id: moduleId },
+  })
 
   if (!modulesLoading && !lessonModule) return notFound()
 
