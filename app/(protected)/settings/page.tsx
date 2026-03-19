@@ -25,10 +25,15 @@ export default function SettingsPage() {
     [activeUser?.first_name, activeUser?.last_name].filter(Boolean).join(" ") ||
     "User"
 
-  const memberSince = "2026"
+  const memberSince = activeUser?.date_created
+    ? new Date(activeUser.date_created).toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "long",
+      })
+    : "N/A"
 
   return (
-    <div className="min-h-screen bg-[#EDE6F0]">
+    <div className="min-h-screen bg-purple-100/20">
       {/* Page header */}
       <Navbar />
 

@@ -14,6 +14,7 @@ const requestHeaders: Record<string, string> = {
 const Axios: AxiosInstance = axios.create({
   baseURL,
   headers: requestHeaders,
+  timeout: 60000,
 })
 
 function handleClearLocalStorage() {

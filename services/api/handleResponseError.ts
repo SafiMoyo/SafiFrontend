@@ -1,47 +1,53 @@
-import { toast } from "sonner";
+import { toast } from "sonner"
 
 export type CustomError = {
   response: {
     data: {
       errors: {
-        location: string;
-        message: string;
-        path: string;
-      }[];
-      message: string;
-    };
-  };
-  message: string;
-};
+        location: string
+        message: string
+        path: string
+      }[]
+      message: string
+    }
+  }
+  message: string
+}
 
 const handleResponseError = (err: CustomError) => {
-  if (err?.message && !err.response.data) {
-    toast.error(err.message);
-    return;
+  // Axios timeout errors usually have code ECONNABORTED and no response payload.
+  if ((err as { code?: string })?.code === "ECONNABORTED") {
+    toast.error("Request timed out. Please try again.")
+    return
   }
-  if (err && err.response.data) {
-    const { message, errors } = err.response.data;
+
+  if (err?.message && !err?.response?.data) {
+    toast.error(err.message)
+    return
+  }
+  if (err?.response?.data) {
+    const { message, errors } = err.response.data
 
     if (Array.isArray(errors)) {
       errors.forEach((error) => {
-        return toast.error(error.message);
-      });
-      return;
+        return toast.error(error.message)
+      })
+      return
     }
     if (message) {
-      toast.error(message);
+      toast.error(message)
 
-      return;
+      return
     }
 
     if (typeof errors === "string") {
-      toast.error(errors);
+      toast.error(errors)
 
-      return;
+      return
     }
   } else {
-    console.log(err);
+    console.log(err)
   }
-};
+}
 
-export default handleResponseError;
+export default handleResponseError

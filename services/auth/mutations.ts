@@ -39,3 +39,8 @@ export const useMutateUpdateProfilePicture = createMutation({
     },
   },
 })
+
+export const useMutateDeleteAccount = createMutation({
+  url: "/user/delete-account",
+  method: "DELETE",
+})

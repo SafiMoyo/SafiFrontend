@@ -5,41 +5,42 @@ import { Camera, User } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { AgeGroupSelect } from "@/components/ui/age-group-select"
 import { useAuthContext } from "@/context"
 import {
   useMutateUpdateProfile,
   useMutateUpdateProfilePicture,
 } from "@/services/auth/mutations"
 import { toast } from "sonner"
+import { ProfileForm } from "../utils"
 
 export function ProfileCard() {
   const { activeUser } = useAuthContext()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
-  const [email, setEmail] = useState("")
-  const [ageGroup, setAgeGroup] = useState("")
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const [form, setForm] = useState<ProfileForm>({
+    firstName: "",
+    lastName: "",
+    email: "",
+    ageGroup: "",
+    avatarPreview: null,
+  })
 
   useEffect(() => {
     if (activeUser) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setFirstName(activeUser?.first_name ?? "")
-      setLastName(activeUser?.last_name ?? "")
-      setEmail(activeUser?.email_address ?? "")
-      if (activeUser?.profile_picture) {
-        setAvatarPreview(activeUser.profile_picture)
-      }
+      setForm({
+        firstName: activeUser.first_name ?? "",
+        lastName: activeUser.last_name ?? "",
+        email: activeUser.email_address ?? "",
+        ageGroup: activeUser.age_group ?? "",
+        avatarPreview: activeUser.profile_picture || null,
+      })
     }
   }, [activeUser])
+
+  const setField = (key: keyof ProfileForm, value: string) =>
+    setForm((prev) => ({ ...prev, [key]: value }))
 
   const { mutate: updateProfile, isPending: isSaving } = useMutateUpdateProfile(
     {
@@ -50,28 +51,29 @@ export function ProfileCard() {
   const { mutate: uploadPicture, isPending: isUploading } =
     useMutateUpdateProfilePicture({
       onSuccess: () => toast.success("Profile picture updated"),
+      queryParams: {
+        user_id: activeUser?.id.toString() || "",
+      },
     })
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Preview immediately
     const reader = new FileReader()
-    reader.onload = () => setAvatarPreview(reader.result as string)
+    reader.onload = () => setField("avatarPreview", reader.result as string)
     reader.readAsDataURL(file)
 
     const formData = new FormData()
-    formData.append("profile_picture", file)
+    formData.append("file", file)
     uploadPicture(formData)
   }
 
   const handleSave = () => {
     updateProfile({
-      first_name: firstName,
-      last_name: lastName,
-      email_address: email,
-      age_group: ageGroup,
+      first_name: form.firstName,
+      last_name: form.lastName,
+      age_group: form.ageGroup,
     })
   }
 
@@ -97,10 +99,10 @@ export function ProfileCard() {
             className="group relative flex size-20 items-center justify-center overflow-hidden rounded-full bg-primary text-2xl font-bold text-white shadow-md transition-opacity"
             aria-label="Change profile picture"
           >
-            {avatarPreview ? (
+            {form.avatarPreview ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={avatarPreview}
+                src={form.avatarPreview}
                 alt="Profile"
                 className="size-full object-cover"
               />
@@ -135,8 +137,8 @@ export function ProfileCard() {
             <Input
               variant="auth"
               placeholder="First name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              value={form.firstName}
+              onChange={(e) => setField("firstName", e.target.value)}
             />
           </div>
           <div className="flex flex-col gap-1.5">
@@ -144,8 +146,8 @@ export function ProfileCard() {
             <Input
               variant="auth"
               placeholder="Last name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              value={form.lastName}
+              onChange={(e) => setField("lastName", e.target.value)}
             />
           </div>
         </div>
@@ -153,28 +155,22 @@ export function ProfileCard() {
         <div className="flex flex-col gap-1.5">
           <Label className="text-sm font-bold text-gray-900">Email</Label>
           <Input
+            disabled
             variant="auth"
             type="email"
             placeholder="your@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            className="disabled:cursor-not-allowed"
+            value={form.email}
+            onChange={(e) => setField("email", e.target.value)}
           />
         </div>
 
         <div className="flex flex-col gap-1.5">
           <Label className="text-sm font-bold text-gray-900">Age Group</Label>
-          <Select value={ageGroup} onValueChange={setAgeGroup}>
-            <SelectTrigger variant="auth">
-              <SelectValue placeholder="Select age group" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="under-13">Under 13</SelectItem>
-              <SelectItem value="13-17">13–17</SelectItem>
-              <SelectItem value="18-24">18–24</SelectItem>
-              <SelectItem value="25-34">25–34</SelectItem>
-              <SelectItem value="35+">35+</SelectItem>
-            </SelectContent>
-          </Select>
+          <AgeGroupSelect
+            value={form.ageGroup}
+            onChange={(val) => setField("ageGroup", val)}
+          />
         </div>
 
         <Button
