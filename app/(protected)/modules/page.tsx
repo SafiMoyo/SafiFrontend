@@ -1,6 +1,6 @@
 "use client"
 
-import { Lock, Video } from "lucide-react"
+import { Lock, Video, ChevronLeft } from "lucide-react"
 import Image from "next/image"
 import { useMemo } from "react"
 import { Button } from "@/components/ui/button"
@@ -10,6 +10,7 @@ import { useAuthContext } from "@/context"
 import { getImageUrl } from "@/lib/image-fallback"
 import Footer from "@/components/footer/footer"
 import Navbar from "@/components/navbar/navbar"
+import { ModuleListSkeleton } from "@/components/skeleton"
 
 export default function ModulesPage() {
   const { activeUser } = useAuthContext()
@@ -26,6 +27,9 @@ export default function ModulesPage() {
       {/* Header bar */}
       <div className="bg-purple-200">
         <div className="mx-auto flex w-full max-w-3xl items-center gap-3 px-5 py-3">
+          <Button variant="ghost" href="/dashboard" className="p-1">
+            <ChevronLeft size={20} />
+          </Button>
           <Video size={20} className="text-primary" />
           <h1 className="text-base font-bold text-gray-800">All Modules</h1>
         </div>
@@ -34,14 +38,7 @@ export default function ModulesPage() {
       {/* Module list */}
       <div className="mx-auto w-full max-w-3xl flex-1 px-4 py-5">
         {isLoading ? (
-          <div className="flex flex-col gap-3">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="h-28 animate-pulse rounded-2xl bg-white/70"
-              />
-            ))}
-          </div>
+          <ModuleListSkeleton />
         ) : modulesData.length === 0 ? (
           <div className="mt-12 text-center text-sm text-gray-500">
             No modules available yet.
@@ -82,22 +79,16 @@ export default function ModulesPage() {
                       </div>
                     )}
                     {/* Sequence badge */}
-                    <div className="absolute top-2 left-2 flex size-6 items-center justify-center rounded-full bg-white/90 text-[10px] font-bold text-primary shadow-sm">
+                    {/* <div className="absolute top-2 left-2 flex size-6 items-center justify-center rounded-full bg-white/90 text-[10px] font-bold text-primary shadow-sm">
                       {module.sequence_num}
-                    </div>
-                    {/* FREE tag */}
-                    {isFree && (
-                      <div className="absolute right-0 bottom-0 left-0 bg-green-500/90 py-0.5 text-center text-[10px] font-bold uppercase tracking-wide text-white">
-                        Free
-                      </div>
-                    )}
+                    </div> */}
                   </div>
 
                   {/* Content — RIGHT */}
                   <div className="flex flex-1 flex-col justify-between gap-2 p-3.5 sm:p-4">
                     <div>
                       <h2
-                        className={`text-sm font-bold leading-snug sm:text-base ${
+                        className={`text-sm leading-snug font-bold sm:text-base ${
                           isLocked ? "text-gray-400" : "text-gray-900"
                         }`}
                       >

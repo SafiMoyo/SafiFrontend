@@ -24,7 +24,7 @@ export type GetModuleLessonsRes = {
 
 export type CheckEnrolledRes = {
   data: {
-    is_enrolled: boolean
+    enrolled: boolean
   }
 }
 

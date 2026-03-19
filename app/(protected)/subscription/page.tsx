@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Check, Lock, BookOpen } from "lucide-react"
+import { Check, Lock, BookOpen, ChevronLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Navbar from "@/components/navbar/navbar"
 import Footer from "@/components/footer/footer"
@@ -72,6 +72,16 @@ export default function SubscriptionPage() {
       <Navbar />
 
       <div className="mx-auto max-w-5xl px-5 py-12">
+        {/* Back button */}
+        <Button
+          variant="ghost"
+          href="/dashboard"
+          className="mb-6 -ml-4 px-2"
+        >
+          <ChevronLeft size={20} className="mr-1" />
+          Back to Dashboard
+        </Button>
+
         <div className="grid gap-10 lg:grid-cols-[1fr_260px]">
           {/* Left — main content */}
           <div>

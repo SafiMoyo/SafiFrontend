@@ -3,7 +3,7 @@
 import { Clock, LibraryBig, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { notFound, useRouter } from "next/navigation"
-import { use, useMemo, useEffect } from "react"
+import { use, useMemo, useEffect, useCallback, useRef } from "react"
 import Navbar from "@/components/navbar/navbar"
 import {
   useQueryModules,
@@ -13,6 +13,9 @@ import {
 import { useAuthContext } from "@/context"
 import { SubscriptionStatus } from "@/types/subscription"
 import type { LessonsType } from "@/types/lesson"
+import { Skeleton } from "@/components/skeleton"
+import Footer from "@/components/footer/footer"
+import { useMutateRecordLesson } from "@/services/module-lesson/mutations"
 
 export default function LessonPage({
   params,
@@ -27,6 +30,8 @@ export default function LessonPage({
   const { data: lessonsData, isLoading } = useQueryModuleLessons({
     queryParams: { module_id: moduleId },
   })
+
+  const { mutate: recordLessonProgress } = useMutateRecordLesson({})
 
   const modules = useMemo(() => modulesData?.data ?? [], [modulesData?.data])
   const lessons = useMemo<LessonsType[]>(
@@ -51,7 +56,10 @@ export default function LessonPage({
       enabled: !!lessonModule && isAccessible,
     })
 
-  const isEnrolled = enrolledData?.data?.is_enrolled ?? false
+  const isEnrolled = enrolledData?.data?.enrolled ?? false
+  const videoDurationRef = useRef(0)
+  const lastTrackedSecondRef = useRef(0)
+  const lastRecordedRateRef = useRef(0)
 
   // Guard: no subscription → /modules
   useEffect(() => {
@@ -65,7 +73,21 @@ export default function LessonPage({
     if (!enrolledLoading && !isEnrolled && isAccessible && lessonModule) {
       router.replace(`/modules/${moduleId}`)
     }
-  }, [enrolledLoading, isEnrolled, isAccessible, lessonModule, moduleId, router])
+  }, [
+    enrolledLoading,
+    isEnrolled,
+    isAccessible,
+    lessonModule,
+    moduleId,
+    router,
+  ])
+
+  // Reset playback tracking when lesson changes.
+  useEffect(() => {
+    videoDurationRef.current = 0
+    lastTrackedSecondRef.current = 0
+    lastRecordedRateRef.current = 0
+  }, [lessonId])
 
   const lessonIndex = useMemo(
     () => lessons.findIndex((l) => String(l.id) === lessonId),
@@ -75,6 +97,66 @@ export default function LessonPage({
     () => lessons[lessonIndex] ?? null,
     [lessons, lessonIndex]
   )
+
+  const handleVideoTimeUpdate = useCallback(
+    (event: React.SyntheticEvent<HTMLVideoElement>) => {
+      if (!lesson) return
+
+      const seconds = Math.floor(event.currentTarget.currentTime)
+      if (seconds <= lastTrackedSecondRef.current) return
+
+      lastTrackedSecondRef.current = seconds
+
+      const duration =
+        videoDurationRef.current ||
+        Math.floor(event.currentTarget.duration || 0)
+
+      if (!duration) return
+      videoDurationRef.current = duration
+
+      const completionRate = Math.min(
+        100,
+        Math.max(0, Math.floor((seconds / duration) * 100))
+      )
+
+      if (completionRate <= lastRecordedRateRef.current) return
+
+      const shouldSync =
+        completionRate === 100 ||
+        completionRate - lastRecordedRateRef.current >= 5
+
+      if (!shouldSync) return
+
+      recordLessonProgress({
+        lesson_id: lesson.id,
+        module_id: moduleId,
+        completion_rate: completionRate,
+      })
+
+      lastRecordedRateRef.current = completionRate
+    },
+    [lesson, moduleId, recordLessonProgress]
+  )
+
+  const handleVideoLoadedMetadata = useCallback(
+    (event: React.SyntheticEvent<HTMLVideoElement>) => {
+      const duration = Math.floor(event.currentTarget.duration || 0)
+      videoDurationRef.current = duration
+    },
+    []
+  )
+
+  const handleVideoEnded = useCallback(() => {
+    if (!lesson || lastRecordedRateRef.current >= 100) return
+
+    recordLessonProgress({
+      lesson_id: lesson.id,
+      module_id: moduleId,
+      completion_rate: 100,
+    })
+
+    lastRecordedRateRef.current = 100
+  }, [lesson, moduleId, recordLessonProgress])
 
   if (!isLoading && !lesson) return notFound()
 
@@ -94,11 +176,9 @@ export default function LessonPage({
             Module {moduleId}
           </p>
           <h1 className="mt-1 text-xl font-bold text-gray-900">
-            {lesson
-              ? `${lessonIndex + 1}. ${lesson.lesson_title}`
-              : "Loading..."}
+            {lesson ? `${lessonIndex + 1}. ${lesson.lesson_title}` : null}
           </h1>
-          {lesson && (
+          {lesson ? (
             <div className="mt-2 flex items-center gap-4 text-sm text-gray-500">
               <span className="flex items-center gap-1">
                 <LibraryBig size={14} />
@@ -109,11 +189,16 @@ export default function LessonPage({
                 {lesson.lesson_duration}
               </span>
             </div>
+          ) : (
+            <div className="mt-2 space-y-2">
+              <Skeleton className="h-5 w-60" />
+              <Skeleton className="h-4 w-44" />
+            </div>
           )}
         </div>
 
         {/* Right: About this lesson card */}
-        {lesson && (
+        {lesson ? (
           <div className="rounded-xl bg-white px-4 py-3.5 shadow-xs sm:w-56">
             <h2 className="mb-1.5 text-sm font-bold text-gray-800">
               About this Lesson
@@ -122,18 +207,28 @@ export default function LessonPage({
               {lesson.lesson_description}
             </p>
           </div>
+        ) : (
+          <div className="rounded-xl bg-white px-4 py-3.5 shadow-xs sm:w-56">
+            <Skeleton className="mb-2 h-4 w-28" />
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="mt-2 h-3 w-5/6" />
+            <Skeleton className="mt-2 h-3 w-2/3" />
+          </div>
         )}
       </div>
 
       {/* Main video player */}
       {lesson ? (
-        <div className="mx-3 mb-4 flex-1 overflow-hidden rounded-2xl bg-black shadow-lg sm:mx-5">
+        <div className="mx-3 mb-4 h-[clamp(220px,50dvh,560px)] overflow-hidden rounded-2xl bg-black shadow-lg sm:mx-5">
           {lesson.video_url ? (
             <video
-              className="h-full w-full"
+              className="h-full w-full object-contain"
               controls
               controlsList="nodownload"
               poster={lesson.cover_image_url || undefined}
+              onLoadedMetadata={handleVideoLoadedMetadata}
+              onTimeUpdate={handleVideoTimeUpdate}
+              onEnded={handleVideoEnded}
             >
               <source src={lesson.video_url} type="video/mp4" />
               Your browser does not support the video tag.
@@ -166,7 +261,9 @@ export default function LessonPage({
           )}
         </div>
       ) : (
-        <div className="mx-3 mb-4 flex-1 rounded-2xl bg-gray-200 sm:mx-5" />
+        <div className="mx-3 mb-4 h-[clamp(220px,50dvh,560px)] rounded-2xl bg-gray-200 sm:mx-5">
+          <Skeleton className="h-full w-full rounded-2xl" />
+        </div>
       )}
 
       {/* Bottom navigation */}
@@ -203,11 +300,7 @@ export default function LessonPage({
       </div>
 
       {/* Footer */}
-      <footer className="bg-[#E4D6B3] py-4 text-center">
-        <p className="text-xs tracking-wider text-gray-600">
-          © 2026 SAFI. ALL RIGHTS RESERVED
-        </p>
-      </footer>
+      <Footer />
     </div>
   )
 }

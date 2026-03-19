@@ -40,8 +40,10 @@ Axios.interceptors.request.use(
 Axios.interceptors.response.use(
   (response) => response,
   async (error) => {
-    handleClearLocalStorage()
-    handleResponseError(error)
+    if (error.response?.status === 401) {
+      handleClearLocalStorage()
+      handleResponseError(error)
+    }
 
     throw error
   }

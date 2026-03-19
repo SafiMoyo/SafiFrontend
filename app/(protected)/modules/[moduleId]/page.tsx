@@ -1,6 +1,7 @@
 "use client"
 
 import { CheckCircle2, Clock, Lock, CircleDashed } from "lucide-react"
+import { ChevronLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useMemo, useEffect } from "react"
 import { notFound, useRouter } from "next/navigation"
@@ -16,6 +17,7 @@ import { useMutateEnrolModule } from "@/services/module-lesson/mutations"
 import { useAuthContext } from "@/context"
 import { SubscriptionStatus } from "@/types/subscription"
 import type { LessonsType } from "@/types/lesson"
+import { LessonTimelineSkeleton } from "@/components/skeleton"
 
 export default function ModulePage({
   params,
@@ -27,15 +29,18 @@ export default function ModulePage({
   const { activeUser } = useAuthContext()
 
   const { data: modulesData, isLoading: modulesLoading } = useQueryModules({})
-  const { data: lessonsData, isLoading: lessonsLoading } =
-    useQueryModuleLessons({
-      queryParams: { module_id: moduleId },
-    })
+  const {
+    data: lessonsData,
+    isLoading: lessonsLoading,
+    refetch: refetchLesson,
+  } = useQueryModuleLessons({
+    queryParams: { module_id: moduleId },
+  })
 
   const modules = useMemo(() => modulesData?.data ?? [], [modulesData?.data])
-  const lessons = useMemo<LessonsType[]>(
+  const lessons = useMemo(
     () => lessonsData?.data ?? [],
-    [lessonsData?.data]
+    [lessonsData?.data, moduleId]
   )
 
   const lessonModule = useMemo(
@@ -62,10 +67,13 @@ export default function ModulePage({
       enabled: !!lessonModule && isAccessible,
     })
 
-  const isEnrolled = enrolledData?.data?.is_enrolled ?? false
+  const isEnrolled = enrolledData?.data?.enrolled ?? false
 
   const { mutate: enrolModule, isPending: enrolling } = useMutateEnrolModule({
     queryParams: { module_id: moduleId },
+    onSuccess: () => {
+      refetchLesson({})
+    },
   })
 
   if (!modulesLoading && !lessonModule) return notFound()
@@ -82,6 +90,12 @@ export default function ModulePage({
       <Navbar />
 
       <div className="mx-auto w-full max-w-3xl flex-1 px-3 py-4 sm:px-5 sm:py-5">
+        {/* Back button */}
+        <Button variant="ghost" href="/modules" className="mb-4 -ml-3 px-2">
+          <ChevronLeft size={20} className="mr-1" />
+          All Modules
+        </Button>
+
         {/* Module header card */}
         <div className="rounded-2xl bg-white p-5 shadow-xs">
           <h1 className="text-lg font-bold text-gray-900">
@@ -136,13 +150,13 @@ export default function ModulePage({
             {/* Vertical connector line */}
             <div className="absolute top-5 bottom-5 left-3.5 w-[0.1px] bg-gray-300" />
 
-            <div className="flex flex-col gap-3">
-              {lessonsLoading ? (
-                <p className="text-sm text-gray-500">Loading lessons...</p>
-              ) : lessons.length === 0 ? (
-                <p className="text-sm text-gray-500">No lessons available.</p>
-              ) : (
-                lessons.map((lesson, index) => {
+            {lessonsLoading ? (
+              <LessonTimelineSkeleton />
+            ) : lessons.length === 0 ? (
+              <p className="text-sm text-gray-500">No lessons available.</p>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {lessons.map((lesson, index) => {
                   const isCompleted = lesson.status === "COMPLETED"
                   const isLocked = lesson.status === "LOCKED"
 
@@ -206,9 +220,9 @@ export default function ModulePage({
                       </div>
                     </div>
                   )
-                })
-              )}
-            </div>
+                })}
+              </div>
+            )}
           </div>
         )}
       </div>

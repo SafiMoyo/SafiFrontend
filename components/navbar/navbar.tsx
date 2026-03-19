@@ -70,6 +70,8 @@ const Navbar = () => {
 
   const displayName = activeUser?.first_name || "User"
   const initials = displayName.slice(0, 1).toUpperCase()
+  const hasProfilePicture = activeUser?.profile_picture
+  const shouldShowNameInButton = !hasProfilePicture
 
   const navItems = [
     { label: "About Safi", href: ROUTE_KEYS.ABOUT },
@@ -118,14 +120,32 @@ const Navbar = () => {
               <button
                 type="button"
                 onClick={() => setProfileOpen((prev) => !prev)}
-                className="flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-2 py-1 pr-3 transition-colors hover:bg-purple-100"
+                className={`flex items-center gap-2 rounded-full border transition-colors ${
+                  hasProfilePicture
+                    ? "border-gray-200 bg-transparent p-0.5"
+                    : "border-purple-200 bg-purple-50 px-2 py-1 pr-3 hover:bg-purple-100"
+                }`}
               >
-                <span className="flex size-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
-                  {initials}
-                </span>
-                <span className="text-sm font-semibold text-gray-800">
-                  {displayName}
-                </span>
+                {hasProfilePicture ? (
+                  <Image
+                    src={activeUser.profile_picture}
+                    alt={displayName}
+                    width={32}
+                    height={32}
+                    className="size-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <>
+                    <span className="flex size-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
+                      {initials}
+                    </span>
+                    {shouldShowNameInButton && (
+                      <span className="text-sm font-semibold text-gray-800">
+                        {displayName}
+                      </span>
+                    )}
+                  </>
+                )}
               </button>
 
               <AnimatePresence>
