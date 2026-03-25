@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { useLoginUser } from "@/services/auth/mutations"
-import { persistAuthSession, parseAuthPayload } from "@/services/auth/session"
+import { persistAuthSession, parseAuthPayload, extractResponseData } from "@/services/auth/session"
 import { AuthContext } from "@/context/auth"
 import { toast } from "sonner"
 
@@ -20,9 +20,10 @@ type LoginFormState = {
 
 type Props = {
   onForgotPassword?: () => void
+  onAuthSuccess?: (accountType: string) => void
 }
 
-export function LogInForm({ onForgotPassword }: Props) {
+export function LogInForm({ onForgotPassword, onAuthSuccess }: Props) {
   const [form, setForm] = useState<LoginFormState>({
     email: "",
     password: "",
@@ -39,8 +40,12 @@ export function LogInForm({ onForgotPassword }: Props) {
   const { mutate, isPending } = useLoginUser({
     onSuccess: (response) => {
       persistAuthSession(parseAuthPayload(response))
+      const data = extractResponseData(response)
+      const user = data.user as Record<string, unknown> | undefined
+      const accountType = (user?.account_type as string) ?? "INDIVIDUAL"
       setLoggedIn(true)
       toast.success("Welcome back!")
+      onAuthSuccess?.(accountType)
     },
   })
 

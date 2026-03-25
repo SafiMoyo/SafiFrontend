@@ -63,7 +63,10 @@ export default function DashboardPage() {
         </p>
         {/* Progress bar */}
         <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-gray-200">
-          <div className="h-full w-0 rounded-full bg-primary transition-all" />
+          <div
+            className="h-full rounded-full bg-primary transition-all"
+            style={{ width: `${freeModule?.module_progress ?? 0}%` }}
+          />
         </div>
       </div>
 

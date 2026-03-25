@@ -11,6 +11,23 @@ export type DashboardStatisticsRes = {
       ongoing_lessons: number
     }
     day_streak: number
+    last_active: string
+    age_group: string
+    average_session: string
+    module_breakdown: {
+      progress: string
+      module_id: string
+      module_title: string
+    }[]
+    weekly_activity: {
+      Monday: number
+      Tuesday: number
+      Wednesday: number
+      Thursday: number
+      Friday: number
+      Saturday: number
+      Sunday: number
+    }
   }
 }
 

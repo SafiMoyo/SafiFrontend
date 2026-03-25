@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react"
 import Image from "next/image"
 import { ArrowLeftIcon } from "lucide-react"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -97,9 +97,9 @@ export function ForgotPasswordModal({ open, onOpenChange, onBack }: Props) {
         </div>
 
         <div className="mb-6 text-center">
-          <h2 className="text-2xl font-extrabold text-gray-900">
+          <DialogTitle className="text-2xl font-extrabold text-gray-900">
             Reset Password
-          </h2>
+          </DialogTitle>
           <p className="mt-1 text-sm font-semibold text-gray-500">
             {form.isResetStep
               ? "Enter the code from your email and choose a new password"

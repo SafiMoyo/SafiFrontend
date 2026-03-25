@@ -3,8 +3,7 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { ChevronLeft } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Settings } from "lucide-react"
 import { useAuthContext } from "@/context"
 import { ProfileCard } from "./_components/profile-card"
 import { SecurityCard } from "./_components/security-card"
@@ -41,16 +40,6 @@ export default function SettingsPage() {
       <Navbar />
 
       <div className="mx-auto max-w-5xl px-5 py-10">
-        {/* Back button */}
-        <Button
-          variant="ghost"
-          href="/dashboard"
-          className="mb-6 -ml-4 px-2"
-        >
-          <ChevronLeft size={20} className="mr-1" />
-          Back to Dashboard
-        </Button>
-
         {/* User hero */}
         <div className="mb-8 text-center">
           {activeUser?.profile_picture ? (

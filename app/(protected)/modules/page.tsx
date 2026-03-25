@@ -52,7 +52,7 @@ export default function ModulesPage() {
               return (
                 <div
                   key={module.id}
-                  className={`flex overflow-hidden rounded-2xl bg-white shadow-xs transition-shadow hover:shadow-md ${
+                  className={`flex h-40 overflow-hidden rounded-2xl bg-white shadow-xs transition-shadow hover:shadow-md ${
                     isLocked ? "opacity-80" : ""
                   }`}
                 >

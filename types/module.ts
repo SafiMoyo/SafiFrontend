@@ -1,6 +1,7 @@
 import { SubscriptionStatus } from "./subscription"
 
 export type ModuleType = {
+  module_progress: number
   id: string
   module_title: string
   module_description: string

@@ -1,11 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useRef, useEffect, useState } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { ENUM_AUTH } from "@/lib/enum"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { SignUpForm } from "./signup-form"
 import { LogInForm } from "./login-form"
 import { ForgotPasswordModal } from "./forgot-password-modal"
@@ -15,23 +15,36 @@ type Props = {
   open: boolean
   onOpenChange: (open: boolean) => void
   authTab: ENUM_AUTH
+  onFamilyAuth?: () => void
 }
 
-export function AuthModal({ open, onOpenChange, authTab }: Props) {
+export function AuthModal({ open, onOpenChange, authTab, onFamilyAuth }: Props) {
   const router = useRouter()
   const { isAuthenticated } = useAuthContext()
   const [tab, setTab] = useState<ENUM_AUTH>(authTab)
   const [forgotOpen, setForgotOpen] = useState(false)
+  const pendingAccountTypeRef = useRef<string | null>(null)
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setTab(authTab), [authTab])
 
   useEffect(() => {
-    if (open && isAuthenticated) {
+    if (open && isAuthenticated && pendingAccountTypeRef.current === null) {
+      // User is already authenticated when modal opens — route based on stored account type
       onOpenChange(false)
       router.push("/dashboard")
     }
   }, [isAuthenticated, onOpenChange, open, router])
+
+  function handleAuthSuccess(accountType: string) {
+    pendingAccountTypeRef.current = accountType
+    onOpenChange(false)
+    if (accountType === "FAMILY") {
+      onFamilyAuth?.()
+    } else {
+      router.push("/dashboard")
+    }
+  }
 
   function handleForgotPassword() {
     onOpenChange(false)
@@ -42,10 +55,6 @@ export function AuthModal({ open, onOpenChange, authTab }: Props) {
     setForgotOpen(false)
     setTab(ENUM_AUTH.LOGIN)
     onOpenChange(true)
-  }
-
-  function handleSignupSuccess() {
-    setTab(ENUM_AUTH.LOGIN)
   }
 
   return (
@@ -63,11 +72,11 @@ export function AuthModal({ open, onOpenChange, authTab }: Props) {
           </div>
 
           <div className="mb-5 text-center">
-            <h2 className="text-2xl font-extrabold text-gray-900">
+            <DialogTitle className="text-2xl font-extrabold text-gray-900">
               {tab === ENUM_AUTH.SIGNUP
                 ? "Welcome to Safi!"
                 : "Welcome back to Safi!"}
-            </h2>
+            </DialogTitle>
             <p className="mt-1 text-sm font-semibold text-gray-700">
               {tab === ENUM_AUTH.SIGNUP
                 ? "Start your learning journey today"
@@ -108,9 +117,12 @@ export function AuthModal({ open, onOpenChange, authTab }: Props) {
           </div>
 
           {tab === ENUM_AUTH.SIGNUP ? (
-            <SignUpForm onSignedUp={handleSignupSuccess} />
+            <SignUpForm onAuthSuccess={handleAuthSuccess} />
           ) : (
-            <LogInForm onForgotPassword={handleForgotPassword} />
+            <LogInForm
+              onForgotPassword={handleForgotPassword}
+              onAuthSuccess={handleAuthSuccess}
+            />
           )}
         </DialogContent>
       </Dialog>

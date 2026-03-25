@@ -8,17 +8,23 @@ import { LayoutDashboard, LogOut, Menu, Settings, User, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ROUTE_KEYS } from "@/lib/constants"
 import { AuthModal } from "@/components/modals/auth"
+import { SelectProfileModal } from "@/components/modals/select-profile-modal"
 import { ENUM_AUTH } from "@/lib/enum"
 import { useAuthContext } from "@/context"
+import { AccountType } from "@/types/user"
 
 const Navbar = () => {
   const pathname = usePathname()
   const router = useRouter()
   const { activeUser, isAuthenticated, logout } = useAuthContext()
+  const isSettingsArea = pathname?.startsWith(ROUTE_KEYS.SETTINGS)
+  const isStatisticsPage = pathname === ROUTE_KEYS.SETTINGS_STATISTICS
   const [open, setOpen] = useState(false)
   const [authOpen, setAuthOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
+  const [selectProfileOpen, setSelectProfileOpen] = useState(false)
   const [authTab, setAuthTab] = useState<ENUM_AUTH>(ENUM_AUTH.LOGIN)
+  const isFamilyAccount = activeUser?.account_type === AccountType.FAMILY
   const [hidden, setHidden] = useState(false)
   const lastScrollY = useRef(0)
   const profileRef = useRef<HTMLDivElement | null>(null)
@@ -79,6 +85,11 @@ const Navbar = () => {
     { label: "Pricing", href: "" },
   ]
 
+  const settingsPrimaryHref = isStatisticsPage
+    ? ROUTE_KEYS.SETTINGS
+    : ROUTE_KEYS.SETTINGS_STATISTICS
+  const settingsPrimaryLabel = isStatisticsPage ? "Settings" : "Statistics"
+
   return (
     <motion.div
       animate={{ y: hidden ? "-100%" : "0%" }}
@@ -98,102 +109,141 @@ const Navbar = () => {
         </Button>
 
         {/* DESKTOP NAV LINKS */}
-        <div className="hidden gap-10 font-semibold md:flex">
-          {navItems.map((item) => (
+        {!isSettingsArea ? (
+          <div className="hidden gap-10 font-semibold md:flex">
+            {navItems.map((item) => (
+              <Button
+                key={item.label}
+                variant="link"
+                href={item.href}
+                className={
+                  pathname === item.href
+                    ? "font-bold text-primary"
+                    : "text-black"
+                }
+              >
+                {item.label}
+              </Button>
+            ))}
+          </div>
+        ) : (
+          <div className="hidden md:block" />
+        )}
+
+        {isAuthenticated && isSettingsArea && (
+          <div className="ml-auto hidden items-center gap-3 md:flex">
             <Button
-              key={item.label}
-              variant="link"
-              href={item.href}
-              className={
-                pathname === item.href ? "font-bold text-primary" : "text-black"
-              }
+              href={settingsPrimaryHref}
+              variant="outline"
+              className="rounded-xl border-primary/30 bg-white text-primary hover:bg-purple-50"
             >
-              {item.label}
+              {settingsPrimaryLabel}
             </Button>
-          ))}
-        </div>
+            <Button
+              href={ROUTE_KEYS.DASHBOARD}
+              variant="outline"
+              className="rounded-xl border-primary/30 bg-white text-primary hover:bg-purple-50"
+            >
+              Dashboard
+            </Button>
+          </div>
+        )}
 
         {/* DESKTOP AUTH — two modes */}
         <div className="hidden gap-4 md:flex">
           {isAuthenticated ? (
-            <div className="relative" ref={profileRef}>
-              <button
-                type="button"
-                onClick={() => setProfileOpen((prev) => !prev)}
-                className={`flex items-center gap-2 rounded-full border transition-colors ${
-                  hasProfilePicture
-                    ? "border-gray-200 bg-transparent p-0.5"
-                    : "border-purple-200 bg-purple-50 px-2 py-1 pr-3 hover:bg-purple-100"
-                }`}
-              >
-                {hasProfilePicture ? (
-                  <Image
-                    src={activeUser.profile_picture}
-                    alt={displayName}
-                    width={32}
-                    height={32}
-                    className="size-8 rounded-full object-cover"
-                  />
-                ) : (
-                  <>
-                    <span className="flex size-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
-                      {initials}
-                    </span>
-                    {shouldShowNameInButton && (
-                      <span className="text-sm font-semibold text-gray-800">
-                        {displayName}
+            isSettingsArea ? null : (
+              <div className="relative" ref={profileRef}>
+                <button
+                  type="button"
+                  onClick={() => setProfileOpen((prev) => !prev)}
+                  className={`flex items-center gap-2 rounded-full border transition-colors ${
+                    hasProfilePicture
+                      ? "border-gray-200 bg-transparent p-0.5"
+                      : "border-purple-200 bg-purple-50 px-2 py-1 pr-3 hover:bg-purple-100"
+                  }`}
+                >
+                  {hasProfilePicture ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={activeUser.profile_picture}
+                      alt={displayName}
+                      className="size-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <>
+                      <span className="flex size-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
+                        {initials}
                       </span>
-                    )}
-                  </>
-                )}
-              </button>
+                      {shouldShowNameInButton && (
+                        <span className="text-sm font-semibold text-gray-800">
+                          {displayName}
+                        </span>
+                      )}
+                    </>
+                  )}
+                </button>
 
-              <AnimatePresence>
-                {profileOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: -4 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute right-0 z-40 mt-2 w-52 rounded-xl border border-gray-200 bg-white p-2 shadow-lg"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => navigate(ROUTE_KEYS.DASHBOARD)}
-                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-100"
+                <AnimatePresence>
+                  {profileOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 z-40 mt-2 w-52 rounded-xl border border-gray-200 bg-white p-2 shadow-lg"
                     >
-                      <LayoutDashboard size={16} />
-                      Dashboard
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => navigate(ROUTE_KEYS.SETTINGS)}
-                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-100"
-                    >
-                      <User size={16} />
-                      Edit Profile
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => navigate(ROUTE_KEYS.SETTINGS)}
-                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-100"
-                    >
-                      <Settings size={16} />
-                      Settings
-                    </button>
-                    <div className="my-1 border-t border-gray-100" />
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
-                    >
-                      <LogOut size={16} />
-                      Logout
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                      <button
+                        type="button"
+                        onClick={() => navigate(ROUTE_KEYS.DASHBOARD)}
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-100"
+                      >
+                        <LayoutDashboard size={16} />
+                        Dashboard
+                      </button>
+                      {isFamilyAccount && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setProfileOpen(false)
+                            setSelectProfileOpen(true)
+                          }}
+                          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-100"
+                        >
+                          <User size={16} />
+                          Switch Account
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => navigate(ROUTE_KEYS.SETTINGS)}
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-100"
+                      >
+                        <User size={16} />
+                        Edit Profile
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => navigate(ROUTE_KEYS.SETTINGS)}
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-100"
+                      >
+                        <Settings size={16} />
+                        Settings
+                      </button>
+                      <div className="my-1 border-t border-gray-100" />
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                      >
+                        <LogOut size={16} />
+                        Logout
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )
           ) : (
             <>
               <Button
@@ -236,25 +286,38 @@ const Navbar = () => {
             className="absolute top-full left-0 z-20 w-full bg-white shadow-lg md:hidden"
           >
             <div className="flex flex-col gap-6 px-6 py-6">
-              {navItems.map((item) => (
-                <Button
-                  key={item.label}
-                  variant="link"
-                  href={item.href}
-                  className={
-                    pathname === item.href
-                      ? "justify-start font-bold text-primary"
-                      : "justify-start text-black"
-                  }
-                  onClick={() => setOpen(false)}
-                >
-                  {item.label}
-                </Button>
-              ))}
+              {!isSettingsArea && (
+                <>
+                  {navItems.map((item) => (
+                    <Button
+                      key={item.label}
+                      variant="link"
+                      href={item.href}
+                      className={
+                        pathname === item.href
+                          ? "justify-start font-bold text-primary"
+                          : "justify-start text-black"
+                      }
+                      onClick={() => setOpen(false)}
+                    >
+                      {item.label}
+                    </Button>
+                  ))}
+                </>
+              )}
 
               <div className="flex flex-col gap-3 border-t border-gray-100 pt-4">
                 {isAuthenticated ? (
                   <>
+                    {isSettingsArea && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => navigate(settingsPrimaryHref)}
+                      >
+                        {settingsPrimaryLabel}
+                      </Button>
+                    )}
                     <Button
                       type="button"
                       variant="outline"
@@ -301,7 +364,16 @@ const Navbar = () => {
         )}
       </AnimatePresence>
 
-      <AuthModal open={authOpen} onOpenChange={setAuthOpen} authTab={authTab} />
+      <AuthModal
+        open={authOpen}
+        onOpenChange={setAuthOpen}
+        authTab={authTab}
+        onFamilyAuth={() => setSelectProfileOpen(true)}
+      />
+      <SelectProfileModal
+        open={selectProfileOpen}
+        onOpenChange={setSelectProfileOpen}
+      />
     </motion.div>
   )
 }

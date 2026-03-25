@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { CreditCard } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -8,10 +9,20 @@ import { useAuthContext } from "@/context"
 import { toast } from "sonner"
 import { useMutateCancelSubscription } from "@/services/subscription/mutations"
 import { SubscriptionStatus } from "@/types/subscription"
+import {
+  CancelSubscriptionConfirmModal,
+  CancelSubscriptionSuccessModal,
+  ContactSupportModal,
+  MessageSentModal,
+} from "./modals"
 
 export function SubscriptionCard() {
   const router = useRouter()
   const { activeUser } = useAuthContext()
+  const [cancelOpen, setCancelOpen] = useState(false)
+  const [cancelledOpen, setCancelledOpen] = useState(false)
+  const [contactOpen, setContactOpen] = useState(false)
+  const [messageOpen, setMessageOpen] = useState(false)
   const subscription = activeUser?.subscription
 
   const isFree =
@@ -20,10 +31,14 @@ export function SubscriptionCard() {
 
   const { mutate: cancelSubscription, isPending: isCancelling } =
     useMutateCancelSubscription({
-      onSuccess: () => toast.success("Subscription cancelled"),
+      onSuccess: () => {
+        setCancelOpen(false)
+        setCancelledOpen(true)
+      },
+      onError: () => toast.error("Unable to cancel subscription right now"),
     })
 
-  const handleCancel = () => {
+  const handleCancelConfirm = () => {
     cancelSubscription({})
   }
 
@@ -77,13 +92,40 @@ export function SubscriptionCard() {
             type="button"
             variant="outline"
             className="h-12 w-full rounded-full"
-            onClick={handleCancel}
-            loading={isCancelling}
+            onClick={() => setCancelOpen(true)}
           >
             Cancel subscription
           </Button>
         )}
+        <Button
+          type="button"
+          variant="ghost"
+          className="h-10 w-full rounded-full text-primary"
+          onClick={() => setContactOpen(true)}
+        >
+          Contact support
+        </Button>
       </div>
+
+      <CancelSubscriptionConfirmModal
+        open={cancelOpen}
+        onOpenChange={setCancelOpen}
+        onConfirm={handleCancelConfirm}
+        isLoading={isCancelling}
+      />
+
+      <CancelSubscriptionSuccessModal
+        open={cancelledOpen}
+        onOpenChange={setCancelledOpen}
+      />
+
+      <ContactSupportModal
+        open={contactOpen}
+        onOpenChange={setContactOpen}
+        onSuccess={() => setMessageOpen(true)}
+      />
+
+      <MessageSentModal open={messageOpen} onOpenChange={setMessageOpen} />
     </div>
   )
 }

@@ -2,7 +2,6 @@
 
 import { FormEvent, useState } from "react"
 import { Eye, EyeOff } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -15,7 +14,7 @@ import {
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { useSignupUser } from "@/services/auth/mutations"
-import { parseAuthPayload, persistAuthSession } from "@/services/auth/session"
+import { parseAuthPayload, persistAuthSession, extractResponseData } from "@/services/auth/session"
 import { toast } from "sonner"
 import { useAuthContext } from "@/context"
 
@@ -25,22 +24,23 @@ type SignupFormState = {
   email: string
   password: string
   ageGroup: string
+  accountType: string
   agreed: boolean
   showPassword: boolean
 }
 
 type Props = {
-  onSignedUp?: () => void
+  onAuthSuccess?: (accountType: string) => void
 }
 
-export function SignUpForm({ onSignedUp }: Props) {
-  const router = useRouter()
+export function SignUpForm({ onAuthSuccess }: Props) {
   const [form, setForm] = useState<SignupFormState>({
     firstName: "",
     lastName: "",
     email: "",
     password: "",
     ageGroup: "",
+    accountType: "",
     agreed: false,
     showPassword: false,
   })
@@ -55,10 +55,12 @@ export function SignUpForm({ onSignedUp }: Props) {
     onSuccess: (response) => {
       const authPayload = parseAuthPayload(response)
       persistAuthSession(authPayload)
+      const data = extractResponseData(response)
+      const user = data.user as Record<string, unknown> | undefined
+      const accountType = (user?.account_type as string) ?? "INDIVIDUAL"
       setLoggedIn(true)
       toast.success("Your account has been created.")
-      onSignedUp?.()
-      router.push("/dashboard")
+      onAuthSuccess?.(accountType)
     },
   })
 
@@ -70,6 +72,7 @@ export function SignUpForm({ onSignedUp }: Props) {
       email_address: form.email,
       password: form.password,
       age_group: form.ageGroup,
+      account_type: form.accountType,
       accepted_terms: form.agreed,
     })
   }
@@ -136,7 +139,6 @@ export function SignUpForm({ onSignedUp }: Props) {
 
         <div className="flex flex-col gap-1.5">
           <Label className="text-sm font-bold text-gray-900">Age group</Label>
-
           <Select
             value={form.ageGroup}
             onValueChange={(v) => set("ageGroup", v)}
@@ -150,6 +152,22 @@ export function SignUpForm({ onSignedUp }: Props) {
               <SelectItem value="18-24">18–24</SelectItem>
               <SelectItem value="25-34">25–34</SelectItem>
               <SelectItem value="35+">35+</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-sm font-bold text-gray-900">Account</Label>
+          <Select
+            value={form.accountType}
+            onValueChange={(v) => set("accountType", v)}
+          >
+            <SelectTrigger className="h-11!" variant="auth">
+              <SelectValue placeholder="Account" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="INDIVIDUAL">Individual</SelectItem>
+              <SelectItem value="FAMILY">Family</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -188,7 +206,7 @@ export function SignUpForm({ onSignedUp }: Props) {
         <Button
           type="submit"
           className="h-12 w-full rounded-full"
-          disabled={!form.agreed || !form.ageGroup}
+          disabled={!form.agreed || !form.ageGroup || !form.accountType}
           loading={signup.isPending}
         >
           Create Account

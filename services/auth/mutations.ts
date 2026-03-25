@@ -44,3 +44,14 @@ export const useMutateDeleteAccount = createMutation({
   url: "/user/delete-account",
   method: "DELETE",
 })
+
+export const useSwitchProfile = createMutation({
+  url: "/auth/switch-profile/:profileId",
+  method: "POST",
+})
+
+export const useAddFamilyMember = createMutation({
+  url: "/auth/add-family-member",
+  keysToRefetch: [keyMe],
+  method: "POST",
+})
