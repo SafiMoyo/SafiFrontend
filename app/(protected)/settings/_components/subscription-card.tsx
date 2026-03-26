@@ -35,7 +35,6 @@ export function SubscriptionCard() {
         setCancelOpen(false)
         setCancelledOpen(true)
       },
-      onError: () => toast.error("Unable to cancel subscription right now"),
     })
 
   const handleCancelConfirm = () => {

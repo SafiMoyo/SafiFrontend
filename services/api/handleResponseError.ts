@@ -16,6 +16,7 @@ export type CustomError = {
 
 const handleResponseError = (err: CustomError) => {
   // Axios timeout errors usually have code ECONNABORTED and no response payload.
+
   if ((err as { code?: string })?.code === "ECONNABORTED") {
     toast.error("Request timed out. Please try again.")
     return

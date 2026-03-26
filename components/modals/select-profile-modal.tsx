@@ -79,7 +79,11 @@ function ProfileCard({
       >
         {picture ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={picture} alt={name} className="h-full w-full object-cover" />
+          <img
+            src={picture}
+            alt={name}
+            className="h-full w-full object-cover"
+          />
         ) : (
           <Initials name={name} colorClass={colorClass} />
         )}
@@ -89,7 +93,7 @@ function ProfileCard({
           </div>
         )}
       </div>
-      <span className="max-w-[96px] truncate text-sm font-semibold text-gray-800">
+      <span className="max-w-24 truncate text-sm font-semibold text-gray-800">
         {name}
       </span>
     </button>
@@ -126,6 +130,7 @@ export function SelectProfileModal({ open, onOpenChange }: Props) {
   const { activeUser, setLoggedIn } = useAuthContext()
   const [addOpen, setAddOpen] = useState(false)
   const [switchingId, setSwitchingId] = useState<number | null>(null)
+  const [isSkipping, setIsSkipping] = useState(false)
 
   const { data, refetch } = useQueryMe({ enabled: open })
   const profile = data?.data
@@ -146,6 +151,19 @@ export function SelectProfileModal({ open, onOpenChange }: Props) {
   function handleSelectParent() {
     onOpenChange(false)
     router.push("/dashboard")
+  }
+
+  async function handleSkipSelection() {
+    setIsSkipping(true)
+    try {
+      if (familyProfiles.length > 0) {
+        await handleSelectChild(familyProfiles[0])
+      } else {
+        handleSelectParent()
+      }
+    } finally {
+      setIsSkipping(false)
+    }
   }
 
   async function handleSelectChild(child: FamilyProfile) {
@@ -218,6 +236,15 @@ export function SelectProfileModal({ open, onOpenChange }: Props) {
               />
             ))}
           </div>
+
+          <button
+            type="button"
+            onClick={handleSkipSelection}
+            disabled={isSkipping}
+            className="mt-7 text-sm font-semibold text-gray-600 underline underline-offset-4 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isSkipping ? "Skipping..." : "Skip"}
+          </button>
         </DialogContent>
       </Dialog>
 

@@ -4,6 +4,7 @@ import { Clock, LibraryBig, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { notFound, useRouter } from "next/navigation"
 import { use, useMemo, useEffect, useCallback, useRef } from "react"
+import type { SyntheticEvent } from "react"
 import Navbar from "@/components/navbar/navbar"
 import {
   useQueryModules,
@@ -60,6 +61,7 @@ export default function LessonPage({
   const videoDurationRef = useRef(0)
   const lastTrackedSecondRef = useRef(0)
   const lastRecordedRateRef = useRef(0)
+  const videoRef = useRef<HTMLVideoElement | null>(null)
 
   // Guard: no subscription → /modules
   useEffect(() => {
@@ -98,8 +100,14 @@ export default function LessonPage({
     [lessons, lessonIndex]
   )
 
+  useEffect(() => {
+    if (!lesson) return
+    const initialRate = Math.max(0, Math.min(100, lesson.completion_rate ?? 0))
+    lastRecordedRateRef.current = initialRate
+  }, [lesson])
+
   const handleVideoTimeUpdate = useCallback(
-    (event: React.SyntheticEvent<HTMLVideoElement>) => {
+    (event: SyntheticEvent<HTMLVideoElement>) => {
       if (!lesson) return
 
       const seconds = Math.floor(event.currentTarget.currentTime)
@@ -139,11 +147,26 @@ export default function LessonPage({
   )
 
   const handleVideoLoadedMetadata = useCallback(
-    (event: React.SyntheticEvent<HTMLVideoElement>) => {
+    (event: SyntheticEvent<HTMLVideoElement>) => {
+      if (!lesson) return
+
       const duration = Math.floor(event.currentTarget.duration || 0)
       videoDurationRef.current = duration
+
+      if (!duration) return
+
+      const resumeFromCompletion = Math.floor(
+        (Math.max(0, Math.min(99, lesson.completion_rate ?? 0)) / 100) *
+          duration
+      )
+
+      const resumeSecond = resumeFromCompletion
+      if (resumeSecond <= 0 || resumeSecond >= duration - 3) return
+
+      event.currentTarget.currentTime = resumeSecond
+      lastTrackedSecondRef.current = resumeSecond
     },
-    []
+    [lesson]
   )
 
   const handleVideoEnded = useCallback(() => {
@@ -157,6 +180,14 @@ export default function LessonPage({
 
     lastRecordedRateRef.current = 100
   }, [lesson, moduleId, recordLessonProgress])
+
+  const handleGoBack = useCallback(() => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back()
+      return
+    }
+    router.push(`/modules/${moduleId}`)
+  }, [moduleId, router])
 
   if (!isLoading && !lesson) return notFound()
 
@@ -172,9 +203,16 @@ export default function LessonPage({
       <div className="flex flex-col gap-4 px-3 py-4 sm:flex-row sm:items-start sm:px-5 sm:py-5">
         {/* Left: Lesson info */}
         <div className="flex-1">
-          <p className="text-xs font-semibold text-primary">
-            Module {moduleId}
-          </p>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleGoBack}
+            className="mb-2 -ml-2 w-fit px-2 text-sm font-semibold text-gray-700"
+          >
+            <ChevronLeft size={16} className="mr-1" />
+            Back
+          </Button>
+
           <h1 className="mt-1 text-xl font-bold text-gray-900">
             {lesson ? `${lessonIndex + 1}. ${lesson.lesson_title}` : null}
           </h1>
@@ -222,6 +260,7 @@ export default function LessonPage({
         <div className="mx-3 mb-4 h-[clamp(220px,50dvh,560px)] overflow-hidden rounded-2xl bg-black shadow-lg sm:mx-5">
           {lesson.video_url ? (
             <video
+              ref={videoRef}
               className="h-full w-full object-contain"
               controls
               controlsList="nodownload"
@@ -268,18 +307,18 @@ export default function LessonPage({
 
       {/* Bottom navigation */}
       <div className="flex items-center justify-between px-3 py-4 sm:px-5 sm:py-5">
-        <Button
-          variant="outline"
-          href={
-            prevLesson
-              ? `/modules/${moduleId}/lessons/${prevLesson.id}`
-              : `/modules/${moduleId}`
-          }
-          className="rounded-full border-gray-300 px-5 text-sm font-semibold text-gray-700"
-        >
-          <ChevronLeft size={16} className="mr-1" />
-          Previous
-        </Button>
+        {prevLesson ? (
+          <Button
+            variant="outline"
+            href={`/modules/${moduleId}/lessons/${prevLesson.id}`}
+            className="rounded-full border-gray-300 px-5 text-sm font-semibold text-gray-700"
+          >
+            <ChevronLeft size={16} className="mr-1" />
+            Previous
+          </Button>
+        ) : (
+          <div className="w-24" />
+        )}
 
         <div className="text-xs font-semibold text-gray-500">
           {lessonIndex + 1} of {lessons.length}

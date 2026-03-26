@@ -20,6 +20,41 @@ export default function ModulesPage() {
   const hasActiveSubscription =
     activeUser?.subscription?.subscription_status === SubscriptionStatus.ACTIVE
 
+  const moduleLocks = useMemo(() => {
+    const sorted = [...modulesData].sort(
+      (a, b) => a.sequence_num - b.sequence_num
+    )
+    const lockMap: Record<
+      string,
+      {
+        isLocked: boolean
+        isSubscriptionLocked: boolean
+        isSequenceLocked: boolean
+      }
+    > = {}
+    const completedById: Record<string, boolean> = {}
+
+    sorted.forEach((module) => {
+      completedById[String(module.id)] = module.module_progress >= 100
+    })
+
+    sorted.forEach((module, index) => {
+      const isFree = module.module_tier === SubscriptionStatus.FREE
+      const subscriptionLocked = !isFree && !hasActiveSubscription
+      const prev = sorted[index - 1]
+      const previousCompleted = prev ? completedById[String(prev.id)] : true
+      const isSequenceLocked = !previousCompleted
+
+      lockMap[String(module.id)] = {
+        isLocked: subscriptionLocked || isSequenceLocked,
+        isSubscriptionLocked: subscriptionLocked,
+        isSequenceLocked,
+      }
+    })
+
+    return lockMap
+  }, [hasActiveSubscription, modulesData])
+
   return (
     <div className="flex min-h-screen flex-col bg-purple-100/50">
       <Navbar />
@@ -46,8 +81,8 @@ export default function ModulesPage() {
         ) : (
           <div className="flex flex-col gap-3">
             {modulesData.map((module) => {
-              const isFree = module.module_tier === SubscriptionStatus.FREE
-              const isLocked = !isFree && !hasActiveSubscription
+              const lockState = moduleLocks[String(module.id)]
+              const isLocked = lockState?.isLocked ?? false
 
               return (
                 <div
@@ -78,10 +113,6 @@ export default function ModulesPage() {
                         </div>
                       </div>
                     )}
-                    {/* Sequence badge */}
-                    {/* <div className="absolute top-2 left-2 flex size-6 items-center justify-center rounded-full bg-white/90 text-[10px] font-bold text-primary shadow-sm">
-                      {module.sequence_num}
-                    </div> */}
                   </div>
 
                   {/* Content — RIGHT */}
@@ -115,13 +146,23 @@ export default function ModulesPage() {
 
                       {isLocked ? (
                         <Button
-                          href="/subscription"
+                          href={
+                            lockState?.isSubscriptionLocked
+                              ? "/subscription"
+                              : "/modules"
+                          }
                           size="sm"
                           variant="outline"
                           className="h-7 border-primary/30 px-3 text-xs text-primary/70"
                         >
-                          <Lock size={10} className="mr-1" />
-                          Unlock
+                          {lockState?.isSubscriptionLocked ? (
+                            <>
+                              <Lock size={10} className="mr-1" />
+                              Unlock
+                            </>
+                          ) : (
+                            "Complete Previous"
+                          )}
                         </Button>
                       ) : (
                         <Button

@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -8,8 +9,26 @@ import { whyCards, difference, steps, videos } from "./utils"
 import ScrollFadeIn from "@/components/scroll-fade-in"
 import Navbar from "@/components/navbar/navbar"
 import Footer from "@/components/footer/footer"
+import { useRouter } from "next/navigation"
+import { ENUM_AUTH } from "@/lib/enum"
+import { AuthModal } from "@/components/modals/auth"
+import { SelectProfileModal } from "@/components/modals/select-profile-modal"
+import { useAuthContext } from "@/context"
 
 export default function SafiLandingPage() {
+  const router = useRouter()
+  const { isAuthenticated } = useAuthContext()
+  const [authOpen, setAuthOpen] = useState(false)
+  const [selectProfileOpen, setSelectProfileOpen] = useState(false)
+
+  const handleStartTrial = () => {
+    if (isAuthenticated) {
+      router.push("/dashboard")
+      return
+    }
+    setAuthOpen(true)
+  }
+
   return (
     <main className="min-h-screen bg-gray-50 text-gray-800">
       {/* NAVBAR */}
@@ -42,7 +61,10 @@ export default function SafiLandingPage() {
             </ScrollFadeIn>
 
             <ScrollFadeIn>
-              <Button className="mt-10 px-8 py-7 text-lg">
+              <Button
+                className="mt-10 px-8 py-7 text-lg"
+                onClick={handleStartTrial}
+              >
                 Start your free Trial
               </Button>
             </ScrollFadeIn>
@@ -152,12 +174,27 @@ export default function SafiLandingPage() {
 
         <div className="mt-10">
           <ScrollFadeIn>
-            <Button className="px-10 py-6 font-bold">
+            <Button className="px-10 py-6 font-bold" onClick={handleStartTrial}>
               Start Your Free Trial
             </Button>
           </ScrollFadeIn>
         </div>
       </section>
+
+      <AuthModal
+        open={authOpen}
+        onOpenChange={setAuthOpen}
+        authTab={ENUM_AUTH.SIGNUP}
+        onFamilyAuth={() => {
+          setAuthOpen(false)
+          setSelectProfileOpen(true)
+        }}
+      />
+
+      <SelectProfileModal
+        open={selectProfileOpen}
+        onOpenChange={setSelectProfileOpen}
+      />
       <Footer />
     </main>
   )

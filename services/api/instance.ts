@@ -45,6 +45,7 @@ Axios.interceptors.response.use(
       handleResponseError(error)
     }
 
+    handleResponseError(error)
     throw error
   }
 )

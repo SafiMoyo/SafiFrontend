@@ -8,7 +8,6 @@ import Footer from "@/components/footer/footer"
 
 import { toast } from "sonner"
 import { SubscriptionProgressItem } from "./components/subscription-progress-item"
-import { FallBackSubScriptionCards } from "./partials/fallback-subscription-cards"
 import { ENUM_BillingCycle } from "@/types/subscription"
 import { useAuthContext } from "@/context"
 import { useQueryPlans } from "@/services/subscription/queries"
@@ -22,7 +21,7 @@ export default function SubscriptionPage() {
     ENUM_BillingCycle.YEARLY
   )
 
-  const { data: plansData } = useQueryPlans({})
+  const { data: plansData, isLoading: plansLoading } = useQueryPlans({})
   const { data: statsData } = useQueryDashboardStatistics({
     queryParams: {
       user_id: activeUser?.id.toString() || "",
@@ -73,11 +72,7 @@ export default function SubscriptionPage() {
 
       <div className="mx-auto max-w-5xl px-5 py-12">
         {/* Back button */}
-        <Button
-          variant="ghost"
-          href="/dashboard"
-          className="mb-6 -ml-4 px-2"
-        >
+        <Button variant="ghost" href="/dashboard" className="mb-6 -ml-4 px-2">
           <ChevronLeft size={20} className="mr-1" />
           Back to Dashboard
         </Button>
@@ -121,7 +116,11 @@ export default function SubscriptionPage() {
             </div>
 
             {/* Plan cards */}
-            {plans.length > 0 ? (
+            {plansLoading ? (
+              <div className="rounded-2xl border border-gray-100 bg-white px-6 py-10 text-center text-sm text-gray-500 shadow-sm">
+                Loading plans...
+              </div>
+            ) : plans.length > 0 ? (
               <div className="grid gap-5 sm:grid-cols-2">
                 {plans.map((plan) => {
                   const featured = isFamilyPlan(plan)
@@ -196,11 +195,10 @@ export default function SubscriptionPage() {
                 })}
               </div>
             ) : (
-              <FallBackSubScriptionCards
-                billing={billing}
-                onUpgrade={handleUpgrade}
-                isUpgrading={isUpgrading}
-              />
+              <div className="rounded-2xl border border-gray-100 bg-white px-6 py-10 text-center text-sm text-gray-500 shadow-sm">
+                Subscription plans are not available right now. Please try
+                again.
+              </div>
             )}
           </div>
 

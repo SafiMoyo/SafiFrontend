@@ -16,8 +16,8 @@ import {
 import { useMutateEnrolModule } from "@/services/module-lesson/mutations"
 import { useAuthContext } from "@/context"
 import { SubscriptionStatus } from "@/types/subscription"
-import type { LessonsType } from "@/types/lesson"
 import { LessonTimelineSkeleton } from "@/components/skeleton"
+import { ENUM_LESSON_STATUS } from "@/types/lesson"
 
 export default function ModulePage({
   params,
@@ -38,9 +38,10 @@ export default function ModulePage({
   })
 
   const modules = useMemo(() => modulesData?.data ?? [], [modulesData?.data])
-  const lessons = useMemo(
-    () => lessonsData?.data ?? [],
-    [lessonsData?.data, moduleId]
+  const lessons = useMemo(() => lessonsData?.data ?? [], [lessonsData?.data])
+  const orderedLessons = useMemo(
+    () => [...lessons].sort((a, b) => a.serial_number - b.serial_number),
+    [lessons]
   )
 
   const lessonModule = useMemo(
@@ -51,8 +52,30 @@ export default function ModulePage({
   const hasActiveSubscription =
     activeUser?.subscription?.subscription_status === SubscriptionStatus.ACTIVE
 
-  const isFreeModule = lessonModule?.module_tier === SubscriptionStatus.FREE
-  const isAccessible = isFreeModule || hasActiveSubscription
+  const moduleLocks = useMemo(() => {
+    const sorted = [...modules].sort((a, b) => a.sequence_num - b.sequence_num)
+    const lockMap: Record<string, boolean> = {}
+    const completedById: Record<string, boolean> = {}
+
+    sorted.forEach((module) => {
+      completedById[String(module.id)] = module.module_progress >= 100
+    })
+
+    sorted.forEach((module, index) => {
+      const isFree = module.module_tier === SubscriptionStatus.FREE
+      const subscriptionLocked = !isFree && !hasActiveSubscription
+      const prev = sorted[index - 1]
+      const previousCompleted = prev ? completedById[String(prev.id)] : true
+
+      lockMap[String(module.id)] = subscriptionLocked || !previousCompleted
+    })
+
+    return lockMap
+  }, [hasActiveSubscription, modules])
+
+  const isAccessible = lessonModule
+    ? !moduleLocks[String(lessonModule.id)]
+    : false
 
   // Redirect to /modules if user doesn't have access
   useEffect(() => {
@@ -68,6 +91,8 @@ export default function ModulePage({
     })
 
   const isEnrolled = enrolledData?.data?.enrolled ?? false
+  const hasResolvedEnrollment =
+    !!lessonModule && isAccessible && !enrolledLoading && !!enrolledData
 
   const { mutate: enrolModule, isPending: enrolling } = useMutateEnrolModule({
     queryParams: { module_id: moduleId },
@@ -83,7 +108,20 @@ export default function ModulePage({
     return null
   }
 
-  const nextLesson = lessons.find((l) => l.status !== "COMPLETED")
+  const isLessonLocked = (index: number) => {
+    if (index === 0) return false
+    return orderedLessons[index - 1]?.status !== ENUM_LESSON_STATUS.COMPLETED
+  }
+
+  const nextLesson = orderedLessons.find(
+    (lesson, index) =>
+      lesson.status !== ENUM_LESSON_STATUS.COMPLETED && !isLessonLocked(index)
+  )
+  const completedLessonsCount = orderedLessons.filter(
+    (lesson) => lesson.status === ENUM_LESSON_STATUS.COMPLETED
+  ).length
+  const isModuleFullyCompleted =
+    orderedLessons.length > 0 && completedLessonsCount === orderedLessons.length
 
   return (
     <div className="flex min-h-screen flex-col bg-purple-100/50">
@@ -104,23 +142,38 @@ export default function ModulePage({
           <p className="mt-2 text-sm text-gray-600">
             {lessonModule?.module_description}
           </p>
+          {isEnrolled && orderedLessons.length > 0 && (
+            <p className="mt-3 text-xs font-semibold text-gray-500">
+              Progress: {completedLessonsCount}/{orderedLessons.length}{" "}
+              completed
+            </p>
+          )}
 
           {/* Enrollment / continue button */}
-          {!enrolledLoading && (
+          {hasResolvedEnrollment && (
             <div className="mt-4">
               {isEnrolled ? (
-                nextLesson && (
+                nextLesson ? (
                   <Button
                     href={`/modules/${moduleId}/lessons/${nextLesson.id}`}
                     className="px-5"
                   >
-                    Continue Learning
+                    {nextLesson.status === ENUM_LESSON_STATUS.ONGOING
+                      ? "Resume Learning"
+                      : "Continue Learning"}
+                  </Button>
+                ) : (
+                  <Button disabled className="px-5" variant="outline">
+                    {isModuleFullyCompleted
+                      ? "Module Completed"
+                      : "No Available Lesson"}
                   </Button>
                 )
               ) : (
                 <Button
                   onClick={() => enrolModule({ module_id: moduleId } as never)}
                   disabled={enrolling}
+                  loading={enrolling}
                   className="px-5"
                 >
                   {enrolling ? "Enrolling…" : "Enroll in Module"}
@@ -131,7 +184,7 @@ export default function ModulePage({
         </div>
 
         {/* Not enrolled state */}
-        {!enrolledLoading && !isEnrolled && (
+        {hasResolvedEnrollment && !isEnrolled && (
           <div className="mt-6 rounded-2xl border border-dashed border-primary/30 bg-white/60 px-5 py-8 text-center">
             <Lock size={32} className="mx-auto mb-3 text-primary/40" />
             <p className="text-sm font-semibold text-gray-700">
@@ -152,14 +205,20 @@ export default function ModulePage({
 
             {lessonsLoading ? (
               <LessonTimelineSkeleton />
-            ) : lessons.length === 0 ? (
+            ) : orderedLessons.length === 0 ? (
               <p className="text-sm text-gray-500">No lessons available.</p>
             ) : (
               <div className="flex flex-col gap-3">
-                {lessons.map((lesson, index) => {
-                  const isCompleted = lesson.status === "COMPLETED"
-                  const isLocked = lesson.status === "LOCKED"
-
+                {orderedLessons.map((lesson, index) => {
+                  const isCompleted =
+                    lesson.status === ENUM_LESSON_STATUS.COMPLETED
+                  const isLocked = isLessonLocked(index)
+                  const isOngoing = lesson.status === ENUM_LESSON_STATUS.ONGOING
+                  const buttonLabel = isCompleted
+                    ? "Watch again"
+                    : isOngoing
+                      ? "Resume"
+                      : "Start"
                   return (
                     <div
                       key={lesson.id}
@@ -201,20 +260,27 @@ export default function ModulePage({
                             </div>
                           </div>
 
-                          {isCompleted && (
-                            <span className="shrink-0 text-xs font-semibold text-green-500">
-                              Completed
+                          {!isCompleted && isOngoing && !isLocked && (
+                            <span className="shrink-0 text-xs font-semibold text-primary">
+                              Ongoing
                             </span>
                           )}
-                          {!isCompleted && !isLocked && (
+                          {!isLocked && (
                             <Button
                               href={`/modules/${moduleId}/lessons/${lesson.id}`}
                               variant="outline"
                               size="sm"
+                              loading={isOngoing && !isCompleted}
                               className="shrink-0 border-primary/40 px-4 text-primary"
                             >
-                              Continue
+                              {buttonLabel}
                             </Button>
+                          )}
+
+                          {!isCompleted && isLocked && (
+                            <span className="shrink-0 text-xs font-semibold text-gray-400">
+                              Complete previous lesson first
+                            </span>
                           )}
                         </div>
                       </div>
