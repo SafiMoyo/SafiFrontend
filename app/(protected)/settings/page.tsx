@@ -3,7 +3,8 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { Settings } from "lucide-react"
+import Link from "next/link"
+import { ChevronRight } from "lucide-react"
 import { useAuthContext } from "@/context"
 import { ProfileCard } from "./_components/profile-card"
 import { SecurityCard } from "./_components/security-card"
@@ -11,6 +12,7 @@ import { SubscriptionCard } from "./_components/subscription-card"
 import { AccountActionsCard } from "./_components/account-actions-card"
 import Footer from "@/components/footer/footer"
 import Navbar from "@/components/navbar/navbar"
+import { ROUTE_KEYS } from "@/lib/constants"
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -40,18 +42,21 @@ export default function SettingsPage() {
       <Navbar />
 
       <div className="mx-auto max-w-5xl px-5 py-10">
-        {/* User hero */}
-        <div className="mb-8 text-center">
+        {/* User hero — links to profile page */}
+        <Link
+          href={ROUTE_KEYS.SETTINGS_PROFILE}
+          className="group mb-8 flex flex-col items-center text-center"
+        >
           {activeUser?.profile_picture ? (
             <Image
               src={activeUser.profile_picture}
               alt={displayName}
               width={56}
               height={56}
-              className="mx-auto mb-2 size-14 rounded-full object-cover shadow-md"
+              className="mx-auto mb-2 size-14 rounded-full object-cover shadow-md ring-2 ring-transparent transition group-hover:ring-primary"
             />
           ) : (
-            <div className="mx-auto mb-2 flex size-14 items-center justify-center rounded-full bg-primary text-xl font-bold text-white shadow-md">
+            <div className="mx-auto mb-2 flex size-14 items-center justify-center rounded-full bg-primary text-xl font-bold text-white shadow-md ring-2 ring-transparent transition group-hover:ring-primary/60">
               {displayName.slice(0, 1).toUpperCase()}
             </div>
           )}
@@ -59,7 +64,10 @@ export default function SettingsPage() {
           <p className="mt-0.5 text-sm text-gray-500">
             Member since {memberSince}
           </p>
-        </div>
+          <span className="mt-1.5 inline-flex items-center gap-0.5 text-xs font-semibold text-primary opacity-0 transition group-hover:opacity-100">
+            View profile <ChevronRight size={12} />
+          </span>
+        </Link>
 
         <div className="grid gap-6 md:grid-cols-[1fr_320px]">
           {/* Left column */}

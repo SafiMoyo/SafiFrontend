@@ -7,4 +7,5 @@ export const ROUTE_KEYS = {
   MODULES: "/modules",
   SETTINGS: "/settings",
   SETTINGS_STATISTICS: "/settings/statistics",
+  SETTINGS_PROFILE: "/settings/profile",
 }
