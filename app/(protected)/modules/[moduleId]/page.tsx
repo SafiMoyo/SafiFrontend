@@ -1,12 +1,11 @@
 "use client"
 
-import { CheckCircle2, Clock, Lock, CircleDashed } from "lucide-react"
-import { ChevronLeft } from "lucide-react"
+import { CheckCircle2, Clock, Lock, CircleDashed, ChevronLeft } from "lucide-react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { useMemo, useEffect } from "react"
 import { notFound, useRouter } from "next/navigation"
 import { use } from "react"
-import Navbar from "@/components/navbar/navbar"
 import Footer from "@/components/footer/footer"
 import {
   useQueryModules,
@@ -125,15 +124,21 @@ export default function ModulePage({
 
   return (
     <div className="flex min-h-screen flex-col bg-purple-100/50">
-      <Navbar />
+      {/* Minimal navbar */}
+      <div className="h-[68px] shrink-0" />
+      <div className="fixed top-0 right-0 left-0 z-50 flex items-center justify-between bg-white px-6 py-4 shadow-sm">
+        <Image src="/images/logo.svg" alt="Safi" width={80} height={28} />
+        <button
+          type="button"
+          onClick={() => router.push("/modules")}
+          className="flex items-center gap-1 text-sm font-semibold text-gray-700 transition hover:text-primary"
+        >
+          <ChevronLeft size={16} />
+          Back
+        </button>
+      </div>
 
       <div className="mx-auto w-full max-w-3xl flex-1 px-3 py-4 sm:px-5 sm:py-5">
-        {/* Back button */}
-        <Button variant="ghost" href="/modules" className="mb-4 -ml-3 px-2">
-          <ChevronLeft size={20} className="mr-1" />
-          All Modules
-        </Button>
-
         {/* Module header card */}
         <div className="rounded-2xl bg-white p-5 shadow-xs">
           <h1 className="text-lg font-bold text-gray-900">

@@ -55,3 +55,20 @@ export const useAddFamilyMember = createMutation({
   keysToRefetch: [keyMe],
   method: "POST",
 })
+
+export const useMutateVerifyPassword = createMutation<{
+  status: boolean
+  message: string
+}>({
+  url: "/user/verify-password",
+  method: "POST",
+})
+
+export const useMutateContactSupport = createMutation<{
+  status: boolean
+  message: string
+  data: Record<string, unknown>
+}>({
+  url: "/contact",
+  method: "POST",
+})

@@ -7,11 +7,9 @@ import {
 } from "@/components/ui/select"
 
 export const AGE_GROUP_OPTIONS = [
-  { value: "under-13", label: "Under 13" },
-  { value: "13-17", label: "13–17" },
-  { value: "18-24", label: "18–24" },
-  { value: "25-34", label: "25–34" },
-  { value: "35+", label: "35+" },
+  { value: "Early Level 4-8", label: "Early Level 4-8" },
+  { value: "Middle Level 9-13", label: "Middle Level 9-13" },
+  { value: "Advanced Level 14-18", label: "Advanced Level 14-18" },
 ]
 
 type AgeGroupSelectProps = {

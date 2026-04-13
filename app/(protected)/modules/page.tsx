@@ -3,17 +3,18 @@
 import { Lock, Video, ChevronLeft } from "lucide-react"
 import Image from "next/image"
 import { useMemo } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useQueryModules } from "@/services/module-lesson/queries"
 import { SubscriptionStatus } from "@/types/subscription"
 import { useAuthContext } from "@/context"
 import { getImageUrl } from "@/lib/image-fallback"
 import Footer from "@/components/footer/footer"
-import Navbar from "@/components/navbar/navbar"
 import { ModuleListSkeleton } from "@/components/skeleton"
 
 export default function ModulesPage() {
   const { activeUser } = useAuthContext()
+  const router = useRouter()
   const { data, isLoading } = useQueryModules({})
   const modulesData = useMemo(() => data?.data ?? [], [data?.data])
 
@@ -57,16 +58,24 @@ export default function ModulesPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-purple-100/50">
-      <Navbar />
+      {/* Minimal navbar */}
+      <div className="h-[68px] shrink-0" />
+      <div className="fixed top-0 right-0 left-0 z-50 flex items-center justify-between bg-white px-6 py-4 shadow-sm">
+        <Image src="/images/logo.svg" alt="Safi" width={80} height={28} />
+        <button
+          type="button"
+          onClick={() => router.push("/dashboard")}
+          className="flex items-center gap-1 text-sm font-semibold text-gray-700 transition hover:text-primary"
+        >
+          <ChevronLeft size={16} />
+          Back
+        </button>
+      </div>
 
       {/* Header bar */}
-      <div className="bg-purple-200">
+      <div style={{ backgroundColor: "#D68BF7" }}>
         <div className="mx-auto flex w-full max-w-3xl items-center gap-3 px-5 py-3">
-          <Button variant="ghost" href="/dashboard" className="p-1">
-            <ChevronLeft size={20} />
-          </Button>
-          <Video size={20} className="text-primary" />
-          <h1 className="text-base font-bold text-gray-800">All Modules</h1>
+          <h1 className="text-base font-bold text-gray-800">Modules</h1>
         </div>
       </div>
 
@@ -79,7 +88,7 @@ export default function ModulesPage() {
             No modules available yet.
           </div>
         ) : (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-5">
             {modulesData.map((module) => {
               const lockState = moduleLocks[String(module.id)]
               const isLocked = lockState?.isLocked ?? false
@@ -87,7 +96,7 @@ export default function ModulesPage() {
               return (
                 <div
                   key={module.id}
-                  className={`flex h-40 overflow-hidden rounded-2xl bg-white shadow-xs transition-shadow hover:shadow-md ${
+                  className={`flex h-52 overflow-hidden rounded-2xl bg-white shadow-xs transition-shadow hover:shadow-md ${
                     isLocked ? "opacity-80" : ""
                   }`}
                 >

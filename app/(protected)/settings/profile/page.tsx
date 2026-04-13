@@ -1,19 +1,18 @@
 "use client"
 
-import { useMemo } from "react"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { ChevronLeft } from "lucide-react"
-import Navbar from "@/components/navbar/navbar"
+import Image from "next/image"
 import Footer from "@/components/footer/footer"
 import { useAuthContext } from "@/context"
 import { useQueryDashboardStatistics } from "@/services/module-lesson/queries"
-import { useQueryModules } from "@/services/module-lesson/queries"
 import { ROUTE_KEYS } from "@/lib/constants"
 import { ProfileHero } from "./_components/profile-hero"
 import { BadgeGrid } from "./_components/badge-grid"
 
 export default function ProfilePage() {
   const { activeUser } = useAuthContext()
+  const router = useRouter()
 
   const { data: statsData, isLoading: isLoadingStats } =
     useQueryDashboardStatistics({
@@ -22,16 +21,7 @@ export default function ProfilePage() {
       },
     })
 
-  const { data: modulesData, isLoading: isLoadingModules } = useQueryModules({})
-
   const stats = statsData?.data
-  const modules = useMemo(
-    () =>
-      [...(modulesData?.data ?? [])].sort(
-        (a, b) => a.sequence_num - b.sequence_num
-      ),
-    [modulesData?.data]
-  )
 
   const displayName =
     [activeUser?.first_name, activeUser?.last_name].filter(Boolean).join(" ") ||
@@ -46,20 +36,21 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-purple-100/40">
-      <Navbar />
+      {/* Minimal navbar */}
+      <div className="h-[68px] shrink-0" />
+      <div className="fixed top-0 right-0 left-0 z-50 flex items-center justify-between bg-white px-6 py-4">
+        <Image src="/images/logo.svg" alt="Safi" width={80} height={28} />
+        <button
+          type="button"
+          onClick={() => router.push(ROUTE_KEYS.SETTINGS)}
+          className="flex items-center gap-1 text-sm font-semibold text-gray-700 transition hover:text-primary"
+        >
+          <ChevronLeft size={16} />
+          Back
+        </button>
+      </div>
 
       <div className="mx-auto max-w-3xl px-5 py-8">
-        {/* Back navigation */}
-        <div className="mb-6">
-          <Link
-            href={ROUTE_KEYS.SETTINGS}
-            className="inline-flex items-center gap-1 text-sm font-semibold text-gray-500 transition-colors hover:text-primary"
-          >
-            <ChevronLeft size={16} />
-            Back
-          </Link>
-        </div>
-
         {/* Profile hero card */}
         <ProfileHero
           displayName={displayName}
@@ -75,10 +66,8 @@ export default function ProfilePage() {
           <h2 className="mb-5 text-2xl font-extrabold text-gray-900">Badges</h2>
 
           <BadgeGrid
-            modules={modules}
-            badgesEarned={stats?.badges_earned ?? 0}
-            ageGroup={activeUser?.age_group ?? "4–6"}
-            isLoading={isLoadingModules || isLoadingStats}
+            badges={stats?.badges ?? []}
+            isLoading={isLoadingStats}
           />
         </div>
       </div>

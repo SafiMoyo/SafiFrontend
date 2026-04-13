@@ -7,3 +7,10 @@ export const useQueryPlans = createQuery<QueryResGetPlans>({
   key: keyPlans,
   url: "/user/plans",
 })
+
+export const keyPublicPricing = ["public-pricing"]
+
+export const useQueryPublicPricing = createQuery<QueryResGetPlans>({
+  key: keyPublicPricing,
+  url: "/public/pricing",
+})

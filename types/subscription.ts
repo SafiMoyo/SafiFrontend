@@ -7,7 +7,7 @@ export enum SubscriptionStatus {
   FREE = "FREE",
   ACTIVE = "ACTIVE",
   CANCELLED = "CANCELLED",
-  EXPIRED = "EXPIRED",
+  EXPIRED = "SUBSCRIPTION EXPIRED",
 }
 
 export type SubscriptionType = {

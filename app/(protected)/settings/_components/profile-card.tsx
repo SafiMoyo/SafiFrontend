@@ -5,7 +5,6 @@ import { Camera, User } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { AgeGroupSelect } from "@/components/ui/age-group-select"
 import { useAuthContext } from "@/context"
 import {
   useMutateUpdateProfile,
@@ -83,16 +82,18 @@ export function ProfileCard() {
 
   const initials = displayName.slice(0, 1).toUpperCase()
 
+  const memberSince = activeUser?.date_created
+    ? new Date(activeUser.date_created).toLocaleDateString(undefined, {
+        month: "long",
+        year: "numeric",
+      })
+    : "N/A"
+
   return (
     <div className="rounded-2xl bg-white p-6 shadow-sm">
-      <div className="mb-6 flex items-center gap-2">
-        <User size={18} className="text-primary" />
-        <h2 className="font-bold text-gray-900">Profile</h2>
-      </div>
-
-      {/* Avatar upload */}
-      <div className="mb-6 flex justify-center">
-        <div className="relative">
+      {/* Avatar + name row */}
+      <div className="mb-5 flex items-center gap-4">
+        <div className="relative shrink-0">
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
@@ -126,12 +127,24 @@ export function ProfileCard() {
             onChange={handleImageChange}
           />
         </div>
+
+        {/* Name + member since */}
+        <div>
+          <p className="text-lg font-bold text-gray-900">{displayName}</p>
+          <p className="mt-0.5 text-xs text-gray-500">Member since {memberSince}</p>
+        </div>
+      </div>
+
+      {/* Profile label — below avatar row, left-aligned */}
+      <div className="mb-4 flex items-center gap-2">
+        <User size={18} className="text-primary" />
+        <h2 className="font-bold text-gray-900">Profile</h2>
       </div>
 
       <div className="space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
-            <Label className="text-sm font-bold text-gray-900">
+            <Label className="text-sm font-bold text-black uppercase">
               First Name
             </Label>
             <Input
@@ -142,7 +155,7 @@ export function ProfileCard() {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="text-sm font-bold text-gray-900">Last Name</Label>
+            <Label className="text-sm font-bold text-black uppercase">Last Name</Label>
             <Input
               variant="auth"
               placeholder="Last name"
@@ -153,7 +166,7 @@ export function ProfileCard() {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label className="text-sm font-bold text-gray-900">Email</Label>
+          <Label className="text-sm font-bold text-black uppercase">Email</Label>
           <Input
             disabled
             variant="auth"
@@ -166,16 +179,19 @@ export function ProfileCard() {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label className="text-sm font-bold text-gray-900">Age Group</Label>
-          <AgeGroupSelect
+          <Label className="text-sm font-bold text-black uppercase">Age Group</Label>
+          <Input
+            disabled
+            variant="auth"
+            placeholder="Age group"
+            className="disabled:cursor-not-allowed"
             value={form.ageGroup}
-            onChange={(val) => setField("ageGroup", val)}
           />
         </div>
 
         <Button
           type="button"
-          className="h-12 w-full rounded-full"
+          className="h-12 w-full rounded-lg"
           onClick={handleSave}
           loading={isSaving}
         >

@@ -32,7 +32,7 @@ export function ProfileHero({
         <div className="flex flex-1 flex-col justify-between gap-5">
           {/* Member since + name */}
           <div>
-            <p className="text-xs font-extrabold tracking-widest text-gray-500 uppercase">
+            <p className="text-xs font-extrabold tracking-widest text-black uppercase">
               Joined {memberSince}
             </p>
             <h1 className="mt-2 text-3xl font-extrabold text-gray-900">
@@ -43,7 +43,7 @@ export function ProfileHero({
           {/* Stat cards */}
           <div className="flex gap-3">
             {/* Streak card */}
-            <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-[#E4D6B3] bg-[#FFF7E3] px-4 py-5">
+            <div className="flex flex-1 flex-col items-center justify-center rounded-[16px] border border-[#FFC733] bg-[#F3E6C4] px-4 py-8">
               <span className="text-3xl">🔥</span>
               <p
                 className={cn(
@@ -59,7 +59,7 @@ export function ProfileHero({
             </div>
 
             {/* Modules card */}
-            <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-purple-200 bg-purple-200/60 px-4 py-5">
+            <div className="flex flex-1 flex-col items-center justify-center rounded-[16px] border border-[#BB2EFA] bg-[#C9A3F2] px-4 py-8">
               <GraduationCap size={28} className="text-gray-700" />
               <p
                 className={cn(

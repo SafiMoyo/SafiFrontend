@@ -30,5 +30,14 @@ export type UserType = {
   profile_picture: string
   date_created: string
   subscription: SubscriptionType
+  // Flat subscription fields returned directly on the user object
+  subscription_status?: string
+  plan_type?: string | null
+  plan_id?: number | null
+  amount_paid?: number | null
+  duration?: string | null
+  start_date?: string | null
+  end_date?: string | null
+  paid_at?: string | null
   family_profiles: FamilyProfile[]
 }

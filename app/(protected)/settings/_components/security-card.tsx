@@ -128,7 +128,7 @@ export function SecurityCard() {
 
         <Button
           type="button"
-          className="h-12 w-full rounded-full"
+          className="h-12 w-full rounded-lg"
           onClick={handleSave}
           loading={isPending}
           disabled={!canSave}

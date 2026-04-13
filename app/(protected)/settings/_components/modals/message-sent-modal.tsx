@@ -12,11 +12,13 @@ import { Button } from "@/components/ui/button"
 type MessageSentModalProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
+  message?: string
 }
 
 export function MessageSentModal({
   open,
   onOpenChange,
+  message,
 }: MessageSentModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -35,9 +37,13 @@ export function MessageSentModal({
 
         <div className="px-6 pb-7 text-center">
           <DialogDescription className="mt-5 text-base leading-relaxed text-slate-700">
-            Thanks for reaching out.
-            <br />
-            We&apos;ll get back to you shortly.
+            {message ?? (
+              <>
+                Thanks for reaching out.
+                <br />
+                We&apos;ll get back to you shortly.
+              </>
+            )}
           </DialogDescription>
 
           <Button

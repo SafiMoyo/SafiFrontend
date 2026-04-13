@@ -1,11 +1,11 @@
 "use client"
 
 import { Clock, LibraryBig, ChevronLeft, ChevronRight } from "lucide-react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { notFound, useRouter } from "next/navigation"
 import { use, useMemo, useEffect, useCallback, useRef } from "react"
 import type { SyntheticEvent } from "react"
-import Navbar from "@/components/navbar/navbar"
 import {
   useQueryModules,
   useQueryModuleLessons,
@@ -197,23 +197,25 @@ export default function LessonPage({
 
   return (
     <div className="flex min-h-screen flex-col bg-[#EDE6F0]">
-      <Navbar />
+      {/* Minimal navbar */}
+      <div className="h-[68px] shrink-0" />
+      <div className="fixed top-0 right-0 left-0 z-50 flex items-center justify-between bg-white px-6 py-4 shadow-sm">
+        <Image src="/images/logo.svg" alt="Safi" width={80} height={28} />
+        <button
+          type="button"
+          onClick={handleGoBack}
+          className="flex items-center gap-1 text-sm font-semibold text-gray-700 transition hover:text-primary"
+        >
+          <ChevronLeft size={16} />
+          Back
+        </button>
+      </div>
 
       {/* Lesson header */}
       <div className="flex flex-col gap-4 px-3 py-4 sm:flex-row sm:items-start sm:px-5 sm:py-5">
         {/* Left: Lesson info */}
         <div className="flex-1">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={handleGoBack}
-            className="mb-2 -ml-2 w-fit px-2 text-sm font-semibold text-gray-700"
-          >
-            <ChevronLeft size={16} className="mr-1" />
-            Back
-          </Button>
-
-          <h1 className="mt-1 text-xl font-bold text-gray-900">
+          <h1 className="text-xl font-bold text-gray-900">
             {lesson ? `${lessonIndex + 1}. ${lesson.lesson_title}` : null}
           </h1>
           {lesson ? (

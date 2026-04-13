@@ -1,6 +1,15 @@
 import { LessonsType } from "@/types/lesson"
 import { ModuleType } from "@/types/module"
 
+export type BadgeItem = {
+  id: number
+  name: string
+  description: string
+  image_url: string | null
+  module_id: string
+  earned_at: string
+}
+
 export type DashboardStatisticsRes = {
   data: {
     lessons_done: number
@@ -14,6 +23,7 @@ export type DashboardStatisticsRes = {
     last_active: string
     age_group: string
     average_session: string
+    badges: BadgeItem[]
     module_breakdown: {
       progress: string
       module_id: string

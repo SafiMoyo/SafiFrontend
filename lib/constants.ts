@@ -3,6 +3,8 @@ export const ROUTE_KEYS = {
   ABOUT: "/about",
   TERMS: "/terms",
   PRIVACY: "/privacy",
+  PRICING: "/pricing",
+  SUBSCRIPTION: "/subscription",
   DASHBOARD: "/dashboard",
   MODULES: "/modules",
   SETTINGS: "/settings",

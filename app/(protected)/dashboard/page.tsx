@@ -3,7 +3,7 @@
 import { LibraryBig, Users } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { useAuthContext } from "@/context"
 import Footer from "@/components/footer/footer"
 import Navbar from "@/components/navbar/navbar"
@@ -11,8 +11,10 @@ import { useQueryModules } from "@/services/module-lesson/queries"
 import { SubscriptionStatus } from "@/types/subscription"
 import { getImageUrl } from "@/lib/image-fallback"
 import type { ModuleType } from "@/types/module"
+import { ParentMenuModal } from "./_components/parent-menu-modal"
 
 export default function DashboardPage() {
+  const [parentMenuOpen, setParentMenuOpen] = useState(false)
   const { activeUser } = useAuthContext()
   const { data, isLoading } = useQueryModules({})
   const modulesData = useMemo(() => data?.data ?? [], [data?.data])
@@ -134,7 +136,7 @@ export default function DashboardPage() {
         </Link>
 
         {/* 3 small lesson cards */}
-        <div className="mt-3 grid grid-cols-3 gap-2 pb-24">
+        <div className="mt-6 grid grid-cols-3 gap-2 pb-24">
           {isLoading ? (
             <div className="col-span-3 rounded-xl bg-white px-3 py-4 text-center text-xs text-gray-500">
               Loading modules...
@@ -151,7 +153,7 @@ export default function DashboardPage() {
                   alt={module.module_title}
                   width={400}
                   height={200}
-                  className="h-24 w-full object-cover"
+                  className="h-36 w-full object-cover"
                 />
                 {/* Footer */}
                 <div className="bg-[#E4D6B3] px-2 py-2">
@@ -176,12 +178,15 @@ export default function DashboardPage() {
       <div className="fixed right-5 bottom-6">
         <button
           type="button"
+          onClick={() => setParentMenuOpen(true)}
           className="flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-lg"
         >
           <Users size={18} className="text-gray-600" />
           Parent Menu
         </button>
       </div>
+
+      <ParentMenuModal open={parentMenuOpen} onOpenChange={setParentMenuOpen} />
 
       {/* Footer */}
       <Footer />

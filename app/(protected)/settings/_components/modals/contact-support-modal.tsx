@@ -1,15 +1,16 @@
 "use client"
 
-import { FormEvent, useState } from "react"
+import React, { useState } from "react"
 import { Mail, MessageSquare, Phone } from "lucide-react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useMutateContactSupport } from "@/services/auth/mutations"
 
 type ContactSupportModalProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSuccess: () => void
+  onSuccess: (message: string) => void
 }
 
 export function ContactSupportModal({
@@ -21,17 +22,23 @@ export function ContactSupportModal({
   const [email, setEmail] = useState("")
   const [message, setMessage] = useState("")
 
+  const { mutate: contactSupport, isPending } = useMutateContactSupport({
+    onSuccess: (data) => {
+      resetForm()
+      onOpenChange(false)
+      onSuccess(data.message)
+    },
+  })
+
   const resetForm = () => {
     setName("")
     setEmail("")
     setMessage("")
   }
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault()
-    resetForm()
-    onOpenChange(false)
-    onSuccess()
+    contactSupport({ name, email, message })
   }
 
   return (
@@ -115,8 +122,12 @@ export function ContactSupportModal({
             </div>
 
             <div className="flex justify-end pt-1">
-              <Button type="submit" className="h-11 rounded-md px-8">
-                Submit
+              <Button
+                type="submit"
+                className="h-11 rounded-md px-8"
+                disabled={isPending}
+              >
+                {isPending ? "Sending..." : "Submit"}
               </Button>
             </div>
           </form>

@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
 import { useAuthContext } from "@/context"
 import { toast } from "sonner"
 import { useMutateDeleteAccount } from "@/services/auth/mutations"
@@ -39,25 +38,25 @@ export function AccountActionsCard() {
   }
 
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-sm">
-      <h2 className="mb-4 font-bold text-gray-900">Account Actions</h2>
+    <div className="flex items-center justify-between rounded-2xl bg-white px-6 py-4 shadow-sm">
+      <h2 className="font-bold" style={{ color: "#999999" }}>Account Actions</h2>
       <div className="flex gap-3">
-        <Button
+        <button
           type="button"
-          variant="outline"
-          className="h-12 flex-1 rounded-full"
           onClick={handleSignOut}
+          className="h-9 bg-white px-6 text-sm font-medium transition hover:bg-gray-50"
+          style={{ border: "1px solid #D68BF7", borderRadius: 8, color: "#4D4D4D" }}
         >
           Sign out
-        </Button>
-        <Button
+        </button>
+        <button
           type="button"
-          variant="destructive"
-          className="h-12 flex-1 rounded-full"
           onClick={() => setDeleteOpen(true)}
+          className="h-9 bg-white px-6 text-sm font-medium transition hover:bg-gray-50"
+          style={{ border: "1px solid #E53935", borderRadius: 8, color: "#4D4D4D" }}
         >
           Delete account
-        </Button>
+        </button>
       </div>
 
       <DeleteAccountModal

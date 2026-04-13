@@ -23,11 +23,16 @@ export function SubscriptionCard() {
   const [cancelledOpen, setCancelledOpen] = useState(false)
   const [contactOpen, setContactOpen] = useState(false)
   const [messageOpen, setMessageOpen] = useState(false)
+  const [contactMessage, setContactMessage] = useState("")
   const subscription = activeUser?.subscription
+  const subscriptionStatus =
+    activeUser?.subscription_status ??
+    subscription?.subscription_status ??
+    SubscriptionStatus.FREE
 
   const isFree =
-    !subscription ||
-    subscription.subscription_status === SubscriptionStatus.FREE
+    !subscriptionStatus ||
+    subscriptionStatus === SubscriptionStatus.FREE
 
   const { mutate: cancelSubscription, isPending: isCancelling } =
     useMutateCancelSubscription({
@@ -54,12 +59,14 @@ export function SubscriptionCard() {
             <p className="font-bold text-gray-900">
               {isFree
                 ? "Free Plan"
-                : `${subscription?.plan_type ?? "Premium"} Plan`}
+                : `${activeUser?.plan_type ?? subscription?.plan_type ?? "No"} PLAN`}
             </p>
-            {!isFree && subscription?.end_date && (
+            {!isFree && (activeUser?.end_date ?? subscription?.end_date) && (
               <p className="mt-0.5 text-xs text-gray-500">
                 Renews on{" "}
-                {new Date(subscription.end_date).toLocaleDateString(undefined, {
+                {new Date(
+                  (activeUser?.end_date ?? subscription?.end_date)!
+                ).toLocaleDateString(undefined, {
                   month: "long",
                   day: "numeric",
                   year: "numeric",
@@ -72,34 +79,43 @@ export function SubscriptionCard() {
               </p>
             )}
           </div>
-          <span className="shrink-0 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-white">
-            {isFree ? "Free" : "Active"}
+          <span
+            className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold text-white ${
+              subscriptionStatus === SubscriptionStatus.CANCELLED ||
+              subscriptionStatus === SubscriptionStatus.EXPIRED
+                ? "bg-red-500"
+                : "bg-primary"
+            }`}
+          >
+            {subscriptionStatus}
           </span>
         </div>
       </div>
 
       <div className="space-y-2">
-        <Button
-          type="button"
-          className="h-12 w-full rounded-full"
-          onClick={() => router.push("/subscription")}
-        >
-          {isFree ? "Upgrade plan" : "Change plan"}
-        </Button>
-        {!isFree && (
+        <div className="flex gap-2">
           <Button
             type="button"
-            variant="outline"
-            className="h-12 w-full rounded-full"
-            onClick={() => setCancelOpen(true)}
+            className="h-10 rounded-lg px-5"
+            onClick={() => router.push("/subscription")}
           >
-            Cancel subscription
+            Upgrade plan
           </Button>
-        )}
+          {!isFree && (
+            <Button
+              type="button"
+              variant="outline"
+              className="h-10 rounded-lg px-5"
+              onClick={() => setCancelOpen(true)}
+            >
+              Cancel plan
+            </Button>
+          )}
+        </div>
         <Button
           type="button"
           variant="ghost"
-          className="h-10 w-full rounded-full text-primary"
+          className="h-10 w-full rounded-lg text-primary"
           onClick={() => setContactOpen(true)}
         >
           Contact support
@@ -121,10 +137,17 @@ export function SubscriptionCard() {
       <ContactSupportModal
         open={contactOpen}
         onOpenChange={setContactOpen}
-        onSuccess={() => setMessageOpen(true)}
+        onSuccess={(msg) => {
+          setContactMessage(msg)
+          setMessageOpen(true)
+        }}
       />
 
-      <MessageSentModal open={messageOpen} onOpenChange={setMessageOpen} />
+      <MessageSentModal
+        open={messageOpen}
+        onOpenChange={setMessageOpen}
+        message={contactMessage}
+      />
     </div>
   )
 }

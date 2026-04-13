@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 import Image from "next/image"
-import { whyCards, difference, steps, videos } from "./utils"
+import { whyCards, difference, steps } from "./utils"
 import ScrollFadeIn from "@/components/scroll-fade-in"
 import Navbar from "@/components/navbar/navbar"
 import Footer from "@/components/footer/footer"
@@ -15,11 +15,37 @@ import { AuthModal } from "@/components/modals/auth"
 import { SelectProfileModal } from "@/components/modals/select-profile-modal"
 import { useAuthContext } from "@/context"
 
+const heroSlides = [
+  "/images/hero-1.png",
+  "/images/hero-2.jpg",
+  "/images/hero-4.png",
+]
+
 export default function SafiLandingPage() {
   const router = useRouter()
   const { isAuthenticated } = useAuthContext()
   const [authOpen, setAuthOpen] = useState(false)
   const [selectProfileOpen, setSelectProfileOpen] = useState(false)
+  const [activeSlide, setActiveSlide] = useState(0)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const goToSlide = (index: number) => {
+    setActiveSlide(index)
+  }
+
+  const startAutoPlay = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    intervalRef.current = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % heroSlides.length)
+    }, 2000)
+  }
+
+  useEffect(() => {
+    startAutoPlay()
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+    }
+  }, [])
 
   const handleStartTrial = () => {
     if (isAuthenticated) {
@@ -35,18 +61,27 @@ export default function SafiLandingPage() {
       <Navbar />
 
       {/* HERO */}
-      <section className="mx-auto mt-1 max-w-7xl px-6">
+      <section className="mx-auto mt-6 max-w-7xl px-6">
         <div className="relative overflow-hidden rounded-2xl shadow-md">
-          <Image
-            alt="Logo"
-            src={"/images/hero-1.png"}
-            width={300}
-            height={100}
-            className="h-[500px] w-full object-cover"
-          />
+          {/* Slides */}
+          <div
+            className="flex h-[600px] transition-transform duration-500 ease-in-out"
+            style={{ transform: `translateX(-${activeSlide * 100}%)` }}
+          >
+            {heroSlides.map((src, i) => (
+              <div key={i} className="relative h-[600px] w-full shrink-0">
+                <Image
+                  alt={`Hero slide ${i + 1}`}
+                  src={src}
+                  fill
+                  className="object-cover"
+                  priority={i === 0}
+                />
+              </div>
+            ))}
+          </div>
 
-          <div className="absolute inset-0 bg-white/20" />
-
+          {/* Overlay content */}
           <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
             <ScrollFadeIn direction="down">
               <h1 className="mb-4 text-4xl font-extrabold md:text-5xl">
@@ -68,6 +103,24 @@ export default function SafiLandingPage() {
                 Start your free Trial
               </Button>
             </ScrollFadeIn>
+          </div>
+
+          {/* Dot indicators */}
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+            {heroSlides.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => {
+                  goToSlide(i)
+                  startAutoPlay()
+                }}
+                className={cn(
+                  "h-2 rounded-full transition-all duration-300",
+                  i === activeSlide ? "w-6 bg-white" : "w-2 bg-white/50"
+                )}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -95,7 +148,7 @@ export default function SafiLandingPage() {
       </section>
 
       {/* HOW SAFI BUILDS AI SKILLS */}
-      <section className="mx-auto max-w-5xl px-6 py-12">
+      <section id="how-it-works" className="mx-auto max-w-5xl px-6 py-12">
         <ScrollFadeIn direction="down">
           <h2 className="mb-12 text-center text-xl font-extrabold">
             How Safi Builds AI Skills
@@ -160,14 +213,14 @@ export default function SafiLandingPage() {
         </ScrollFadeIn>
 
         <div className="grid gap-8 md:grid-cols-3">
-          {videos.map((v, i) => (
+          {["/images/banner1.png", "/images/banner2.png", "/images/banner3.png"].map((src, i) => (
             <ScrollFadeIn
               delay={i * 0.15}
               key={i}
               direction="down"
               className="overflow-hidden rounded-xl shadow-md"
             >
-              <img src={v} alt="videos" className="h-48 w-full object-cover" />
+              <img src={src} alt={`Banner ${i + 1}`} className="h-48 w-full object-cover" />
             </ScrollFadeIn>
           ))}
         </div>

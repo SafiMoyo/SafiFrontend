@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
+import { useRouter } from "next/navigation"
 import {
   Award,
   BookOpen,
@@ -15,6 +16,7 @@ import Footer from "@/components/footer/footer"
 import { useAuthContext } from "@/context"
 import { useQueryDashboardStatistics } from "@/services/module-lesson/queries"
 import { cn } from "@/lib/utils"
+import { ROUTE_KEYS } from "@/lib/constants"
 import {
   progressWidthSteps,
   WeekDayItem,
@@ -100,6 +102,7 @@ function formatLastActive(lastActive?: string) {
 
 export default function SettingsStatisticsPage() {
   const { activeUser } = useAuthContext()
+  const router = useRouter()
 
   const { data, isLoading } = useQueryDashboardStatistics({
     queryParams: {
@@ -154,11 +157,19 @@ export default function SettingsStatisticsPage() {
               </p>
             </div>
           </div>
+          <button
+            type="button"
+            onClick={() => router.push(ROUTE_KEYS.SETTINGS_PROFILE)}
+            className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-black transition hover:bg-primary/90"
+          >
+            {activeUser?.first_name || "User"}
+          </button>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-2xl border border-[#E4D6B3] bg-[#FFF7E3] p-5 shadow-sm">
-            <p className="mb-3 text-xl">🔥</p>
+          {/* Card 1 — Day Streak */}
+          <div className="flex min-h-56 flex-col items-center justify-center rounded-[16px] border border-[#FFC733] bg-[#F3E6C4] p-5 text-center shadow-sm">
+            <p className="mb-3 text-2xl">🔥</p>
             <p className="text-4xl font-extrabold text-gray-900">
               {isLoading ? "--" : (stats?.day_streak ?? 0)}
             </p>
@@ -167,8 +178,9 @@ export default function SettingsStatisticsPage() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-purple-200 bg-purple-100/70 p-5 shadow-sm">
-            <p className="mb-3 text-xl">📖</p>
+          {/* Card 2 — Lessons Done */}
+          <div className="flex min-h-56 flex-col items-center justify-center rounded-[16px] border border-[#BB2EFA] bg-[#C9A3F2] p-5 text-center shadow-sm">
+            <p className="mb-3 text-2xl">📖</p>
             <p className="text-4xl font-extrabold text-gray-900">
               {isLoading ? "--" : lessonsDone}
             </p>
@@ -177,8 +189,9 @@ export default function SettingsStatisticsPage() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-[#E4D6B3] bg-[#FFF7E3] p-5 shadow-sm">
-            <p className="mb-3 text-xl">🎓</p>
+          {/* Card 3 — Modules Completed (same as card 1) */}
+          <div className="flex min-h-56 flex-col items-center justify-center rounded-[16px] border border-[#FFC733] bg-[#F3E6C4] p-5 text-center shadow-sm">
+            <p className="mb-3 text-2xl">🎓</p>
             <p className="text-4xl font-extrabold text-gray-900">
               {isLoading ? "--" : (stats?.modules_completed ?? 0)}
             </p>
@@ -187,8 +200,9 @@ export default function SettingsStatisticsPage() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-purple-200 bg-purple-100/70 p-5 shadow-sm">
-            <p className="mb-3 text-xl">🏅</p>
+          {/* Card 4 — Badges (same as card 2) */}
+          <div className="flex min-h-56 flex-col items-center justify-center rounded-[16px] border border-[#BB2EFA] bg-[#C9A3F2] p-5 text-center shadow-sm">
+            <p className="mb-3 text-2xl">🏅</p>
             <p className="text-4xl font-extrabold text-gray-900">
               {isLoading ? "--" : (stats?.badges_earned ?? 0)}
             </p>
@@ -228,7 +242,7 @@ export default function SettingsStatisticsPage() {
           <div className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-bold text-gray-900">
-                Weekly Activity
+                Weekly Activities
               </h2>
               <p className="text-sm font-semibold text-gray-700">
                 Avg {stats?.average_session || "0 mins/day"}

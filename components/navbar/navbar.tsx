@@ -25,24 +25,7 @@ const Navbar = () => {
   const [selectProfileOpen, setSelectProfileOpen] = useState(false)
   const [authTab, setAuthTab] = useState<ENUM_AUTH>(ENUM_AUTH.LOGIN)
   const isFamilyAccount = activeUser?.account_type === AccountType.FAMILY
-  const [hidden, setHidden] = useState(false)
-  const lastScrollY = useRef(0)
   const profileRef = useRef<HTMLDivElement | null>(null)
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentY = window.scrollY
-      if (currentY > 60 && currentY > lastScrollY.current) {
-        setHidden(true)
-        setOpen(false)
-      } else {
-        setHidden(false)
-      }
-      lastScrollY.current = currentY
-    }
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -79,23 +62,34 @@ const Navbar = () => {
   const hasProfilePicture = activeUser?.profile_picture
   const shouldShowNameInButton = !hasProfilePicture
 
+  const handleHowItWorks = () => {
+    setOpen(false)
+    if (pathname === "/") {
+      document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })
+    } else {
+      window.location.href = "/#how-it-works"
+    }
+  }
+
   const navItems = [
-    { label: "About Safi", href: ROUTE_KEYS.ABOUT },
-    { label: "How it works", href: "" },
-    { label: "Pricing", href: "" },
+    { label: "About Safi", href: ROUTE_KEYS.ABOUT, onClick: undefined },
+    { label: "How it works", href: "", onClick: handleHowItWorks },
+    {
+      label: "Pricing",
+      href: isAuthenticated ? ROUTE_KEYS.SUBSCRIPTION : ROUTE_KEYS.PRICING,
+      onClick: undefined,
+    },
   ]
 
   const settingsPrimaryHref = isStatisticsPage
     ? ROUTE_KEYS.SETTINGS
     : ROUTE_KEYS.SETTINGS_STATISTICS
-  const settingsPrimaryLabel = isStatisticsPage ? "Settings" : "Statistics"
+  const settingsPrimaryLabel = isStatisticsPage ? "Settings" : "Learning Journey"
 
   return (
-    <motion.div
-      animate={{ y: hidden ? "-100%" : "0%" }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="sticky top-0 z-50 bg-white py-4"
-    >
+    <div className="h-[68px] shrink-0">
+    <div className="fixed top-0 right-0 left-0 z-50 bg-white py-4 shadow-sm">
+
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6">
         {/* LOGO */}
         <Button variant={"ghost"} href="/">
@@ -115,7 +109,8 @@ const Navbar = () => {
               <Button
                 key={item.label}
                 variant="link"
-                href={item.href}
+                href={item.href || undefined}
+                onClick={item.onClick}
                 className={
                   pathname === item.href
                     ? "font-bold text-primary"
@@ -292,13 +287,13 @@ const Navbar = () => {
                     <Button
                       key={item.label}
                       variant="link"
-                      href={item.href}
+                      href={item.href || undefined}
                       className={
                         pathname === item.href
                           ? "justify-start font-bold text-primary"
                           : "justify-start text-black"
                       }
-                      onClick={() => setOpen(false)}
+                      onClick={item.onClick ?? (() => setOpen(false))}
                     >
                       {item.label}
                     </Button>
@@ -374,7 +369,8 @@ const Navbar = () => {
         open={selectProfileOpen}
         onOpenChange={setSelectProfileOpen}
       />
-    </motion.div>
+    </div>
+    </div>
   )
 }
 
