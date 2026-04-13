@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { AGE_GROUP_OPTIONS } from "@/components/ui/age-group-select"
 import { Button } from "@/components/ui/button"
 import { useSignupUser } from "@/services/auth/mutations"
 import { parseAuthPayload, persistAuthSession, extractResponseData } from "@/services/auth/session"
@@ -147,11 +148,11 @@ export function SignUpForm({ onAuthSuccess }: Props) {
               <SelectValue placeholder="Select age group" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="under-13">Under 13</SelectItem>
-              <SelectItem value="13-17">13–17</SelectItem>
-              <SelectItem value="18-24">18–24</SelectItem>
-              <SelectItem value="25-34">25–34</SelectItem>
-              <SelectItem value="35+">35+</SelectItem>
+              {AGE_GROUP_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
