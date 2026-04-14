@@ -90,11 +90,9 @@ export function AddProfileModal({ open, onOpenChange, onAdded }: Props) {
               <SelectValue placeholder="Age Group" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="under-13">Under 13</SelectItem>
-              <SelectItem value="13-17">13–17</SelectItem>
-              <SelectItem value="18-24">18–24</SelectItem>
-              <SelectItem value="25-34">25–34</SelectItem>
-              <SelectItem value="35+">35+</SelectItem>
+              <SelectItem value="Early Level 4-8">Early Level 4–8</SelectItem>
+              <SelectItem value="Middle Level 9-13">Middle Level 9–13</SelectItem>
+              <SelectItem value="Advanced 14-18">Advanced 14–18</SelectItem>
             </SelectContent>
           </Select>
 

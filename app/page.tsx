@@ -95,7 +95,7 @@ export default function SafiLandingPage() {
       </section>
 
       {/* HOW SAFI BUILDS AI SKILLS */}
-      <section className="mx-auto max-w-5xl px-6 py-12">
+      <section id="how-it-works" className="mx-auto max-w-5xl px-6 py-12">
         <ScrollFadeIn direction="down">
           <h2 className="mb-12 text-center text-xl font-extrabold">
             How Safi Builds AI Skills

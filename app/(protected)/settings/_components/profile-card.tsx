@@ -1,12 +1,13 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Camera, User } from "lucide-react"
+import { ArrowRight, Camera, MoveRight, User } from "lucide-react"
+import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { AgeGroupSelect } from "@/components/ui/age-group-select"
 import { useAuthContext } from "@/context"
+import { ROUTE_KEYS } from "@/lib/constants"
 import {
   useMutateUpdateProfile,
   useMutateUpdateProfilePicture,
@@ -73,7 +74,6 @@ export function ProfileCard() {
     updateProfile({
       first_name: form.firstName,
       last_name: form.lastName,
-      age_group: form.ageGroup,
     })
   }
 
@@ -83,6 +83,13 @@ export function ProfileCard() {
 
   const initials = displayName.slice(0, 1).toUpperCase()
 
+  const memberSince = activeUser?.date_created
+    ? new Date(activeUser.date_created).toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "long",
+      })
+    : null
+
   return (
     <div className="rounded-2xl bg-white p-6 shadow-sm">
       <div className="mb-6 flex items-center gap-2">
@@ -91,12 +98,12 @@ export function ProfileCard() {
       </div>
 
       {/* Avatar upload */}
-      <div className="mb-6 flex justify-center">
+      <div className="mb-4 flex flex-col items-center gap-2">
         <div className="relative">
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="group relative flex size-20 items-center justify-center overflow-hidden rounded-full bg-primary text-2xl font-bold text-white shadow-md transition-opacity"
+            className="group relative flex size-20 items-center justify-center overflow-hidden rounded-full bg-primary text-2xl font-bold text-white shadow-md"
             aria-label="Change profile picture"
           >
             {form.avatarPreview ? (
@@ -126,6 +133,18 @@ export function ProfileCard() {
             onChange={handleImageChange}
           />
         </div>
+
+        <Link
+          href={ROUTE_KEYS.SETTINGS_PROFILE}
+          className="text-center transition-opacity hover:opacity-70"
+        >
+          <p className="font-semibold text-gray-900">{displayName}</p>
+          {memberSince && (
+            <p className="flex items-center justify-center gap-1 text-xs text-gray-400">
+              Member since {memberSince} {<MoveRight size={12} />}
+            </p>
+          )}
+        </Link>
       </div>
 
       <div className="space-y-4">
@@ -161,16 +180,14 @@ export function ProfileCard() {
             placeholder="your@email.com"
             className="disabled:cursor-not-allowed"
             value={form.email}
-            onChange={(e) => setField("email", e.target.value)}
           />
         </div>
 
         <div className="flex flex-col gap-1.5">
           <Label className="text-sm font-bold text-gray-900">Age Group</Label>
-          <AgeGroupSelect
-            value={form.ageGroup}
-            onChange={(val) => setField("ageGroup", val)}
-          />
+          <div className="flex h-11 items-center rounded-xl border border-purple-100 bg-purple-50/40 px-4 text-sm text-gray-700">
+            {form.ageGroup || "—"}
+          </div>
         </div>
 
         <Button

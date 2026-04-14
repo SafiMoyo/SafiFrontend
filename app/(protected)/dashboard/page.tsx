@@ -65,6 +65,7 @@ export default function DashboardPage() {
   return (
     <div className="flex min-h-screen flex-col bg-purple-100/40">
       <Navbar />
+
       {/* Greeting */}
       <div className="px-5 pt-8 pb-4">
         <h1 className="text-2xl font-bold text-primary">
@@ -73,7 +74,7 @@ export default function DashboardPage() {
         <p className="mt-0.5 text-sm text-gray-500">Ready to explore?</p>
       </div>
 
-      {/* Module 1 card */}
+      {/* Free module progress card */}
       <div className="mx-5 rounded-2xl bg-white p-5 shadow-xs">
         <h2 className="text-lg font-bold text-gray-900">
           {freeModule?.module_title ?? "Free Module"}
@@ -82,7 +83,6 @@ export default function DashboardPage() {
           {freeModule?.module_description ??
             "This is your first step to greatness."}
         </p>
-        {/* Progress bar */}
         <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-gray-200">
           <div
             className="h-full rounded-full bg-primary transition-all"
@@ -95,7 +95,7 @@ export default function DashboardPage() {
       <div className="mt-6 px-5">
         <h3 className="mb-3 font-bold text-gray-800">Start learning</h3>
 
-        {/* Featured card */}
+        {/* Featured module card */}
         <Link
           href={freeModule ? moduleHref(freeModule) : "/modules"}
           className="block overflow-hidden rounded-2xl"
@@ -113,7 +113,6 @@ export default function DashboardPage() {
             className="h-48 w-full object-cover"
             priority
           />
-          {/* Card footer */}
           <div className="flex items-center justify-between bg-[#c4a0e0] px-4 py-3">
             <span className="font-semibold text-white">
               {freeModule?.module_title ?? "Start your free module"}
@@ -124,16 +123,16 @@ export default function DashboardPage() {
           </div>
         </Link>
 
-        {/* View all lessons */}
+        {/* View all modules */}
         <Link
-          href={"/modules"}
+          href="/modules"
           className="mt-3 flex items-center gap-2 text-sm font-semibold text-primary"
         >
           <LibraryBig size={18} />
           View all modules
         </Link>
 
-        {/* 3 small lesson cards */}
+        {/* 3 small module cards */}
         <div className="mt-3 grid grid-cols-3 gap-2 pb-24">
           {isLoading ? (
             <div className="col-span-3 rounded-xl bg-white px-3 py-4 text-center text-xs text-gray-500">
@@ -153,7 +152,6 @@ export default function DashboardPage() {
                   height={200}
                   className="h-24 w-full object-cover"
                 />
-                {/* Footer */}
                 <div className="bg-[#E4D6B3] px-2 py-2">
                   <p className="truncate text-xs font-bold text-gray-800">
                     {module.module_title}
@@ -172,18 +170,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Floating Parent Menu button */}
-      <div className="fixed right-5 bottom-6">
-        <button
-          type="button"
-          className="flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-lg"
-        >
-          <Users size={18} className="text-gray-600" />
-          Parent Menu
-        </button>
-      </div>
-
-      {/* Footer */}
       <Footer />
     </div>
   )
