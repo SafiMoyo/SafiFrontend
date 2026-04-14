@@ -220,7 +220,13 @@ export default function SafiLandingPage() {
               direction="down"
               className="overflow-hidden rounded-xl shadow-md"
             >
-              <img src={src} alt={`Banner ${i + 1}`} className="h-48 w-full object-cover" />
+              <button
+                type="button"
+                onClick={() => setAuthOpen(true)}
+                className="block w-full cursor-pointer"
+              >
+                <img src={src} alt={`Banner ${i + 1}`} className="h-48 w-full object-cover" />
+              </button>
             </ScrollFadeIn>
           ))}
         </div>
