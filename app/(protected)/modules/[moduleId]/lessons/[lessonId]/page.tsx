@@ -259,7 +259,7 @@ export default function LessonPage({
 
       {/* Main video player */}
       {lesson ? (
-        <div className="mx-3 mb-4 h-[clamp(220px,50dvh,560px)] overflow-hidden rounded-2xl bg-black shadow-lg sm:mx-5">
+        <div className="mx-3 mb-4 h-[clamp(280px,65dvh,700px)] overflow-hidden rounded-2xl bg-black shadow-lg sm:mx-5">
           {lesson.video_url ? (
             <video
               ref={videoRef}

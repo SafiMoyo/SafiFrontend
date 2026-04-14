@@ -138,7 +138,7 @@ export default function ModulePage({
         </button>
       </div>
 
-      <div className="mx-auto w-full max-w-3xl flex-1 px-3 py-4 sm:px-5 sm:py-5">
+      <div className="mx-auto w-full max-w-7xl flex-1 px-3 py-4 sm:px-5 sm:py-5">
         {/* Module header card */}
         <div className="rounded-2xl bg-white p-5 shadow-xs">
           <h1 className="text-lg font-bold text-gray-900">
@@ -244,22 +244,22 @@ export default function ModulePage({
 
                       {/* Lesson card */}
                       <div
-                        className={`w-full rounded-xl bg-white px-4 py-3.5 shadow-xs ${
+                        className={`w-full rounded-xl bg-white px-5 py-5 shadow-xs ${
                           isLocked ? "opacity-60" : ""
                         }`}
                       >
                         <div className="flex items-center justify-between gap-3">
                           <div>
                             <p
-                              className={`text-sm font-semibold ${
+                              className={`text-base font-semibold ${
                                 isLocked ? "text-gray-400" : "text-gray-800"
                               }`}
                             >
                               {index + 1}. {lesson.lesson_title}
                             </p>
-                            <div className="mt-1 flex items-center gap-1 text-gray-400">
-                              <Clock size={12} />
-                              <span className="text-xs">
+                            <div className="mt-1.5 flex items-center gap-1 text-gray-400">
+                              <Clock size={13} />
+                              <span className="text-sm">
                                 {lesson.lesson_duration}
                               </span>
                             </div>

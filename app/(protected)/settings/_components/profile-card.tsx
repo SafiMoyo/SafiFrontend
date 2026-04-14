@@ -12,6 +12,14 @@ import {
 } from "@/services/auth/mutations"
 import { toast } from "sonner"
 import { ProfileForm } from "../utils"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { AGE_GROUP_OPTIONS } from "@/components/ui/age-group-select"
 
 export function ProfileCard() {
   const { activeUser } = useAuthContext()
@@ -180,13 +188,21 @@ export function ProfileCard() {
 
         <div className="flex flex-col gap-1.5">
           <Label className="text-sm font-bold text-black uppercase">Age Group</Label>
-          <Input
-            disabled
-            variant="auth"
-            placeholder="Age group"
-            className="disabled:cursor-not-allowed"
+          <Select
             value={form.ageGroup}
-          />
+            onValueChange={(v) => setField("ageGroup", v)}
+          >
+            <SelectTrigger variant="auth" className="h-11">
+              <SelectValue placeholder="Select age group" />
+            </SelectTrigger>
+            <SelectContent>
+              {AGE_GROUP_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <Button

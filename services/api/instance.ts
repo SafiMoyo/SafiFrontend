@@ -4,6 +4,7 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from "axios"
 import handleResponseError from "./handleResponseError"
+import { getStoredAccessToken } from "@/services/auth/session"
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL || ""
 
@@ -27,7 +28,7 @@ function handleClearLocalStorage() {
 Axios.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     if (typeof window !== "undefined") {
-      const token = localStorage.getItem("accessToken")
+      const token = getStoredAccessToken()
       if (token) {
         config.headers["Authorization"] = `Bearer ${token}`
       }

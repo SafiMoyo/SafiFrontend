@@ -3,7 +3,7 @@
 import { LibraryBig, Users } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { useMemo, useState } from "react"
+import { useMemo, useState, useRef, useEffect } from "react"
 import { useAuthContext } from "@/context"
 import Footer from "@/components/footer/footer"
 import Navbar from "@/components/navbar/navbar"
@@ -15,6 +15,27 @@ import { ParentMenuModal } from "./_components/parent-menu-modal"
 
 export default function DashboardPage() {
   const [parentMenuOpen, setParentMenuOpen] = useState(false)
+  const [footerVisible, setFooterVisible] = useState(false)
+  const footerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = footerRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setFooterVisible(entry.isIntersecting)
+        if (entry.isIntersecting) {
+          document.documentElement.style.setProperty(
+            "--footer-h",
+            `${el.offsetHeight}px`
+          )
+        }
+      },
+      { threshold: 0 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
   const { activeUser } = useAuthContext()
   const { data, isLoading } = useQueryModules({})
   const modulesData = useMemo(() => data?.data ?? [], [data?.data])
@@ -102,25 +123,26 @@ export default function DashboardPage() {
           href={freeModule ? moduleHref(freeModule) : "/modules"}
           className="block overflow-hidden rounded-2xl"
         >
-          <Image
-            src={getImageUrl(
-              freeModule?.cover_image_url,
-              freeModule?.id ?? "free-module",
-              800,
-              320
-            )}
-            alt={freeModule?.module_title ?? "Module"}
-            width={800}
-            height={320}
-            className="h-48 w-full object-cover"
-            priority
-          />
+          <div className="relative h-84 w-full">
+            <Image
+              src={getImageUrl(
+                freeModule?.cover_image_url,
+                freeModule?.id ?? "free-module",
+                800,
+                320
+              )}
+              alt={freeModule?.module_title ?? "Module"}
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
           {/* Card footer */}
-          <div className="flex items-center justify-between bg-[#c4a0e0] px-4 py-3">
-            <span className="font-semibold text-white">
+          <div className="flex items-center justify-between bg-[#D68BF7] px-4 py-3">
+            <span className="font-semibold text-black">
               {freeModule?.module_title ?? "Start your free module"}
             </span>
-            <span className="text-sm text-white/90">
+            <span className="text-sm text-black/90">
               {freeModule ? `${freeModule.no_of_lessons} lessons` : "--"}
             </span>
           </div>
@@ -153,11 +175,11 @@ export default function DashboardPage() {
                   alt={module.module_title}
                   width={400}
                   height={200}
-                  className="h-36 w-full object-cover"
+                  className="h-72 w-full object-cover"
                 />
                 {/* Footer */}
                 <div className="bg-[#E4D6B3] px-2 py-2">
-                  <p className="truncate text-xs font-bold text-gray-800">
+                  <p className="truncate text-sm font-bold text-black">
                     {module.module_title}
                   </p>
                   <p className="text-[10px] text-gray-500">
@@ -175,13 +197,17 @@ export default function DashboardPage() {
       </div>
 
       {/* Floating Parent Menu button */}
-      <div className="fixed right-5 bottom-6">
+      <div
+        className="fixed right-5 z-40 transition-all duration-300"
+        style={{ bottom: footerVisible ? "calc(var(--footer-h, 100px) + 16px)" : "24px" }}
+      >
         <button
           type="button"
           onClick={() => setParentMenuOpen(true)}
-          className="flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-lg"
+          className="flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-black shadow-lg"
+          style={{ backgroundColor: "#D68BF7" }}
         >
-          <Users size={18} className="text-gray-600" />
+          <Users size={18} className="text-black" />
           Parent Menu
         </button>
       </div>
@@ -189,7 +215,9 @@ export default function DashboardPage() {
       <ParentMenuModal open={parentMenuOpen} onOpenChange={setParentMenuOpen} />
 
       {/* Footer */}
-      <Footer />
+      <div ref={footerRef}>
+        <Footer />
+      </div>
     </div>
   )
 }

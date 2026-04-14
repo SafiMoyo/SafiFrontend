@@ -17,7 +17,7 @@ import { useAuthContext } from "@/context"
 
 const heroSlides = [
   "/images/hero-1.png",
-  "/images/hero-2.jpg",
+  "/images/hero-5.png",
   "/images/hero-4.png",
 ]
 
@@ -37,7 +37,7 @@ export default function SafiLandingPage() {
     if (intervalRef.current) clearInterval(intervalRef.current)
     intervalRef.current = setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % heroSlides.length)
-    }, 2000)
+    }, 6000)
   }
 
   useEffect(() => {
@@ -84,12 +84,12 @@ export default function SafiLandingPage() {
           {/* Overlay content */}
           <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
             <ScrollFadeIn direction="down">
-              <h1 className="mb-4 text-4xl font-extrabold md:text-5xl">
+              <h1 className="mb-4 text-4xl text-black font-extrabold md:text-5xl">
                 AI literacy starts here
               </h1>
             </ScrollFadeIn>
             <ScrollFadeIn direction="left">
-              <p className="mb-6 max-w-2xl text-gray-700">
+              <p className="mb-6 max-w-2xl text-lg text-black font-extrabold">
                 Safi teaches students how artificial intelligence works and how
                 to use it productively through real-world, practical learning.
               </p>
@@ -139,7 +139,7 @@ export default function SafiLandingPage() {
               <div className="h-full rounded-xl bg-[#e6d6b6] shadow-xs">
                 <div className="p-6">
                   <h3 className="font-bold">{card.title}</h3>
-                  <p className="mt-3 text-sm text-gray-700">{card.desc}</p>
+                  <p className="mt-3 text-base text-gray-700">{card.desc}</p>
                 </div>
               </div>
             </ScrollFadeIn>
@@ -198,7 +198,7 @@ export default function SafiLandingPage() {
               <div className="h-full rounded-xl border-none bg-[#e6d6b6] shadow-xs">
                 <div className="p-6">
                   <h3 className="mb-3 font-bold">{item.title}</h3>
-                  <p className="text-sm text-gray-700">{item.desc}</p>
+                  <p className="mt-3 text-base text-gray-700">{item.desc}</p>
                 </div>
               </div>
             </ScrollFadeIn>

@@ -39,7 +39,7 @@ export function LogInForm({ onForgotPassword, onAuthSuccess }: Props) {
 
   const { mutate, isPending } = useLoginUser({
     onSuccess: (response) => {
-      persistAuthSession(parseAuthPayload(response))
+      persistAuthSession(parseAuthPayload(response), form.remember)
       const data = extractResponseData(response)
       const user = data.user as Record<string, unknown> | undefined
       const accountType = (user?.account_type as string) ?? "INDIVIDUAL"

@@ -50,7 +50,7 @@ export default function ProfilePage() {
         </button>
       </div>
 
-      <div className="mx-auto max-w-3xl px-5 py-8">
+      <div className="mx-auto max-w-7xl px-5 py-8">
         {/* Profile hero card */}
         <ProfileHero
           displayName={displayName}

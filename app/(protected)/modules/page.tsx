@@ -74,13 +74,13 @@ export default function ModulesPage() {
 
       {/* Header bar */}
       <div style={{ backgroundColor: "#D68BF7" }}>
-        <div className="mx-auto flex w-full max-w-3xl items-center gap-3 px-5 py-3">
+        <div className="mx-auto flex w-full max-w-7xl items-center gap-3 px-5 py-3">
           <h1 className="text-base font-bold text-gray-800">Modules</h1>
         </div>
       </div>
 
       {/* Module list */}
-      <div className="mx-auto w-full max-w-3xl flex-1 px-4 py-5">
+      <div className="mx-auto w-full max-w-7xl flex-1 px-4 py-5">
         {isLoading ? (
           <ModuleListSkeleton />
         ) : modulesData.length === 0 ? (
@@ -101,7 +101,7 @@ export default function ModulesPage() {
                   }`}
                 >
                   {/* Cover image — LEFT */}
-                  <div className="relative w-32 shrink-0 sm:w-40">
+                  <div className="relative w-48 shrink-0 sm:w-64">
                     <Image
                       src={getImageUrl(
                         module.cover_image_url,
@@ -112,7 +112,7 @@ export default function ModulesPage() {
                       alt={module.module_title}
                       fill
                       className="object-cover"
-                      sizes="(max-width: 640px) 128px, 160px"
+                      sizes="(max-width: 640px) 192px, 256px"
                     />
                     {/* Lock overlay */}
                     {isLocked && (

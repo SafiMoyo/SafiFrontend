@@ -90,9 +90,9 @@ const Navbar = () => {
     <div className="h-[68px] shrink-0">
     <div className="fixed top-0 right-0 left-0 z-50 bg-white py-4 shadow-sm">
 
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6">
+      <nav className="flex items-center justify-between px-5">
         {/* LOGO */}
-        <Button variant={"ghost"} href="/">
+        <Button variant={"ghost"} href="/" className="-ml-3">
           <Image
             alt="Logo"
             src={"/images/logo.svg"}
@@ -209,7 +209,7 @@ const Navbar = () => {
                           Switch Account
                         </button>
                       )}
-                      <button
+                      {/* <button
                         type="button"
                         onClick={() => navigate(ROUTE_KEYS.SETTINGS)}
                         className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-100"
@@ -224,7 +224,7 @@ const Navbar = () => {
                       >
                         <Settings size={16} />
                         Settings
-                      </button>
+                      </button> */}
                       <div className="my-1 border-t border-gray-100" />
                       <button
                         type="button"

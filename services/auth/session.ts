@@ -52,35 +52,73 @@ export const parseAuthPayload = (response: unknown): ParsedAuthPayload => {
   }
 }
 
-export const persistAuthSession = (payload: ParsedAuthPayload) => {
+/**
+ * Returns localStorage when "remember me" is checked,
+ * sessionStorage otherwise (cleared when the browser tab closes).
+ */
+export const getAuthStorage = (): Storage | null => {
+  if (typeof window === "undefined") return null
+  const remembered = localStorage.getItem(STORAGE_KEYS.accessToken)
+  // If a token lives in localStorage already (remembered session), use it.
+  // During a fresh login the caller passes the storage explicitly via persistAuthSession.
+  return remembered ? localStorage : sessionStorage
+}
+
+export const persistAuthSession = (
+  payload: ParsedAuthPayload,
+  remember = false
+) => {
   if (typeof window === "undefined") return
 
+  // Clear the other storage so stale tokens don't linger.
+  const primary = remember ? localStorage : sessionStorage
+  const other = remember ? sessionStorage : localStorage
+
+  const sessionKeys = [
+    STORAGE_KEYS.accessToken,
+    STORAGE_KEYS.refreshToken,
+    STORAGE_KEYS.userId,
+  ]
+  sessionKeys.forEach((k) => other.removeItem(k))
+
   if (payload.accessToken) {
-    localStorage.setItem(STORAGE_KEYS.accessToken, payload.accessToken)
+    primary.setItem(STORAGE_KEYS.accessToken, payload.accessToken)
   }
 
   if (payload.refreshToken) {
-    localStorage.setItem(STORAGE_KEYS.refreshToken, payload.refreshToken)
+    primary.setItem(STORAGE_KEYS.refreshToken, payload.refreshToken)
   }
 
   if (payload.userId) {
-    localStorage.setItem(STORAGE_KEYS.userId, payload.userId)
+    primary.setItem(STORAGE_KEYS.userId, payload.userId)
   }
 }
 
 export const clearAuthSession = () => {
   if (typeof window === "undefined") return
 
-  localStorage.removeItem(STORAGE_KEYS.accessToken)
-  localStorage.removeItem(STORAGE_KEYS.refreshToken)
-  localStorage.removeItem(STORAGE_KEYS.webSocketToken)
-  localStorage.removeItem(STORAGE_KEYS.userId)
-  localStorage.removeItem(STORAGE_KEYS.username)
-  localStorage.removeItem(STORAGE_KEYS.activeUser)
-  localStorage.removeItem(STORAGE_KEYS.loggedIn)
+  const keys = [
+    STORAGE_KEYS.accessToken,
+    STORAGE_KEYS.refreshToken,
+    STORAGE_KEYS.webSocketToken,
+    STORAGE_KEYS.userId,
+    STORAGE_KEYS.username,
+    STORAGE_KEYS.activeUser,
+    STORAGE_KEYS.loggedIn,
+  ]
+
+  keys.forEach((k) => {
+    localStorage.removeItem(k)
+    sessionStorage.removeItem(k)
+  })
 }
 
-export const hasStoredAccessToken = () => {
-  if (typeof window === "undefined") return false
-  return Boolean(localStorage.getItem(STORAGE_KEYS.accessToken))
+export const getStoredAccessToken = (): string | null => {
+  if (typeof window === "undefined") return null
+  return (
+    localStorage.getItem(STORAGE_KEYS.accessToken) ||
+    sessionStorage.getItem(STORAGE_KEYS.accessToken)
+  )
 }
+
+export const hasStoredAccessToken = () => Boolean(getStoredAccessToken())
