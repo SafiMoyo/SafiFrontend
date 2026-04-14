@@ -86,7 +86,7 @@ export function ProfileHero({
         </div>
 
         {/* Right: profile image */}
-        <div className="mx-auto w-full max-w-[260px] overflow-hidden rounded-2xl sm:mx-0 sm:w-[260px] sm:flex-shrink-0">
+        <div className="mx-auto w-full max-w-65 overflow-hidden rounded-2xl sm:mx-0 sm:w-65 sm:shrink-0 md:w-75 md:max-w-75">
           {profilePicture ? (
             <Image
               src={profilePicture}
@@ -97,7 +97,7 @@ export function ProfileHero({
               priority
             />
           ) : (
-            <div className="flex h-full min-h-[220px] w-full items-center justify-center bg-primary text-7xl font-extrabold text-white">
+            <div className="flex h-full min-h-55 w-full items-center justify-center bg-primary text-7xl font-extrabold text-white">
               {initials}
             </div>
           )}

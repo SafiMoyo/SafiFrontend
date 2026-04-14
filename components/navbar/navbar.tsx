@@ -121,7 +121,7 @@ const Navbar = () => {
             onHowItWorks={handleHowItWorks}
           />
         ) : (
-          <div className="hidden md:block" />
+          <div className="hidden lg:block" />
         )}
 
         <SettingsShortcuts
@@ -132,7 +132,7 @@ const Navbar = () => {
         />
 
         {!isAuthenticated && (
-          <div className="hidden gap-4 md:flex">
+          <div className="hidden gap-4 lg:flex">
             <Button
               type="button"
               variant="outline"
@@ -152,7 +152,7 @@ const Navbar = () => {
         )}
 
         {isAuthenticated && !isSettingsArea && (
-          <div className="hidden md:flex">
+          <div className="hidden lg:flex">
             <ProfileMenu
               activeUser={activeUser}
               profileOpen={profileOpen}
@@ -171,7 +171,7 @@ const Navbar = () => {
         <button
           type="button"
           onClick={() => setOpen(!open)}
-          className="md:hidden"
+          className="p-1 lg:hidden"
         >
           {open ? <X size={28} /> : <Menu size={28} />}
         </button>

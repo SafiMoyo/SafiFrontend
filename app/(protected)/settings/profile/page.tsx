@@ -48,7 +48,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-purple-100/40">
       <Navbar />
 
-      <div className="mx-auto max-w-3xl px-5 py-8">
+      <div className="mx-auto max-w-4xl px-5 py-8">
         {/* Back navigation */}
         <div className="mb-6">
           <Link

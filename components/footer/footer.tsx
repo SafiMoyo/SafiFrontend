@@ -36,24 +36,24 @@ const Footer = () => {
             </Button>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex gap-1">
             <MagneticLink>
-              <a href="#" title="LinkedIn" target="_blank" rel="noopener noreferrer">
+              <a href="#" title="LinkedIn" target="_blank" rel="noopener noreferrer" className="flex size-11 items-center justify-center rounded-full transition-colors hover:bg-black/10">
                 <Linkedin size={18} />
               </a>
             </MagneticLink>
             <MagneticLink>
-              <a href="#" title="Instagram" target="_blank" rel="noopener noreferrer">
+              <a href="#" title="Instagram" target="_blank" rel="noopener noreferrer" className="flex size-11 items-center justify-center rounded-full transition-colors hover:bg-black/10">
                 <Instagram size={18} />
               </a>
             </MagneticLink>
             <MagneticLink>
-              <a href="#" title="YouTube" target="_blank" rel="noopener noreferrer">
+              <a href="#" title="YouTube" target="_blank" rel="noopener noreferrer" className="flex size-11 items-center justify-center rounded-full transition-colors hover:bg-black/10">
                 <Youtube size={18} />
               </a>
             </MagneticLink>
             <MagneticLink>
-              <a href="#" title="TikTok" target="_blank" rel="noopener noreferrer">
+              <a href="#" title="TikTok" target="_blank" rel="noopener noreferrer" className="flex size-11 items-center justify-center rounded-full transition-colors hover:bg-black/10">
                 <Music2 size={18} />
               </a>
             </MagneticLink>

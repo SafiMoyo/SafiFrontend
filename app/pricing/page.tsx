@@ -53,7 +53,7 @@ export default function PricingPage() {
       <Navbar />
 
       <div className="bg-[#F3E6C4] px-6 py-3">
-        <div className="mx-auto max-w-7xl text-lg font-bold">Pricing</div>
+        <div className="mx-auto max-w-6xl text-lg font-bold">Pricing</div>
       </div>
 
       <div className="mx-auto max-w-4xl px-6 py-16">

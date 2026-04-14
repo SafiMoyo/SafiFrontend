@@ -31,7 +31,7 @@ export function BadgeGrid({ modules, badgesEarned, ageGroup = "4–6", isLoading
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
         {Array.from({ length: PLACEHOLDER_COUNT }).map((_, i) => (
           <div
             // eslint-disable-next-line react/no-array-index-key

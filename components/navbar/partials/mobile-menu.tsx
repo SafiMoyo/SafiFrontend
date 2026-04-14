@@ -46,7 +46,7 @@ export const MobileMenu = ({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -15 }}
           transition={{ duration: 0.25 }}
-          className="absolute top-full left-0 z-20 w-full bg-white shadow-lg md:hidden"
+          className="absolute top-full left-0 z-20 w-full bg-white shadow-lg lg:hidden"
         >
           <div className="flex flex-col gap-6 px-6 py-6">
             {!isSettingsArea && (

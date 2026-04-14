@@ -77,7 +77,7 @@ export default function SubscriptionPage() {
           Back to Dashboard
         </Button>
 
-        <div className="grid gap-10 lg:grid-cols-[1fr_260px]">
+        <div className="grid gap-10 md:grid-cols-[1fr_280px]">
           {/* Left — main content */}
           <div>
             <h1 className="mb-3 text-4xl font-bold text-gray-900">
@@ -94,7 +94,7 @@ export default function SubscriptionPage() {
               <button
                 type="button"
                 onClick={() => setBilling(ENUM_BillingCycle.YEARLY)}
-                className={`rounded-full px-6 py-2.5 text-sm font-semibold transition-all ${
+                className={`rounded-full px-6 py-3 text-sm font-semibold transition-all ${
                   billing === ENUM_BillingCycle.YEARLY
                     ? "bg-primary text-white shadow-sm"
                     : "border border-gray-200 bg-white text-gray-700 hover:border-primary/40"
@@ -105,7 +105,7 @@ export default function SubscriptionPage() {
               <button
                 type="button"
                 onClick={() => setBilling(ENUM_BillingCycle.MONTHLY)}
-                className={`rounded-full px-6 py-2.5 text-sm font-semibold transition-all ${
+                className={`rounded-full px-6 py-3 text-sm font-semibold transition-all ${
                   billing === ENUM_BillingCycle.MONTHLY
                     ? "bg-primary text-white shadow-sm"
                     : "border border-gray-200 bg-white text-gray-700 hover:border-primary/40"

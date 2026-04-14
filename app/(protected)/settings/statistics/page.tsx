@@ -16,17 +16,11 @@ import { useAuthContext } from "@/context"
 import { useQueryDashboardStatistics } from "@/services/module-lesson/queries"
 import { cn } from "@/lib/utils"
 import {
-  progressWidthSteps,
+  getProgressWidthClass,
   WeekDayItem,
   activityHeightSteps,
   dayLabelMap,
 } from "../utils"
-
-function getProgressWidthClass(percent: number) {
-  const normalized = Math.max(0, Math.min(100, percent))
-  const index = Math.round(normalized / 5)
-  return progressWidthSteps[index]
-}
 
 function getActivityHeightClass(value: number, max: number) {
   if (value <= 0) return activityHeightSteps[0]

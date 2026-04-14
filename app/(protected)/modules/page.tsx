@@ -87,12 +87,12 @@ export default function ModulesPage() {
               return (
                 <div
                   key={module.id}
-                  className={`flex h-40 overflow-hidden rounded-2xl bg-white shadow-xs transition-shadow hover:shadow-md ${
+                  className={`flex h-44 overflow-hidden rounded-2xl bg-white shadow-xs transition-shadow hover:shadow-md sm:h-52 ${
                     isLocked ? "opacity-80" : ""
                   }`}
                 >
                   {/* Cover image — LEFT */}
-                  <div className="relative w-32 shrink-0 sm:w-40">
+                  <div className="relative w-32 shrink-0 sm:w-44 md:w-48">
                     <Image
                       src={getImageUrl(
                         module.cover_image_url,
@@ -103,7 +103,7 @@ export default function ModulesPage() {
                       alt={module.module_title}
                       fill
                       className="object-cover"
-                      sizes="(max-width: 640px) 128px, 160px"
+                      sizes="(max-width: 640px) 128px, (max-width: 768px) 176px, 192px"
                     />
                     {/* Lock overlay */}
                     {isLocked && (
@@ -116,7 +116,7 @@ export default function ModulesPage() {
                   </div>
 
                   {/* Content — RIGHT */}
-                  <div className="flex flex-1 flex-col justify-between gap-2 p-3.5 sm:p-4">
+                  <div className="flex flex-1 flex-col justify-between gap-2 p-4 sm:p-5">
                     <div>
                       <h2
                         className={`text-sm leading-snug font-bold sm:text-base ${
@@ -153,7 +153,7 @@ export default function ModulesPage() {
                           }
                           size="sm"
                           variant="outline"
-                          className="h-7 border-primary/30 px-3 text-xs text-primary/70"
+                          className="h-10 border-primary/30 px-4 text-sm text-primary/70"
                         >
                           {lockState?.isSubscriptionLocked ? (
                             <>
@@ -168,7 +168,7 @@ export default function ModulesPage() {
                         <Button
                           href={`/modules/${module.id}`}
                           size="sm"
-                          className="h-7 px-3 text-xs"
+                          className="h-10 px-4 text-sm"
                         >
                           View Module
                         </Button>

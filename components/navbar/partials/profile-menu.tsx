@@ -44,11 +44,11 @@ export const ProfileMenu = ({
           <img
             src={activeUser?.profile_picture}
             alt={displayName}
-            className="size-8 rounded-full object-cover"
+            className="size-10 rounded-full object-cover"
           />
         ) : (
           <>
-            <span className="flex size-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
+            <span className="flex size-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
               {initials}
             </span>
             <span className="text-sm font-semibold text-gray-800">

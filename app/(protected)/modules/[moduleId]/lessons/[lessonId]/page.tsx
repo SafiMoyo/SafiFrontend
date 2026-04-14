@@ -199,8 +199,11 @@ export default function LessonPage({
     <div className="flex min-h-screen flex-col bg-[#EDE6F0]">
       <Navbar />
 
+      {/* Centered content — comfortable on tablets up to 1024px */}
+      <div className="mx-auto w-full max-w-5xl flex-1">
+
       {/* Lesson header */}
-      <div className="flex flex-col gap-4 px-3 py-4 sm:flex-row sm:items-start sm:px-5 sm:py-5">
+      <div className="flex flex-col gap-4 px-4 py-5 sm:flex-row sm:items-start sm:px-6 md:px-8 md:py-6">
         {/* Left: Lesson info */}
         <div className="flex-1">
           <Button
@@ -237,7 +240,7 @@ export default function LessonPage({
 
         {/* Right: About this lesson card */}
         {lesson ? (
-          <div className="rounded-xl bg-white px-4 py-3.5 shadow-xs sm:w-56">
+          <div className="rounded-xl bg-white px-4 py-3.5 shadow-xs sm:w-60 md:w-72 lg:w-80">
             <h2 className="mb-1.5 text-sm font-bold text-gray-800">
               About this Lesson
             </h2>
@@ -246,7 +249,7 @@ export default function LessonPage({
             </p>
           </div>
         ) : (
-          <div className="rounded-xl bg-white px-4 py-3.5 shadow-xs sm:w-56">
+          <div className="rounded-xl bg-white px-4 py-3.5 shadow-xs sm:w-60 md:w-72 lg:w-80">
             <Skeleton className="mb-2 h-4 w-28" />
             <Skeleton className="h-3 w-full" />
             <Skeleton className="mt-2 h-3 w-5/6" />
@@ -257,7 +260,7 @@ export default function LessonPage({
 
       {/* Main video player */}
       {lesson ? (
-        <div className="mx-3 mb-4 h-[clamp(220px,50dvh,560px)] overflow-hidden rounded-2xl bg-black shadow-lg sm:mx-5">
+        <div className="mx-4 mb-4 h-[clamp(240px,52dvh,580px)] overflow-hidden rounded-2xl bg-black shadow-lg sm:mx-6 md:mx-8">
           {lesson.video_url ? (
             <video
               ref={videoRef}
@@ -300,13 +303,13 @@ export default function LessonPage({
           )}
         </div>
       ) : (
-        <div className="mx-3 mb-4 h-[clamp(220px,50dvh,560px)] rounded-2xl bg-gray-200 sm:mx-5">
+        <div className="mx-4 mb-4 h-[clamp(240px,52dvh,580px)] rounded-2xl bg-gray-200 sm:mx-6 md:mx-8">
           <Skeleton className="h-full w-full rounded-2xl" />
         </div>
       )}
 
       {/* Bottom navigation */}
-      <div className="flex items-center justify-between px-3 py-4 sm:px-5 sm:py-5">
+      <div className="flex items-center justify-between px-4 py-5 sm:px-6 md:px-8">
         {prevLesson ? (
           <Button
             variant="outline"
@@ -337,6 +340,8 @@ export default function LessonPage({
           <ChevronRight size={16} className="ml-1" />
         </Button>
       </div>
+
+      </div>{/* end max-w-5xl wrapper */}
 
       {/* Footer */}
       <Footer />

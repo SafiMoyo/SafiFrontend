@@ -25,7 +25,7 @@ export function BadgeCard({
       {/* Top module banner */}
       <div
         className={cn(
-          "absolute top-0 inset-x-0 py-1 text-center text-[7px] font-black tracking-[0.12em] uppercase",
+          "absolute top-0 inset-x-0 py-1 text-center text-[9px] font-black tracking-widest uppercase sm:text-[10px]",
           isUnlocked
             ? "bg-amber-400 text-purple-900"
             : "bg-purple-100 text-purple-300"
@@ -37,17 +37,17 @@ export function BadgeCard({
       {/* Sparkles */}
       {isUnlocked && (
         <>
-          <span className="absolute top-6 left-1.5 text-[9px] text-yellow-300">
+          <span className="absolute top-7 left-1.5 text-[10px] text-yellow-300">
             ✦
           </span>
-          <span className="absolute top-6 right-1.5 text-[9px] text-yellow-300">
+          <span className="absolute top-7 right-1.5 text-[10px] text-yellow-300">
             ✦
           </span>
         </>
       )}
 
       {/* Rainbow stripe */}
-      <div className="mt-6 h-1 w-full overflow-hidden rounded-full">
+      <div className="mt-7 h-1 w-full overflow-hidden rounded-full">
         <div
           className={cn(
             "h-full w-full",
@@ -61,7 +61,7 @@ export function BadgeCard({
       {/* Icon */}
       <div
         className={cn(
-          "mt-1 flex flex-1 items-center justify-center text-2xl",
+          "mt-1 flex flex-1 items-center justify-center text-2xl sm:text-3xl",
           !isUnlocked && "opacity-25"
         )}
       >
@@ -72,7 +72,7 @@ export function BadgeCard({
       <div className="w-full text-center">
         <p
           className={cn(
-            "truncate text-[8px] font-bold leading-tight",
+            "truncate text-[9px] font-bold leading-tight sm:text-[10px]",
             isUnlocked ? "text-white" : "text-purple-200"
           )}
         >
@@ -80,7 +80,7 @@ export function BadgeCard({
         </p>
         <p
           className={cn(
-            "mt-0.5 text-[7px]",
+            "mt-0.5 text-[8px] sm:text-[9px]",
             isUnlocked ? "text-amber-300" : "text-purple-200/60"
           )}
         >

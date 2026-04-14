@@ -46,6 +46,12 @@ export const progressWidthSteps = [
   "w-full",
 ]
 
+export function getProgressWidthClass(percent: number) {
+  const normalized = Math.max(0, Math.min(100, percent))
+  const index = Math.round(normalized / 5)
+  return progressWidthSteps[index]
+}
+
 export const activityHeightSteps = [
   "h-2",
   "h-3",

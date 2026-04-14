@@ -27,7 +27,7 @@ export default function SettingsPage() {
 
       {/* Yellow title banner */}
       <div className="bg-[#F3E6C4] px-6 py-3">
-        <div className="mx-auto flex max-w-7xl items-center gap-2 text-lg font-bold">
+        <div className="mx-auto flex max-w-6xl items-center gap-2 text-lg font-bold">
           <SettingsIcon className="size-5" />
           Settings
         </div>

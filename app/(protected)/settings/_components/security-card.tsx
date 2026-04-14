@@ -71,7 +71,7 @@ export function SecurityCard() {
               type="button"
               onClick={() => toggleShow("current")}
               aria-label={show.current ? "Hide password" : "Show password"}
-              className="absolute top-1/2 right-3 -translate-y-1/2 text-purple-400 transition-opacity hover:opacity-70"
+              className="absolute top-1/2 right-1 -translate-y-1/2 p-2 text-purple-400 transition-opacity hover:opacity-70"
             >
               {show.current ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -95,7 +95,7 @@ export function SecurityCard() {
               type="button"
               onClick={() => toggleShow("newPw")}
               aria-label={show.newPw ? "Hide password" : "Show password"}
-              className="absolute top-1/2 right-3 -translate-y-1/2 text-purple-400 transition-opacity hover:opacity-70"
+              className="absolute top-1/2 right-1 -translate-y-1/2 p-2 text-purple-400 transition-opacity hover:opacity-70"
             >
               {show.newPw ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -119,7 +119,7 @@ export function SecurityCard() {
               type="button"
               onClick={() => toggleShow("confirm")}
               aria-label={show.confirm ? "Hide password" : "Show password"}
-              className="absolute top-1/2 right-3 -translate-y-1/2 text-purple-400 transition-opacity hover:opacity-70"
+              className="absolute top-1/2 right-1 -translate-y-1/2 p-2 text-purple-400 transition-opacity hover:opacity-70"
             >
               {show.confirm ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>

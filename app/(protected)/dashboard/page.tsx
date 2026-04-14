@@ -1,6 +1,6 @@
 "use client"
 
-import { LibraryBig, Users } from "lucide-react"
+import { LibraryBig } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { useMemo } from "react"
@@ -11,6 +11,7 @@ import { useQueryModules } from "@/services/module-lesson/queries"
 import { SubscriptionStatus } from "@/types/subscription"
 import { getImageUrl } from "@/lib/image-fallback"
 import type { ModuleType } from "@/types/module"
+import { getProgressWidthClass } from "@/app/(protected)/settings/utils"
 
 export default function DashboardPage() {
   const { activeUser } = useAuthContext()
@@ -58,7 +59,7 @@ export default function DashboardPage() {
 
   const otherModules = useMemo(
     () =>
-      modulesData.filter((module) => module.id !== freeModule?.id).slice(0, 3),
+      modulesData.filter((module) => module.id !== freeModule?.id).slice(0, 4),
     [modulesData, freeModule?.id]
   )
 
@@ -66,107 +67,114 @@ export default function DashboardPage() {
     <div className="flex min-h-screen flex-col bg-purple-100/40">
       <Navbar />
 
-      {/* Greeting */}
-      <div className="px-5 pt-8 pb-4">
-        <h1 className="text-2xl font-bold text-primary">
-          Hello, {activeUser?.first_name || "there"}!
-        </h1>
-        <p className="mt-0.5 text-sm text-gray-500">Ready to explore?</p>
-      </div>
-
-      {/* Free module progress card */}
-      <div className="mx-5 rounded-2xl bg-white p-5 shadow-xs">
-        <h2 className="text-lg font-bold text-gray-900">
-          {freeModule?.module_title ?? "Free Module"}
-        </h2>
-        <p className="mt-1 text-sm text-gray-600">
-          {freeModule?.module_description ??
-            "This is your first step to greatness."}
-        </p>
-        <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-gray-200">
-          <div
-            className="h-full rounded-full bg-primary transition-all"
-            style={{ width: `${freeModule?.module_progress ?? 0}%` }}
-          />
+      {/* Centered content wrapper — keeps layout comfortable on tablets */}
+      <div className="mx-auto w-full max-w-6xl flex-1 px-5">
+        {/* Greeting */}
+        <div className="pt-8 pb-4">
+          <h1 className="text-2xl font-bold text-primary">
+            Hello, {activeUser?.first_name || "there"}!
+          </h1>
+          <p className="mt-0.5 text-sm text-gray-500">Ready to explore?</p>
         </div>
-      </div>
 
-      {/* Start learning */}
-      <div className="mt-6 px-5">
-        <h3 className="mb-3 font-bold text-gray-800">Start learning</h3>
-
-        {/* Featured module card */}
-        <Link
-          href={freeModule ? moduleHref(freeModule) : "/modules"}
-          className="block overflow-hidden rounded-2xl"
-        >
-          <Image
-            src={getImageUrl(
-              freeModule?.cover_image_url,
-              freeModule?.id ?? "free-module",
-              800,
-              320
-            )}
-            alt={freeModule?.module_title ?? "Module"}
-            width={800}
-            height={320}
-            className="h-48 w-full object-cover"
-            priority
-          />
-          <div className="flex items-center justify-between bg-[#c4a0e0] px-4 py-3">
-            <span className="font-semibold text-white">
-              {freeModule?.module_title ?? "Start your free module"}
-            </span>
-            <span className="text-sm text-white/90">
-              {freeModule ? `${freeModule.no_of_lessons} lessons` : "--"}
-            </span>
+        {/* Free module progress card */}
+        <div className="rounded-2xl bg-white p-5 shadow-xs">
+          <h2 className="text-lg font-bold text-gray-900">
+            {freeModule?.module_title ?? "Free Module"}
+          </h2>
+          <p className="mt-1 text-sm text-gray-600">
+            {freeModule?.module_description ??
+              "This is your first step to greatness."}
+          </p>
+          <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-gray-200">
+            <div
+              className={`h-full rounded-full bg-primary transition-all ${getProgressWidthClass(freeModule?.module_progress ?? 0)}`}
+            />
           </div>
-        </Link>
+        </div>
 
-        {/* View all modules */}
-        <Link
-          href="/modules"
-          className="mt-3 flex items-center gap-2 text-sm font-semibold text-primary"
-        >
-          <LibraryBig size={18} />
-          View all modules
-        </Link>
+        {/* Start learning */}
+        <div className="mt-6">
+          <h3 className="mb-3 font-bold text-gray-800">Start learning</h3>
 
-        {/* 3 small module cards */}
-        <div className="mt-3 grid grid-cols-3 gap-2 pb-24">
-          {isLoading ? (
-            <div className="col-span-3 rounded-xl bg-white px-3 py-4 text-center text-xs text-gray-500">
-              Loading modules...
+          {/* Featured module card */}
+          <Link
+            href={freeModule ? moduleHref(freeModule) : "/modules"}
+            className="block overflow-hidden rounded-2xl"
+          >
+            <Image
+              src={getImageUrl(
+                freeModule?.cover_image_url,
+                freeModule?.id ?? "free-module",
+                800,
+                400
+              )}
+              alt={freeModule?.module_title ?? "Module"}
+              width={800}
+              height={400}
+              className="h-52 w-full object-cover sm:h-64"
+              priority
+            />
+            <div className="flex items-center justify-between bg-[#c4a0e0] px-4 py-3.5">
+              <span className="font-semibold text-white">
+                {freeModule?.module_title ?? "Start your free module"}
+              </span>
+              <span className="text-sm text-white/90">
+                {freeModule ? `${freeModule.no_of_lessons} lessons` : "--"}
+              </span>
             </div>
-          ) : otherModules.length > 0 ? (
-            otherModules.map((module) => (
-              <Link
-                key={module.id}
-                href={moduleHref(module)}
-                className="overflow-hidden rounded-xl"
-              >
-                <Image
-                  src={getImageUrl(module.cover_image_url, module.id, 400, 200)}
-                  alt={module.module_title}
-                  width={400}
-                  height={200}
-                  className="h-24 w-full object-cover"
-                />
-                <div className="bg-[#E4D6B3] px-2 py-2">
-                  <p className="truncate text-xs font-bold text-gray-800">
-                    {module.module_title}
-                  </p>
-                  <p className="text-[10px] text-gray-500">
-                    {module.no_of_lessons} lessons
-                  </p>
-                </div>
-              </Link>
-            ))
-          ) : (
-            <div className="col-span-3 rounded-xl bg-white px-3 py-4 text-center text-xs text-gray-500">
-              No additional modules available yet.
-            </div>
-          )}
+          </Link>
+
+          {/* View all modules */}
+          <Link
+            href="/modules"
+            className="mt-3 flex items-center gap-2 text-sm font-semibold text-primary"
+          >
+            <LibraryBig size={18} />
+            View all modules
+          </Link>
+
+          {/* Small module cards — 2-col on mobile, 4-col on tablet */}
+          <div className="mt-3 grid grid-cols-2 gap-3 pb-8 sm:grid-cols-4">
+            {isLoading ? (
+              <div className="col-span-2 rounded-xl bg-white px-3 py-4 text-center text-xs text-gray-500 sm:col-span-4">
+                Loading modules...
+              </div>
+            ) : otherModules.length > 0 ? (
+              otherModules.map((module) => (
+                <Link
+                  key={module.id}
+                  href={moduleHref(module)}
+                  className="overflow-hidden rounded-xl"
+                >
+                  <Image
+                    src={getImageUrl(
+                      module.cover_image_url,
+                      module.id,
+                      400,
+                      200
+                    )}
+                    alt={module.module_title}
+                    width={400}
+                    height={200}
+                    className="h-24 w-full object-cover sm:h-28"
+                  />
+                  <div className="bg-[#E4D6B3] px-2 py-2">
+                    <p className="truncate text-xs font-bold text-gray-800">
+                      {module.module_title}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {module.no_of_lessons} lessons
+                    </p>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <div className="col-span-2 rounded-xl bg-white px-3 py-4 text-center text-xs text-gray-500 sm:col-span-4">
+                No additional modules available yet.
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
