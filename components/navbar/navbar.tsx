@@ -196,6 +196,14 @@ const Navbar = () => {
                         <LayoutDashboard size={16} />
                         Dashboard
                       </button>
+                      <button
+                        type="button"
+                        onClick={() => navigate(ROUTE_KEYS.SETTINGS_PROFILE)}
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-100"
+                      >
+                        <User size={16} />
+                        Profile
+                      </button>
                       {isFamilyAccount && (
                         <button
                           type="button"
@@ -225,15 +233,6 @@ const Navbar = () => {
                         <Settings size={16} />
                         Settings
                       </button> */}
-                      <div className="my-1 border-t border-gray-100" />
-                      <button
-                        type="button"
-                        onClick={handleLogout}
-                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
-                      >
-                        <LogOut size={16} />
-                        Logout
-                      </button>
                     </motion.div>
                   )}
                 </AnimatePresence>

@@ -2,7 +2,7 @@
 import usePersistedState from "@/hooks/usePersistedState"
 import { STORAGE_KEYS } from "@/lib/storage-keys"
 import { useQueryMe } from "@/services/auth/queries"
-import { clearAuthSession, hasStoredAccessToken } from "@/services/auth/session"
+import { clearAuthSession, hasStoredAccessToken, getStoredAccessToken } from "@/services/auth/session"
 
 import { UserType } from "@/types/user"
 
@@ -43,7 +43,9 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   })
   const userId =
     typeof window !== "undefined"
-      ? (localStorage.getItem(STORAGE_KEYS.userId) ?? "")
+      ? ((localStorage.getItem(STORAGE_KEYS.userId) ||
+          sessionStorage.getItem(STORAGE_KEYS.userId)) ??
+        "")
       : ""
 
   const hasToken = hasStoredAccessToken()
