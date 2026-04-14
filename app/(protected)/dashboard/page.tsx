@@ -119,34 +119,44 @@ export default function DashboardPage() {
         <h3 className="mb-3 font-bold text-gray-800">Start learning</h3>
 
         {/* Featured card */}
-        <Link
-          href={freeModule ? moduleHref(freeModule) : "/modules"}
-          className="block overflow-hidden rounded-2xl"
-        >
-          <div className="relative h-84 w-full">
-            <Image
-              src={getImageUrl(
-                freeModule?.cover_image_url,
-                freeModule?.id ?? "free-module",
-                800,
-                320
-              )}
-              alt={freeModule?.module_title ?? "Module"}
-              fill
-              className="object-cover"
-              priority
-            />
+        {isLoading || !freeModule ? (
+          <div className="overflow-hidden rounded-2xl">
+            <div className="h-84 w-full animate-pulse bg-gray-200" />
+            <div className="flex items-center justify-between bg-[#D68BF7] px-4 py-3">
+              <div className="h-4 w-40 animate-pulse rounded bg-black/20" />
+              <div className="h-4 w-16 animate-pulse rounded bg-black/20" />
+            </div>
           </div>
-          {/* Card footer */}
-          <div className="flex items-center justify-between bg-[#D68BF7] px-4 py-3">
-            <span className="font-semibold text-black">
-              {freeModule?.module_title ?? "Start your free module"}
-            </span>
-            <span className="text-sm text-black/90">
-              {freeModule ? `${freeModule.no_of_lessons} lessons` : "--"}
-            </span>
-          </div>
-        </Link>
+        ) : (
+          <Link
+            href={moduleHref(freeModule)}
+            className="block overflow-hidden rounded-2xl"
+          >
+            <div className="relative h-84 w-full">
+              <Image
+                src={getImageUrl(
+                  freeModule.cover_image_url,
+                  freeModule.id,
+                  800,
+                  320
+                )}
+                alt={freeModule.module_title ?? "Module"}
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+            {/* Card footer */}
+            <div className="flex items-center justify-between bg-[#D68BF7] px-4 py-3">
+              <span className="font-semibold text-black">
+                {freeModule.module_title}
+              </span>
+              <span className="text-sm text-black/90">
+                {freeModule.no_of_lessons} lessons
+              </span>
+            </div>
+          </Link>
+        )}
 
         {/* View all lessons */}
         <Link
