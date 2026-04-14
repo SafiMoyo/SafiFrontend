@@ -4,7 +4,7 @@ import { Clock, LibraryBig, ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { notFound, useRouter } from "next/navigation"
-import { use, useMemo, useEffect, useCallback, useRef } from "react"
+import { use, useMemo, useEffect, useCallback, useRef, useState } from "react"
 import type { SyntheticEvent } from "react"
 import {
   useQueryModules,
@@ -62,6 +62,7 @@ export default function LessonPage({
   const lastTrackedSecondRef = useRef(0)
   const lastRecordedRateRef = useRef(0)
   const videoRef = useRef<HTMLVideoElement | null>(null)
+  const [watchedRate, setWatchedRate] = useState(0)
 
   // Guard: no subscription → /modules
   useEffect(() => {
@@ -89,6 +90,7 @@ export default function LessonPage({
     videoDurationRef.current = 0
     lastTrackedSecondRef.current = 0
     lastRecordedRateRef.current = 0
+    setWatchedRate(0)
   }, [lessonId])
 
   const lessonIndex = useMemo(
@@ -104,6 +106,7 @@ export default function LessonPage({
     if (!lesson) return
     const initialRate = Math.max(0, Math.min(100, lesson.completion_rate ?? 0))
     lastRecordedRateRef.current = initialRate
+    setWatchedRate(initialRate)
   }, [lesson])
 
   const handleVideoTimeUpdate = useCallback(
@@ -126,6 +129,8 @@ export default function LessonPage({
         100,
         Math.max(0, Math.floor((seconds / duration) * 100))
       )
+
+      setWatchedRate((prev) => Math.max(prev, completionRate))
 
       if (completionRate <= lastRecordedRateRef.current) return
 
@@ -170,6 +175,7 @@ export default function LessonPage({
   )
 
   const handleVideoEnded = useCallback(() => {
+    setWatchedRate(100)
     if (!lesson || lastRecordedRateRef.current >= 100) return
 
     recordLessonProgress({
@@ -334,6 +340,8 @@ export default function LessonPage({
           }
           className="rounded-full px-5 text-sm font-semibold"
           variant={nextLesson ? "default" : "outline"}
+          disabled={!!nextLesson && watchedRate < 90}
+          title={!!nextLesson && watchedRate < 90 ? "Watch 90% of the video to unlock" : undefined}
         >
           {nextLesson ? "Next" : "Back to Module"}
           <ChevronRight size={16} className="ml-1" />
