@@ -334,14 +334,20 @@ export default function LessonPage({
 
         <Button
           href={
-            nextLesson
+            nextLesson && watchedRate >= 90
               ? `/modules/${moduleId}/lessons/${nextLesson.id}`
-              : `/modules/${moduleId}`
+              : !nextLesson
+                ? `/modules/${moduleId}`
+                : undefined
           }
           className="rounded-full px-5 text-sm font-semibold"
           variant={nextLesson ? "default" : "outline"}
           disabled={!!nextLesson && watchedRate < 90}
-          title={!!nextLesson && watchedRate < 90 ? "Watch 90% of the video to unlock" : undefined}
+          title={
+            !!nextLesson && watchedRate < 90
+              ? "Watch 90% of the video to unlock"
+              : undefined
+          }
         >
           {nextLesson ? "Next" : "Back to Module"}
           <ChevronRight size={16} className="ml-1" />

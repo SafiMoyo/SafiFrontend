@@ -17,6 +17,7 @@ import { useAuthContext } from "@/context"
 import { SubscriptionStatus } from "@/types/subscription"
 import { LessonTimelineSkeleton } from "@/components/skeleton"
 import { ENUM_LESSON_STATUS } from "@/types/lesson"
+import { getImageUrl } from "@/lib/image-fallback"
 
 export default function ModulePage({
   params,
@@ -244,14 +245,38 @@ export default function ModulePage({
 
                       {/* Lesson card */}
                       <div
-                        className={`w-full rounded-xl bg-white px-5 py-5 shadow-xs ${
+                        className={`flex h-40 w-full overflow-hidden rounded-xl bg-white shadow-xs sm:h-44 ${
                           isLocked ? "opacity-60" : ""
                         }`}
                       >
-                        <div className="flex items-center justify-between gap-3">
+                        {/* Cover image — LEFT */}
+                        <div className="relative w-36 shrink-0 sm:w-44">
+                          <Image
+                            src={getImageUrl(
+                              lesson.cover_image_url,
+                              lesson.id,
+                              320,
+                              400
+                            )}
+                            alt={lesson.lesson_title}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 640px) 144px, 176px"
+                          />
+                          {isLocked && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px]">
+                              <div className="flex size-8 items-center justify-center rounded-full bg-white/20">
+                                <Lock size={15} className="text-white" />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Content — RIGHT */}
+                        <div className="flex flex-1 flex-col justify-between gap-2 p-3 sm:p-4">
                           <div>
                             <p
-                              className={`text-base font-semibold ${
+                              className={`text-sm font-semibold leading-snug sm:text-base ${
                                 isLocked ? "text-gray-400" : "text-gray-800"
                               }`}
                             >
@@ -259,34 +284,35 @@ export default function ModulePage({
                             </p>
                             <div className="mt-1.5 flex items-center gap-1 text-gray-400">
                               <Clock size={13} />
-                              <span className="text-sm">
+                              <span className="text-xs sm:text-sm">
                                 {lesson.lesson_duration}
                               </span>
                             </div>
                           </div>
 
-                          {!isCompleted && isOngoing && !isLocked && (
-                            <span className="shrink-0 text-xs font-semibold text-primary">
-                              Ongoing
-                            </span>
-                          )}
-                          {!isLocked && (
-                            <Button
-                              href={`/modules/${moduleId}/lessons/${lesson.id}`}
-                              variant="outline"
-                              size="sm"
-                              loading={isOngoing && !isCompleted}
-                              className="shrink-0 border-primary/40 px-4 text-primary"
-                            >
-                              {buttonLabel}
-                            </Button>
-                          )}
-
-                          {!isCompleted && isLocked && (
-                            <span className="shrink-0 text-xs font-semibold text-gray-400">
-                              Complete previous lesson first
-                            </span>
-                          )}
+                          <div className="flex items-center justify-between gap-2">
+                            {!isCompleted && isOngoing && !isLocked && (
+                              <span className="text-xs font-semibold text-primary">
+                                Ongoing
+                              </span>
+                            )}
+                            {!isCompleted && isLocked && (
+                              <span className="text-xs font-semibold text-gray-400">
+                                Complete previous lesson first
+                              </span>
+                            )}
+                            {!isLocked && (
+                              <Button
+                                href={`/modules/${moduleId}/lessons/${lesson.id}`}
+                                variant="outline"
+                                size="sm"
+                                loading={isOngoing && !isCompleted}
+                                className="ml-auto shrink-0 border-primary/40 px-4 text-xs text-primary"
+                              >
+                                {buttonLabel}
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>

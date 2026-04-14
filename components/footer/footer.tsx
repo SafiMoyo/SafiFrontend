@@ -39,25 +39,49 @@ const Footer = () => {
 
         <div className="flex gap-4">
           <MagneticLink>
-            <button className="cursor-pointer" title="LinkedIn">
+            <a
+              href="https://www.linkedin.com/company/safimoyo/?viewAsMember=true"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="LinkedIn"
+              className="cursor-pointer"
+            >
               <Linkedin size={18} />
-            </button>
+            </a>
           </MagneticLink>
           <MagneticLink>
-            <button className="cursor-pointer" title="Instagram">
+            <a
+              href="https://www.instagram.com/learnsafi?igsh=bTQzMnlzc29remg1&utm_source=qr"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Instagram"
+              className="cursor-pointer"
+            >
               <Instagram size={18} />
-            </button>
+            </a>
           </MagneticLink>
           <MagneticLink>
-            <button className="cursor-pointer" title="Youtube">
+            <a
+              href="https://www.youtube.com/@SafiMoyoOfficial"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Youtube"
+              className="cursor-pointer"
+            >
               <Youtube size={18} />
-            </button>
+            </a>
           </MagneticLink>
           <MagneticLink>
-            <button className="cursor-pointer" title="TikTok">
+            <a
+              href="https://www.tiktok.com/@learnsafi"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="TikTok"
+              className="cursor-pointer"
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/images/tiktok.png" alt="TikTok" className="size-[18px] object-contain" />
-            </button>
+            </a>
           </MagneticLink>
         </div>
       </div>
