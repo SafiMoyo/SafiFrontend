@@ -20,7 +20,7 @@ export const useMutateForgotPassword = createMutation({
   method: "POST",
 })
 export const useMutateResetPassword = createMutation({
-  url: "/auth/change-password/",
+  url: "/auth/change-password",
   method: "POST",
 })
 
