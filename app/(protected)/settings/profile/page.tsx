@@ -42,7 +42,7 @@ export default function ProfilePage() {
         <Image src="/images/logo.svg" alt="Safi" width={80} height={28} />
         <button
           type="button"
-          onClick={() => router.push(ROUTE_KEYS.SETTINGS)}
+          onClick={() => router.back()}
           className="flex items-center gap-1 text-sm font-semibold text-gray-700 transition hover:text-primary"
         >
           <ChevronLeft size={16} />
