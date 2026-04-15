@@ -124,10 +124,11 @@ export default function SettingsStatisticsPage() {
       }))
     }
 
-    return Object.entries(week).map(([day, value]) => ({
+    const weekOrder = Object.keys(dayLabelMap) // Mon → Sun
+    return weekOrder.map((day) => ({
       key: day,
-      label: dayLabelMap[day] ?? day.slice(0, 3).toUpperCase(),
-      value,
+      label: dayLabelMap[day],
+      value: (week as Record<string, number>)[day] ?? 0,
     }))
   }, [stats?.weekly_activity])
 
@@ -243,32 +244,38 @@ export default function SettingsStatisticsPage() {
               </p>
             </div>
 
-            <div className="flex h-44 items-end justify-between gap-2">
-              {weeklyActivity.map((day) => {
-                const clamped = Math.min(Math.max(day.value, 0), 10)
-                const heightPct = (clamped / 10) * 100
+            <div className="flex flex-col gap-1">
+              {/* Bar area — fixed height so height:% resolves correctly */}
+              <div className="flex h-40 items-end justify-between gap-2">
+                {weeklyActivity.map((day) => {
+                  const clamped = Math.min(Math.max(day.value, 0), 10)
+                  const heightPct = (clamped / 10) * 100
 
-                return (
-                  <div
-                    key={day.key}
-                    className="flex w-full flex-col items-center gap-2"
-                  >
+                  return (
                     <div
-                      className="w-full max-w-8 transition-all"
+                      key={day.key}
+                      className="w-full max-w-8 transition-all duration-500"
                       style={{
-                        height: `${heightPct}%`,
-                        minHeight: clamped > 0 ? 4 : 8,
+                        height: clamped === 0 ? 6 : `${heightPct}%`,
                         backgroundColor: getBarColor(clamped),
                         borderRadius: 4,
                       }}
                       title={`${day.key}: ${day.value}`}
                     />
+                  )
+                })}
+              </div>
+
+              {/* Labels row */}
+              <div className="flex justify-between gap-2">
+                {weeklyActivity.map((day) => (
+                  <div key={day.key} className="flex w-full max-w-8 justify-center">
                     <p className="text-[10px] font-semibold tracking-wide text-gray-500">
                       {day.label}
                     </p>
                   </div>
-                )
-              })}
+                ))}
+              </div>
             </div>
           </div>
         </div>
