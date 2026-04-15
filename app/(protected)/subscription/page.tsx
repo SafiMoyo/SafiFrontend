@@ -32,7 +32,7 @@ export default function SubscriptionPage() {
   const filteredPlans = plans.filter(
     (plan) =>
       plan.duration.toLowerCase() === billing &&
-      plan.plan_type === activeUser?.account_type
+      plan.plan_type === (activeUser?.account_type as unknown as ENUM_PLAN_TYPE)
   )
   const stats = statsData?.data
 
