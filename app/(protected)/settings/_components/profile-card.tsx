@@ -12,6 +12,7 @@ import {
 } from "@/services/auth/mutations"
 import { toast } from "sonner"
 import { ProfileForm } from "../utils"
+import { AvatarPickerModal } from "./avatar-picker-modal"
 import {
   Select,
   SelectContent,
@@ -24,6 +25,7 @@ import { AGE_GROUP_OPTIONS } from "@/components/ui/age-group-select"
 export function ProfileCard() {
   const { activeUser } = useAuthContext()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [avatarPickerOpen, setAvatarPickerOpen] = useState(false)
 
   const [form, setForm] = useState<ProfileForm>({
     firstName: "",
@@ -76,6 +78,23 @@ export function ProfileCard() {
     uploadPicture(formData)
   }
 
+  const handleAvatarSelect = async (src: string) => {
+    try {
+      setField("avatarPreview", src)
+      const res = await fetch(src)
+      const blob = await res.blob()
+      const filename = src.split("/").pop() ?? "avatar.png"
+      const file = new File([blob], filename, { type: blob.type || "image/png" })
+      const formData = new FormData()
+      formData.append("file", file)
+      uploadPicture(formData, {
+        onSuccess: () => setAvatarPickerOpen(false),
+      })
+    } catch {
+      toast.error("Failed to set avatar. Please try again.")
+    }
+  }
+
   const handleSave = () => {
     updateProfile({
       first_name: form.firstName,
@@ -104,7 +123,7 @@ export function ProfileCard() {
         <div className="relative shrink-0">
           <button
             type="button"
-            onClick={() => fileInputRef.current?.click()}
+            onClick={() => setAvatarPickerOpen(true)}
             className="group relative flex size-20 items-center justify-center overflow-hidden rounded-full bg-primary text-2xl font-bold text-white shadow-md transition-opacity"
             aria-label="Change profile picture"
           >
@@ -126,6 +145,7 @@ export function ProfileCard() {
               )}
             </span>
           </button>
+          {/* kept for potential future direct upload */}
           <input
             aria-label="Upload image"
             ref={fileInputRef}
@@ -214,6 +234,13 @@ export function ProfileCard() {
           Save changes
         </Button>
       </div>
+      <AvatarPickerModal
+        open={avatarPickerOpen}
+        onOpenChange={setAvatarPickerOpen}
+        userAgeGroup={activeUser?.age_group}
+        onSelect={handleAvatarSelect}
+        isUploading={isUploading}
+      />
     </div>
   )
 }

@@ -63,7 +63,7 @@ export function SecurityCard() {
             <Input
               variant="auth"
               type={show.current ? "text" : "password"}
-              placeholder="••••••••"
+              placeholder="Enter current password"
               value={current}
               onChange={(e) => setCurrent(e.target.value)}
               className="pr-10"

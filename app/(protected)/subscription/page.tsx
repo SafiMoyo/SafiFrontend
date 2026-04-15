@@ -30,7 +30,9 @@ export default function SubscriptionPage() {
 
   const plans = plansData?.data ?? []
   const filteredPlans = plans.filter(
-    (plan) => plan.duration.toLowerCase() === billing
+    (plan) =>
+      plan.duration.toLowerCase() === billing &&
+      plan.plan_type === activeUser?.account_type
   )
   const stats = statsData?.data
 
