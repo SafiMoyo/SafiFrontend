@@ -1,6 +1,6 @@
 "use client"
 
-import { Clock, LibraryBig, ChevronLeft, ChevronRight } from "lucide-react"
+import { Clock, LibraryBig, ChevronLeft, ChevronRight, Lock } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { notFound, useRouter } from "next/navigation"
@@ -92,6 +92,17 @@ export default function LessonPage({
     lastRecordedRateRef.current = 0
     setWatchedRate(0)
   }, [lessonId])
+
+  // Dispose video when user leaves the page so it doesn't play in background.
+  useEffect(() => {
+    return () => {
+      const video = videoRef.current
+      if (!video) return
+      video.pause()
+      video.src = ""
+      video.load()
+    }
+  }, [])
 
   const lessonIndex = useMemo(
     () => lessons.findIndex((l) => String(l.id) === lessonId),
@@ -272,6 +283,9 @@ export default function LessonPage({
               className="h-full w-full object-contain"
               controls
               controlsList="nodownload"
+              autoPlay
+              muted
+              playsInline
               poster={lesson.cover_image_url || undefined}
               onLoadedMetadata={handleVideoLoadedMetadata}
               onTimeUpdate={handleVideoTimeUpdate}
@@ -349,6 +363,9 @@ export default function LessonPage({
               : undefined
           }
         >
+          {!!nextLesson && watchedRate < 90 && (
+            <Lock size={13} className="mr-1" />
+          )}
           {nextLesson ? "Next" : "Back to Module"}
           <ChevronRight size={16} className="ml-1" />
         </Button>
