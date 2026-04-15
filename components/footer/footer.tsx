@@ -7,10 +7,10 @@ import { ROUTE_KEYS } from "@/lib/constants"
 const Footer = () => {
   return (
     <footer className="mt-16 bg-[#e7d8b6] py-6">
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-6 text-sm md:flex-row">
-        <div>© 2026 SAFIMOYO. ALL RIGHTS RESERVED</div>
+      <div className="grid grid-cols-1 items-center gap-6 px-5 text-sm md:grid-cols-3 lg:px-10">
+        <div className="text-center md:text-left">© 2026 SAFIMOYO. ALL RIGHTS RESERVED</div>
 
-        <div className="flex gap-6">
+        <div className="flex justify-center gap-6">
           <Button
             className="text-black"
             variant={"link"}
@@ -37,7 +37,7 @@ const Footer = () => {
           </Button>
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex justify-center gap-4 md:justify-end">
           <MagneticLink>
             <a
               href="https://www.linkedin.com/company/safimoyo/?viewAsMember=true"

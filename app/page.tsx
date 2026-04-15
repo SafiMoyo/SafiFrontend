@@ -61,7 +61,7 @@ export default function SafiLandingPage() {
       <Navbar />
 
       {/* HERO */}
-      <section className="mx-auto mt-6 max-w-7xl px-6">
+      <section className="mt-6 px-5 lg:px-10">
         <div className="relative overflow-hidden rounded-2xl shadow-md">
           {/* Slides */}
           <div
@@ -126,7 +126,7 @@ export default function SafiLandingPage() {
       </section>
 
       {/* WHY AI */}
-      <section className="mx-auto max-w-7xl px-6 py-16">
+      <section className="px-5 lg:px-10 py-16">
         <ScrollFadeIn direction="down">
           <h2 className="mb-10 text-center text-xl font-extrabold text-gray-700">
             Why Should Students Learn Artificial Intelligence?
@@ -148,7 +148,7 @@ export default function SafiLandingPage() {
       </section>
 
       {/* HOW SAFI BUILDS AI SKILLS */}
-      <section id="how-it-works" className="mx-auto max-w-5xl px-6 py-12">
+      <section id="how-it-works" className="px-5 lg:px-10 py-12">
         <ScrollFadeIn direction="down">
           <h2 className="mb-12 text-center text-xl font-extrabold">
             How Safi Builds AI Skills
@@ -185,7 +185,7 @@ export default function SafiLandingPage() {
       </section>
 
       {/* WHAT MAKES SAFI DIFFERENT */}
-      <section className="mx-auto max-w-7xl px-6 py-16">
+      <section className="px-5 lg:px-10 py-16">
         <ScrollFadeIn direction="down">
           <h2 className="mb-10 text-center text-xl font-extrabold">
             What Makes Safi Different
@@ -207,7 +207,7 @@ export default function SafiLandingPage() {
       </section>
 
       {/* SAMPLE VIDEOS */}
-      <section className="mx-auto max-w-7xl px-6 py-10 text-center">
+      <section className="px-5 lg:px-10 py-10 text-center">
         <ScrollFadeIn direction="down">
           <h2 className="mb-8 text-lg font-extrabold">SAMPLE VIDEOS</h2>
         </ScrollFadeIn>

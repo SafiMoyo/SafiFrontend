@@ -25,8 +25,9 @@ export function AuthModal({ open, onOpenChange, authTab, onFamilyAuth }: Props) 
   const [forgotOpen, setForgotOpen] = useState(false)
   const pendingAccountTypeRef = useRef<string | null>(null)
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => setTab(authTab), [authTab])
+  useEffect(() => {
+    if (open) setTab(authTab)
+  }, [open, authTab])
 
   useEffect(() => {
     if (open && isAuthenticated && pendingAccountTypeRef.current === null) {

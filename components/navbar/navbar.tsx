@@ -90,7 +90,7 @@ const Navbar = () => {
     <div className="h-[68px] shrink-0">
     <div className="fixed top-0 right-0 left-0 z-50 bg-white py-4 shadow-sm">
 
-      <nav className="flex items-center justify-between px-5">
+      <nav className="flex items-center justify-between px-5 lg:px-10">
         {/* LOGO */}
         <Button variant={"ghost"} href="/" className="-ml-3">
           <Image
