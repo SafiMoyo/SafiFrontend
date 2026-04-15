@@ -18,67 +18,19 @@ import { useSignupUser } from "@/services/auth/mutations"
 import { parseAuthPayload, persistAuthSession, extractResponseData } from "@/services/auth/session"
 import { toast } from "sonner"
 import { useAuthContext } from "@/context"
-
-const passwordRules = [
-  { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
-  { label: "A letter (a–z or A–Z)", test: (p: string) => /[a-zA-Z]/.test(p) },
-  { label: "A number (0–9)", test: (p: string) => /[0-9]/.test(p) },
-]
-
-function PasswordStrength({ password }: { password: string }) {
-  const passed = passwordRules.filter((r) => r.test(password))
-  const isStrong = passed.length === passwordRules.length
-
-  return (
-    <div className="mt-1.5 space-y-1">
-      {passwordRules.map((rule) => {
-        const ok = rule.test(password)
-        return (
-          <p
-            key={rule.label}
-            className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${
-              ok ? "text-green-600" : "text-gray-400"
-            }`}
-          >
-            <span
-              className={`inline-flex size-3.5 shrink-0 items-center justify-center rounded-full border ${
-                ok ? "border-green-500 bg-green-500 text-white" : "border-gray-300"
-              }`}
-            >
-              {ok && (
-                <svg viewBox="0 0 10 10" className="size-2.5" fill="none">
-                  <path
-                    d="M2 5l2.5 2.5L8 3"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              )}
-            </span>
-            {rule.label}
-          </p>
-        )
-      })}
-      {isStrong && (
-        <p className="mt-1 text-xs font-semibold text-green-600">
-          Password is strong
-        </p>
-      )}
-    </div>
-  )
-}
+import { passwordRules, PasswordStrength } from "@/components/ui/password-strength"
 
 type SignupFormState = {
   firstName: string
   lastName: string
   email: string
   password: string
+  confirmPassword: string
   ageGroup: string
   accountType: string
   agreed: boolean
   showPassword: boolean
+  showConfirmPassword: boolean
 }
 
 type Props = {
@@ -91,10 +43,12 @@ export function SignUpForm({ onAuthSuccess }: Props) {
     lastName: "",
     email: "",
     password: "",
+    confirmPassword: "",
     ageGroup: "",
     accountType: "",
     agreed: false,
     showPassword: false,
+    showConfirmPassword: false,
   })
   const { setLoggedIn } = useAuthContext()
 
@@ -195,6 +149,34 @@ export function SignUpForm({ onAuthSuccess }: Props) {
         </div>
 
         <div className="flex flex-col gap-1.5">
+          <Label className="text-sm font-bold text-gray-900">
+            Confirm Password
+          </Label>
+          <div className="relative">
+            <Input
+              variant="auth"
+              type={form.showConfirmPassword ? "text" : "password"}
+              placeholder="Repeat your password"
+              value={form.confirmPassword}
+              onChange={(e) => set("confirmPassword", e.target.value)}
+              className="pr-10"
+              required
+            />
+            <button
+              type="button"
+              aria-label={form.showConfirmPassword ? "Hide password" : "Show password"}
+              onClick={() => set("showConfirmPassword", !form.showConfirmPassword)}
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 transition-opacity hover:opacity-70"
+            >
+              {form.showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+          {form.confirmPassword.length > 0 && form.confirmPassword !== form.password && (
+            <p className="text-xs font-medium text-red-500">Passwords do not match</p>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-1.5">
           <Label className="text-sm font-bold text-gray-900">Age group</Label>
           <Select
             value={form.ageGroup}
@@ -267,7 +249,8 @@ export function SignUpForm({ onAuthSuccess }: Props) {
             !form.agreed ||
             !form.ageGroup ||
             !form.accountType ||
-            passwordRules.some((r) => !r.test(form.password))
+            passwordRules.some((r) => !r.test(form.password)) ||
+            form.confirmPassword !== form.password
           }
           loading={signup.isPending}
         >

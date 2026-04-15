@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { useMutateResetPassword } from "@/services/auth/mutations"
 import { toast } from "sonner"
+import { PasswordStrength } from "@/components/ui/password-strength"
 
 type Visibility = {
   current: boolean
@@ -100,6 +101,7 @@ export function SecurityCard() {
               {show.newPw ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
+          {newPw.length > 0 && <PasswordStrength password={newPw} />}
         </div>
 
         <div className="flex flex-col gap-1.5">
