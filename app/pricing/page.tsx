@@ -23,6 +23,9 @@ export default function PricingPage() {
     useQueryPublicPricing({})
 
   const plans = plansData?.data ?? []
+  const filteredPlans = plans.filter(
+    (plan) => plan.duration.toLowerCase() === billing
+  )
 
   const getPrice = (plan: PlanType) => plan.amount
 
@@ -30,9 +33,7 @@ export default function PricingPage() {
 
   const getSavings = (plan: PlanType) => {
     if (billing !== ENUM_BillingCycle.YEARLY) return null
-    const monthlyCost = plan.amount * 12
-    const yearlySavings = plan.discount * 12
-    const saved = monthlyCost - yearlySavings
+    const saved = plan.amount * 0.2
     return saved > 0 ? `Save ₦${saved.toLocaleString()}` : null
   }
 
@@ -86,9 +87,9 @@ export default function PricingPage() {
           <div className="rounded-2xl border border-gray-100 bg-white px-6 py-10 text-center text-sm text-gray-500 shadow-sm">
             Loading plans...
           </div>
-        ) : plans.length > 0 ? (
+        ) : filteredPlans.length > 0 ? (
           <div className="grid gap-5 sm:grid-cols-2">
-            {plans.map((plan) => {
+            {filteredPlans.map((plan) => {
               const featured = isFamilyPlan(plan)
               const savings = getSavings(plan)
               return (

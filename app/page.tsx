@@ -26,17 +26,20 @@ export default function SafiLandingPage() {
   const { isAuthenticated } = useAuthContext()
   const [authOpen, setAuthOpen] = useState(false)
   const [selectProfileOpen, setSelectProfileOpen] = useState(false)
-  const [activeSlide, setActiveSlide] = useState(0)
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isResetting, setIsResetting] = useState(false)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  // Clone first slide at the end so slide 3→0 is a smooth slide, not a jump
+  const extendedSlides = [...heroSlides, heroSlides[0]]
 
   const goToSlide = (index: number) => {
-    setActiveSlide(index)
+    setCurrentIndex(index)
   }
 
   const startAutoPlay = () => {
     if (intervalRef.current) clearInterval(intervalRef.current)
     intervalRef.current = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % heroSlides.length)
+      setCurrentIndex((prev) => prev + 1)
     }, 6000)
   }
 
@@ -46,6 +49,26 @@ export default function SafiLandingPage() {
       if (intervalRef.current) clearInterval(intervalRef.current)
     }
   }, [])
+
+  // When we land on the clone (index === heroSlides.length), wait for the
+  // transition to finish then silently snap back to the real first slide
+  useEffect(() => {
+    if (currentIndex !== heroSlides.length) return
+    const snapBack = setTimeout(() => {
+      setIsResetting(true)
+      setCurrentIndex(0)
+    }, 500)
+    return () => clearTimeout(snapBack)
+  }, [currentIndex])
+
+  // Re-enable transitions one frame after the silent snap
+  useEffect(() => {
+    if (!isResetting) return
+    const reenable = setTimeout(() => setIsResetting(false), 50)
+    return () => clearTimeout(reenable)
+  }, [isResetting])
+
+  const activeDotIndex = currentIndex % heroSlides.length
 
   const handleStartTrial = () => {
     if (isAuthenticated) {
@@ -65,10 +88,13 @@ export default function SafiLandingPage() {
         <div className="relative overflow-hidden rounded-2xl shadow-md">
           {/* Slides */}
           <div
-            className="flex h-[600px] transition-transform duration-500 ease-in-out"
-            style={{ transform: `translateX(-${activeSlide * 100}%)` }}
+            className="flex h-[600px]"
+            style={{
+              transform: `translateX(-${currentIndex * 100}%)`,
+              transition: isResetting ? "none" : "transform 500ms ease-in-out",
+            }}
           >
-            {heroSlides.map((src, i) => (
+            {extendedSlides.map((src, i) => (
               <div key={i} className="relative h-[600px] w-full shrink-0">
                 <Image
                   alt={`Hero slide ${i + 1}`}
@@ -117,7 +143,7 @@ export default function SafiLandingPage() {
                 }}
                 className={cn(
                   "h-2 rounded-full transition-all duration-300",
-                  i === activeSlide ? "w-6 bg-white" : "w-2 bg-white/50"
+                  i === activeDotIndex ? "w-6 bg-white" : "w-2 bg-white/50"
                 )}
               />
             ))}
