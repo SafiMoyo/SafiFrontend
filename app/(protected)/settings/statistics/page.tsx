@@ -20,7 +20,6 @@ import { ROUTE_KEYS } from "@/lib/constants"
 import {
   progressWidthSteps,
   WeekDayItem,
-  activityHeightSteps,
   dayLabelMap,
 } from "../utils"
 
@@ -30,14 +29,11 @@ function getProgressWidthClass(percent: number) {
   return progressWidthSteps[index]
 }
 
-function getActivityHeightClass(value: number, max: number) {
-  if (value <= 0) return activityHeightSteps[0]
-  const ratio = value / Math.max(1, max)
-  const index = Math.max(
-    1,
-    Math.min(activityHeightSteps.length - 1, Math.round(ratio * 12))
-  )
-  return activityHeightSteps[index]
+function getBarColor(value: number): string {
+  if (value === 0) return "#D1D1D1"
+  if (value <= 3.5) return "#D68BF7"
+  if (value <= 7.5) return "#8900EB"
+  return "#4CAF50"
 }
 
 function parseProgressRatio(progress: string) {
@@ -134,8 +130,6 @@ export default function SettingsStatisticsPage() {
       value,
     }))
   }, [stats?.weekly_activity])
-
-  const maxActivity = Math.max(...weeklyActivity.map((item) => item.value), 1)
 
   const moduleBreakdown = stats?.module_breakdown ?? []
 
@@ -251,7 +245,8 @@ export default function SettingsStatisticsPage() {
 
             <div className="flex h-44 items-end justify-between gap-2">
               {weeklyActivity.map((day) => {
-                const active = day.value > 0
+                const clamped = Math.min(Math.max(day.value, 0), 10)
+                const heightPct = (clamped / 10) * 100
 
                 return (
                   <div
@@ -259,11 +254,13 @@ export default function SettingsStatisticsPage() {
                     className="flex w-full flex-col items-center gap-2"
                   >
                     <div
-                      className={cn(
-                        "w-full max-w-8 rounded-md transition-all",
-                        getActivityHeightClass(day.value, maxActivity),
-                        active ? "bg-primary" : "bg-gray-200"
-                      )}
+                      className="w-full max-w-8 transition-all"
+                      style={{
+                        height: `${heightPct}%`,
+                        minHeight: clamped > 0 ? 4 : 8,
+                        backgroundColor: getBarColor(clamped),
+                        borderRadius: 4,
+                      }}
                       title={`${day.key}: ${day.value}`}
                     />
                     <p className="text-[10px] font-semibold tracking-wide text-gray-500">

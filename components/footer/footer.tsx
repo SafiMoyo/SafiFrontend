@@ -1,11 +1,20 @@
-import React from "react"
+"use client"
+
+import React, { useState } from "react"
 import MagneticLink from "../magnetic-links"
 import { Linkedin, Instagram, Youtube } from "lucide-react"
 import { Button } from "../ui/button"
 import { ROUTE_KEYS } from "@/lib/constants"
+import { ContactSupportModal } from "@/app/(protected)/settings/_components/modals/contact-support-modal"
+import { MessageSentModal } from "@/app/(protected)/settings/_components/modals/message-sent-modal"
 
 const Footer = () => {
+  const [contactOpen, setContactOpen] = useState(false)
+  const [messageSentOpen, setMessageSentOpen] = useState(false)
+  const [sentMessage, setSentMessage] = useState<string | undefined>()
+
   return (
+    <>
     <footer className="mt-16 bg-[#e7d8b6] py-6">
       <div className="grid grid-cols-1 items-center gap-6 px-5 text-sm md:grid-cols-3 lg:px-10">
         <div className="text-center md:text-left">© 2026 SAFIMOYO. ALL RIGHTS RESERVED</div>
@@ -32,7 +41,11 @@ const Footer = () => {
           >
             Terms{" "}
           </Button>
-          <Button className="text-black" variant={"link"}>
+          <Button
+            className="text-black"
+            variant={"link"}
+            onClick={() => setContactOpen(true)}
+          >
             Contact Us
           </Button>
         </div>
@@ -86,6 +99,21 @@ const Footer = () => {
         </div>
       </div>
     </footer>
+
+    <ContactSupportModal
+      open={contactOpen}
+      onOpenChange={setContactOpen}
+      onSuccess={(msg) => {
+        setSentMessage(msg)
+        setMessageSentOpen(true)
+      }}
+    />
+    <MessageSentModal
+      open={messageSentOpen}
+      onOpenChange={setMessageSentOpen}
+      message={sentMessage}
+    />
+    </>
   )
 }
 

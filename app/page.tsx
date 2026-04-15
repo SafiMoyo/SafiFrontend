@@ -17,7 +17,7 @@ import { useAuthContext } from "@/context"
 
 const heroSlides = [
   "/images/hero-1.png",
-  "/images/hero-5.png",
+  "/images/new-hero2.png",
   "/images/hero-4.png",
 ]
 
@@ -239,7 +239,7 @@ export default function SafiLandingPage() {
         </ScrollFadeIn>
 
         <div className="grid gap-8 md:grid-cols-3">
-          {["/images/banner1.png", "/images/banner2.png", "/images/banner3.png"].map((src, i) => (
+          {["/images/banner1.png", "/images/banner2.png", "/images/banner6.png"].map((src, i) => (
             <ScrollFadeIn
               delay={i * 0.15}
               key={i}
