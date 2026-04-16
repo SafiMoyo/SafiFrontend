@@ -139,7 +139,7 @@ const Navbar = () => {
               variant="outline"
               className="rounded-xl border-primary/30 bg-white text-primary hover:bg-purple-50"
             >
-              Dashboard
+              Back to Dashboard
             </Button>
           </div>
         )}
@@ -317,7 +317,7 @@ const Navbar = () => {
                       variant="outline"
                       onClick={() => navigate(ROUTE_KEYS.DASHBOARD)}
                     >
-                      Dashboard
+                      Back to Dashboard
                     </Button>
                     <Button
                       type="button"

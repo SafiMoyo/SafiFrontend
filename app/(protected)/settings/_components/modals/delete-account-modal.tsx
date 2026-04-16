@@ -46,7 +46,7 @@ export function DeleteAccountModal({
   const [agreed, setAgreed] = useState(false)
 
   const canDelete = useMemo(
-    () => typedWord.trim().toUpperCase() === "DELETE" && agreed,
+    () => typedWord.trim() === "DELETE" && agreed,
     [typedWord, agreed]
   )
 
@@ -152,7 +152,7 @@ export function DeleteAccountModal({
             <Input
               variant="auth"
               value={typedWord}
-              onChange={(e) => setTypedWord(e.target.value)}
+              onChange={(e) => setTypedWord(e.target.value.toUpperCase())}
               placeholder="DELETE"
               className="mt-3 h-11 rounded-lg border-slate-300 bg-white font-mono text-sm tracking-widest placeholder:font-sans placeholder:tracking-normal"
             />

@@ -122,7 +122,7 @@ export default function SubscriptionPage() {
               return (
                 <div
                   key={plan.id}
-                  className={`rounded-2xl p-6 transition-shadow ${
+                  className={`flex flex-col rounded-2xl p-6 transition-shadow ${
                     featured
                       ? "border-2 border-primary bg-white shadow-md"
                       : "border border-gray-100 bg-white shadow-sm"
@@ -151,7 +151,7 @@ export default function SubscriptionPage() {
                     </span>
                   </div>
 
-                  <ul className="mb-6 space-y-2.5">
+                  <ul className="mb-6 flex-1 space-y-2.5">
                     {plan.subscription_benefits.map((feature) => (
                       <li
                         key={feature.id}
@@ -176,7 +176,7 @@ export default function SubscriptionPage() {
                   <Button
                     type="button"
                     variant={featured ? "default" : "outline"}
-                    className="h-11 w-full rounded-full"
+                    className="mt-auto h-11 w-full rounded-full"
                     onClick={() => handleUpgrade(plan.id, billingCycle)}
                     loading={isUpgrading}
                   >
