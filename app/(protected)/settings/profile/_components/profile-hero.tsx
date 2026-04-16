@@ -1,10 +1,15 @@
 "use client"
 
 import Image from "next/image"
-import { GraduationCap } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Camera, GraduationCap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ROUTE_KEYS } from "@/lib/constants"
 import { cn } from "@/lib/utils"
+import { useAuthContext } from "@/context"
+import { useMutateUpdateProfilePicture } from "@/services/auth/mutations"
+import { toast } from "sonner"
+import { AvatarPickerModal } from "../../_components/avatar-picker-modal"
 
 interface ProfileHeroProps {
   displayName: string
@@ -23,7 +28,38 @@ export function ProfileHero({
   modulesCompleted,
   isLoading,
 }: ProfileHeroProps) {
-  const initials = displayName.slice(0, 1).toUpperCase()
+  const { activeUser } = useAuthContext()
+  const [avatarPickerOpen, setAvatarPickerOpen] = useState(false)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(profilePicture)
+
+  useEffect(() => {
+    setAvatarPreview(profilePicture)
+  }, [profilePicture])
+
+  const { mutate: uploadPicture, isPending: isUploading } =
+    useMutateUpdateProfilePicture({
+      onSuccess: () => toast.success("Profile picture updated"),
+      queryParams: {
+        user_id: activeUser?.id.toString() || "",
+      },
+    })
+
+  const handleAvatarSelect = async (src: string) => {
+    try {
+      setAvatarPreview(src)
+      const res = await fetch(src)
+      const blob = await res.blob()
+      const filename = src.split("/").pop() ?? "avatar.png"
+      const file = new File([blob], filename, { type: blob.type || "image/png" })
+      const formData = new FormData()
+      formData.append("file", file)
+      uploadPicture(formData, {
+        onSuccess: () => setAvatarPickerOpen(false),
+      })
+    } catch {
+      toast.error("Failed to set avatar. Please try again.")
+    }
+  }
 
   return (
     <div className="rounded-2xl bg-white p-6 shadow-sm">
@@ -85,24 +121,61 @@ export function ProfileHero({
           </Button>
         </div>
 
-        {/* Right: profile image */}
-        <div className="mx-auto w-full max-w-[260px] overflow-hidden rounded-2xl sm:mx-0 sm:w-[260px] sm:flex-shrink-0">
-          {profilePicture ? (
-            <Image
-              src={profilePicture}
-              alt={displayName}
-              width={260}
-              height={300}
-              className="h-full w-full object-cover"
-              priority
-            />
+        {/* Right: profile image — clickable to open avatar picker */}
+        <button
+          type="button"
+          onClick={() => setAvatarPickerOpen(true)}
+          aria-label="Change profile picture"
+          className="group relative mx-auto w-full max-w-[260px] overflow-hidden rounded-2xl sm:mx-0 sm:w-[260px] sm:flex-shrink-0"
+        >
+          {avatarPreview ? (
+            <>
+              <Image
+                src={avatarPreview}
+                alt={displayName}
+                width={260}
+                height={300}
+                className="h-full w-full object-cover"
+                priority
+              />
+              {/* Hover overlay */}
+              <span className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                {isUploading ? (
+                  <span className="size-7 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                ) : (
+                  <>
+                    <Camera size={28} className="text-white" />
+                    <span className="text-xs font-semibold text-white">
+                      Change avatar
+                    </span>
+                  </>
+                )}
+              </span>
+            </>
           ) : (
-            <div className="flex h-full min-h-[220px] w-full items-center justify-center bg-primary text-7xl font-extrabold text-white">
-              {initials}
+            <div className="flex min-h-[220px] w-full flex-col items-center justify-center gap-3 bg-primary">
+              {isUploading ? (
+                <span className="size-8 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              ) : (
+                <>
+                  <Camera size={36} className="text-white" />
+                  <span className="text-sm font-semibold text-white">
+                    Click to upload avatar
+                  </span>
+                </>
+              )}
             </div>
           )}
-        </div>
+        </button>
       </div>
+
+      <AvatarPickerModal
+        open={avatarPickerOpen}
+        onOpenChange={setAvatarPickerOpen}
+        userAgeGroup={activeUser?.age_group}
+        onSelect={handleAvatarSelect}
+        isUploading={isUploading}
+      />
     </div>
   )
 }

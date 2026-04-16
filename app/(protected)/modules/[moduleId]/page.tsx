@@ -166,7 +166,9 @@ export default function ModulePage({
                   >
                     {nextLesson.status === ENUM_LESSON_STATUS.ONGOING
                       ? "Resume Learning"
-                      : "Continue Learning"}
+                      : completedLessonsCount > 0
+                        ? "Continue Learning"
+                        : "Start Learning"}
                   </Button>
                 ) : (
                   <Button disabled className="px-5" variant="outline">

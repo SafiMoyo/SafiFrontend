@@ -126,7 +126,7 @@ export default function SafiLandingPage() {
                 className="mt-10 px-8 py-7 text-lg"
                 onClick={handleStartTrial}
               >
-                Start your free Trial
+                {isAuthenticated ? "Continue Learning" : "Start your free Trial"}
               </Button>
             </ScrollFadeIn>
           </div>
@@ -260,7 +260,7 @@ export default function SafiLandingPage() {
         <div className="mt-10">
           <ScrollFadeIn>
             <Button className="px-10 py-6 font-bold" onClick={handleStartTrial}>
-              Start Your Free Trial
+              {isAuthenticated ? "Continue Learning" : "Start Your Free Trial"}
             </Button>
           </ScrollFadeIn>
         </div>

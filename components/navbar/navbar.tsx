@@ -103,7 +103,7 @@ const Navbar = () => {
         </Button>
 
         {/* DESKTOP NAV LINKS */}
-        {!isSettingsArea ? (
+        {!isSettingsArea && !isAuthenticated ? (
           <div className="hidden gap-10 font-semibold md:flex">
             {navItems.map((item) => (
               <Button
@@ -280,7 +280,7 @@ const Navbar = () => {
             className="absolute top-full left-0 z-20 w-full bg-white shadow-lg md:hidden"
           >
             <div className="flex flex-col gap-6 px-6 py-6">
-              {!isSettingsArea && (
+              {!isSettingsArea && !isAuthenticated && (
                 <>
                   {navItems.map((item) => (
                     <Button
