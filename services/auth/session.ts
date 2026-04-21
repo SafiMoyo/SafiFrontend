@@ -121,4 +121,12 @@ export const getStoredAccessToken = (): string | null => {
   )
 }
 
+export const getStoredRefreshToken = (): string | null => {
+  if (typeof window === "undefined") return null
+  return (
+    localStorage.getItem(STORAGE_KEYS.refreshToken) ||
+    sessionStorage.getItem(STORAGE_KEYS.refreshToken)
+  )
+}
+
 export const hasStoredAccessToken = () => Boolean(getStoredAccessToken())

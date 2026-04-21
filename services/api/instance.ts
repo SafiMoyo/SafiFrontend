@@ -4,7 +4,13 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from "axios"
 import handleResponseError from "./handleResponseError"
-import { getStoredAccessToken } from "@/services/auth/session"
+import {
+  getStoredAccessToken,
+  getStoredRefreshToken,
+  persistAuthSession,
+  parseAuthPayload,
+  clearAuthSession,
+} from "@/services/auth/session"
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL || ""
 
@@ -18,11 +24,21 @@ const Axios: AxiosInstance = axios.create({
   timeout: 60000,
 })
 
-function handleClearLocalStorage() {
+let isRefreshing = false
+let failedQueue: Array<{
+  resolve: (token: string) => void
+  reject: (error: unknown) => void
+}> = []
+
+function processQueue(error: unknown, token: string | null = null) {
+  failedQueue.forEach((p) => (error ? p.reject(error) : p.resolve(token!)))
+  failedQueue = []
+}
+
+function handleSessionExpired() {
   if (typeof window === "undefined") return
-  ;["user", "loggedIn", "accessToken"].forEach((key) => {
-    localStorage.removeItem(key)
-  })
+  clearAuthSession()
+  window.location.href = "/"
 }
 
 Axios.interceptors.request.use(
@@ -41,9 +57,49 @@ Axios.interceptors.request.use(
 Axios.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
-      handleClearLocalStorage()
-      handleResponseError(error)
+    const originalRequest = error.config
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      const refreshToken = getStoredRefreshToken()
+
+      if (!refreshToken) {
+        handleSessionExpired()
+        return Promise.reject(error)
+      }
+
+      if (isRefreshing) {
+        return new Promise<string>((resolve, reject) => {
+          failedQueue.push({ resolve, reject })
+        })
+          .then((token) => {
+            originalRequest.headers["Authorization"] = `Bearer ${token}`
+            return Axios(originalRequest)
+          })
+          .catch((err) => Promise.reject(err))
+      }
+
+      originalRequest._retry = true
+      isRefreshing = true
+
+      try {
+        const response = await axios.post(`${baseURL}/auth/refresh-token`, {
+          refresh_token: refreshToken,
+        })
+        const payload = parseAuthPayload(response.data)
+        persistAuthSession(payload)
+
+        const newToken = payload.accessToken!
+        processQueue(null, newToken)
+
+        originalRequest.headers["Authorization"] = `Bearer ${newToken}`
+        return Axios(originalRequest)
+      } catch (refreshError) {
+        processQueue(refreshError, null)
+        handleSessionExpired()
+        return Promise.reject(refreshError)
+      } finally {
+        isRefreshing = false
+      }
     }
 
     handleResponseError(error)
