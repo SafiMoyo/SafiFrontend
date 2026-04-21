@@ -93,10 +93,17 @@ export default function ModulesPage() {
               const lockState = moduleLocks[String(module.id)]
               const isLocked = lockState?.isLocked ?? false
 
+              const href = isLocked
+                  ? lockState?.isSubscriptionLocked
+                    ? "/subscription"
+                    : "/modules"
+                  : `/modules/${module.id}`
+
               return (
                 <div
                   key={module.id}
-                  className={`flex h-52 overflow-hidden rounded-2xl bg-white shadow-xs transition-shadow hover:shadow-md ${
+                  onClick={() => router.push(href)}
+                  className={`flex h-52 cursor-pointer overflow-hidden rounded-2xl bg-white shadow-xs transition-shadow hover:shadow-md ${
                     isLocked ? "opacity-80" : ""
                   }`}
                 >

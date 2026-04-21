@@ -19,6 +19,7 @@ const Navbar = () => {
   const { activeUser, isAuthenticated, logout } = useAuthContext()
   const isSettingsArea = pathname?.startsWith(ROUTE_KEYS.SETTINGS)
   const isStatisticsPage = pathname === ROUTE_KEYS.SETTINGS_STATISTICS
+  const isDashboardPage = pathname === ROUTE_KEYS.DASHBOARD
   const [open, setOpen] = useState(false)
   const [authOpen, setAuthOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
@@ -103,7 +104,7 @@ const Navbar = () => {
         </Button>
 
         {/* DESKTOP NAV LINKS */}
-        {!isSettingsArea && !isAuthenticated ? (
+        {!isSettingsArea && !isDashboardPage ? (
           <div className="hidden gap-10 font-semibold md:flex">
             {navItems.map((item) => (
               <Button
@@ -163,11 +164,11 @@ const Navbar = () => {
                     <img
                       src={activeUser.profile_picture}
                       alt={displayName}
-                      className="size-8 rounded-full object-cover"
+                      className="size-11 rounded-full object-cover"
                     />
                   ) : (
                     <>
-                      <span className="flex size-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
+                      <span className="flex size-11 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
                         {initials}
                       </span>
                       {shouldShowNameInButton && (

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, X } from "lucide-react"
 import Image from "next/image"
 import { toast } from "sonner"
 import { useMutateVerifyPassword } from "@/services/auth/mutations"
@@ -46,6 +46,17 @@ export function ParentMenuModal({ open, onOpenChange }: ParentMenuModalProps) {
         className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Close button */}
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={() => onOpenChange(false)}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
         {/* Logo */}
         <div className="mb-6 flex items-center justify-center gap-2">
           <Image src="/images/logo.svg" alt="Safi" width={80} height={28} />

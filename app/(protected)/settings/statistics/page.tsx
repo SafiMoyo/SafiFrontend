@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import {
   Award,
@@ -10,6 +10,7 @@ import {
   Timer,
   TrendingUp,
   BarChart3,
+  ChevronDown,
 } from "lucide-react"
 import Navbar from "@/components/navbar/navbar"
 import Footer from "@/components/footer/footer"
@@ -22,6 +23,8 @@ import {
   WeekDayItem,
   dayLabelMap,
 } from "../utils"
+import { AccountType } from "@/types/user"
+import { SelectProfileModal } from "@/components/modals/select-profile-modal"
 
 function getProgressWidthClass(percent: number) {
   const normalized = Math.max(0, Math.min(100, percent))
@@ -99,6 +102,8 @@ function formatLastActive(lastActive?: string) {
 export default function SettingsStatisticsPage() {
   const { activeUser } = useAuthContext()
   const router = useRouter()
+  const [selectProfileOpen, setSelectProfileOpen] = useState(false)
+  const isFamilyAccount = activeUser?.account_type === AccountType.FAMILY
 
   const { data, isLoading } = useQueryDashboardStatistics({
     queryParams: {
@@ -154,10 +159,15 @@ export default function SettingsStatisticsPage() {
           </div>
           <button
             type="button"
-            onClick={() => router.push(ROUTE_KEYS.SETTINGS_PROFILE)}
-            className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-black transition hover:bg-primary/90"
+            onClick={() =>
+              isFamilyAccount
+                ? setSelectProfileOpen(true)
+                : router.push(ROUTE_KEYS.SETTINGS_PROFILE)
+            }
+            className="flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-black transition hover:bg-primary/90"
           >
             {activeUser?.first_name || "User"}
+            {isFamilyAccount && <ChevronDown size={14} className="text-black" />}
           </button>
         </div>
 
@@ -363,6 +373,12 @@ export default function SettingsStatisticsPage() {
       </div>
 
       <Footer />
+
+      <SelectProfileModal
+        open={selectProfileOpen}
+        onOpenChange={setSelectProfileOpen}
+        redirectTo="/settings/statistics"
+      />
     </div>
   )
 }

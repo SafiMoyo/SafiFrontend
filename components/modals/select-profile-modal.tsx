@@ -123,9 +123,10 @@ function AddProfileCard({ onClick }: { onClick: () => void }) {
 type Props = {
   open: boolean
   onOpenChange: (open: boolean) => void
+  redirectTo?: string
 }
 
-export function SelectProfileModal({ open, onOpenChange }: Props) {
+export function SelectProfileModal({ open, onOpenChange, redirectTo = "/dashboard" }: Props) {
   const router = useRouter()
   const { activeUser, setLoggedIn } = useAuthContext()
   const [addOpen, setAddOpen] = useState(false)
@@ -150,7 +151,7 @@ export function SelectProfileModal({ open, onOpenChange }: Props) {
 
   function handleSelectParent() {
     onOpenChange(false)
-    router.push("/dashboard")
+    router.push(redirectTo)
   }
 
   async function handleSkipSelection() {
@@ -174,9 +175,9 @@ export function SelectProfileModal({ open, onOpenChange }: Props) {
         method: "POST",
       })
       persistAuthSession(parseAuthPayload(response))
-      setLoggedIn(true)
+      localStorage.setItem("loggedIn", JSON.stringify(true))
       onOpenChange(false)
-      router.push("/dashboard")
+      window.location.href = redirectTo
     } catch {
       setSwitchingId(null)
     }

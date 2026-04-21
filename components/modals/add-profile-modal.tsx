@@ -4,13 +4,7 @@ import { FormEvent, useState } from "react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { AgeGroupSelect } from "@/components/ui/age-group-select"
 import { Button } from "@/components/ui/button"
 import { useAddFamilyMember } from "@/services/auth/mutations"
 import { toast } from "sonner"
@@ -85,18 +79,11 @@ export function AddProfileModal({ open, onOpenChange, onAdded }: Props) {
             />
           </div>
 
-          <Select value={form.ageGroup} onValueChange={(v) => set("ageGroup", v)}>
-            <SelectTrigger className="h-12" variant="auth">
-              <SelectValue placeholder="Age Group" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="under-13">Under 13</SelectItem>
-              <SelectItem value="13-17">13–17</SelectItem>
-              <SelectItem value="18-24">18–24</SelectItem>
-              <SelectItem value="25-34">25–34</SelectItem>
-              <SelectItem value="35+">35+</SelectItem>
-            </SelectContent>
-          </Select>
+          <AgeGroupSelect
+            value={form.ageGroup}
+            onChange={(v) => set("ageGroup", v)}
+            className="h-12"
+          />
 
           <Button
             type="submit"

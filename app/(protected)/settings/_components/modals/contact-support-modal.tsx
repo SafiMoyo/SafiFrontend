@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { Mail, MessageSquare, Phone } from "lucide-react"
+import { Mail, MessageSquare, Phone, X } from "lucide-react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -53,7 +53,14 @@ export function ContactSupportModal({
         showCloseButton={false}
         className="w-full !max-w-xl overflow-hidden rounded-md border border-slate-200 bg-white p-0 text-slate-900 shadow-2xl"
       >
-        <div className="bg-linear-to-r from-sky-50 via-primary/10 to-indigo-50 px-6 py-3 sm:px-8">
+        <div className="relative bg-linear-to-r from-sky-50 via-primary/10 to-indigo-50 px-6 py-3 sm:px-8">
+          <button
+            type="button"
+            onClick={() => { resetForm(); onOpenChange(false) }}
+            className="absolute top-3 right-3 text-black hover:text-black/70"
+          >
+            <X size={22} />
+          </button>
           <div className="mx-auto flex size-10 items-center justify-center rounded-full bg-white/70 text-cyan-700">
             <MessageSquare size={14} />
           </div>

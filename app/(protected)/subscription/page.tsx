@@ -1,9 +1,10 @@
 "use client"
 
-import { Check, Lock, BookOpen } from "lucide-react"
+import { Check, Lock, BookOpen, ChevronLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Navbar from "@/components/navbar/navbar"
 import Footer from "@/components/footer/footer"
+import { useRouter } from "next/navigation"
 
 import { toast } from "sonner"
 import { SubscriptionProgressItem } from "./components/subscription-progress-item"
@@ -15,6 +16,7 @@ import { useMutateUpgradePlan } from "@/services/subscription/mutations"
 import { ENUM_PLAN_TYPE, PlanType } from "@/types/plan"
 
 export default function SubscriptionPage() {
+  const router = useRouter()
   const { activeUser } = useAuthContext()
 
   const { data: plansData, isLoading: plansLoading } = useQueryPlans({})
@@ -72,6 +74,16 @@ export default function SubscriptionPage() {
       <Navbar />
 
       <div className="mx-auto max-w-5xl px-5 py-6">
+        <div className="mb-8 flex justify-end">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="flex items-center gap-1 text-sm font-semibold text-gray-700 transition hover:text-primary"
+          >
+            <ChevronLeft size={16} />
+            Back
+          </button>
+        </div>
         {/* Top row — title/subtext left, progress card right */}
         <div className="mb-8 grid items-start gap-6 lg:grid-cols-[1fr_220px]">
           <div>
