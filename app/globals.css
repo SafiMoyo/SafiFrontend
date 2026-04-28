@@ -31,4 +31,11 @@
   button {
     @apply cursor-pointer;
   }
+
+  /* Hide native cursor on fine-pointer (mouse) devices — animated cursor replaces it */
+  @media (pointer: fine) {
+    *, *::before, *::after {
+      cursor: none !important;
+    }
+  }
 }
