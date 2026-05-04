@@ -45,13 +45,6 @@ const Navbar = () => {
     setOpen(false)
   }
 
-  const handleLogout = () => {
-    setProfileOpen(false)
-    setOpen(false)
-    logout()
-    router.push("/")
-  }
-
   const navigate = (path: string) => {
     setProfileOpen(false)
     setOpen(false)
@@ -191,14 +184,6 @@ const Navbar = () => {
                     >
                       <button
                         type="button"
-                        onClick={() => navigate(ROUTE_KEYS.DASHBOARD)}
-                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-100"
-                      >
-                        <LayoutDashboard size={16} />
-                        Dashboard
-                      </button>
-                      <button
-                        type="button"
                         onClick={() => navigate(ROUTE_KEYS.SETTINGS_PROFILE)}
                         className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-100"
                       >
@@ -316,23 +301,9 @@ const Navbar = () => {
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => navigate(ROUTE_KEYS.DASHBOARD)}
+                      onClick={() => navigate(ROUTE_KEYS.SETTINGS_PROFILE)}
                     >
-                      Back to Dashboard
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => navigate(ROUTE_KEYS.SETTINGS)}
-                    >
-                      Settings
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      onClick={handleLogout}
-                    >
-                      Logout
+                      Profile
                     </Button>
                   </>
                 ) : (

@@ -67,7 +67,7 @@ export function ParentMenuModal({ open, onOpenChange }: ParentMenuModalProps) {
 
         <form onSubmit={handleSubmit}>
           {/* Password row */}
-          <div className="mb-6 flex items-center gap-4">
+          <div className="mb-1 flex items-center gap-4">
             <label className="w-24 shrink-0 text-sm font-medium text-gray-700">
               Password
             </label>
@@ -88,6 +88,12 @@ export function ParentMenuModal({ open, onOpenChange }: ParentMenuModalProps) {
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
+          </div>
+
+          {/* Helper text */}
+          <div className="mb-4 flex items-center gap-4">
+            <div className="w-24 shrink-0" />
+            <p className="text-xs text-gray-400">Same as login password</p>
           </div>
 
           {/* Enter button */}
