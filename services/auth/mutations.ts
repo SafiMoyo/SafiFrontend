@@ -16,11 +16,11 @@ export const useVerifyUserEmail = createMutation({
 })
 
 export const useMutateForgotPassword = createMutation({
-  url: "/auth/request-password-reset-email/",
+  url: "/user/forgot-password",
   method: "POST",
 })
 export const useMutateResetPassword = createMutation({
-  url: "/auth/change-password",
+  url: "/user/reset-password",
   method: "POST",
 })
 

@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react"
 import Image from "next/image"
-import { ArrowLeftIcon } from "lucide-react"
+import { ArrowLeftIcon, Eye, EyeOff } from "lucide-react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,7 +11,7 @@ import {
   useMutateForgotPassword,
   useMutateResetPassword,
 } from "@/services/auth/mutations"
-import { toast } from "sonner"
+import { passwordRules, PasswordStrength } from "@/components/ui/password-strength"
 
 type Props = {
   open: boolean
@@ -19,22 +19,29 @@ type Props = {
   onBack: () => void
 }
 
+type Step = "email" | "reset" | "success"
+
 type ForgotFormState = {
   email: string
-  token: string
+  otp: string
   newPassword: string
   confirmPassword: string
-  isResetStep: boolean
+  showPassword: boolean
+  showConfirmPassword: boolean
+}
+
+const initialForm: ForgotFormState = {
+  email: "",
+  otp: "",
+  newPassword: "",
+  confirmPassword: "",
+  showPassword: false,
+  showConfirmPassword: false,
 }
 
 export function ForgotPasswordModal({ open, onOpenChange, onBack }: Props) {
-  const [form, setForm] = useState<ForgotFormState>({
-    email: "",
-    token: "",
-    newPassword: "",
-    confirmPassword: "",
-    isResetStep: false,
-  })
+  const [step, setStep] = useState<Step>("email")
+  const [form, setForm] = useState<ForgotFormState>(initialForm)
 
   const set = <K extends keyof ForgotFormState>(
     key: K,
@@ -43,23 +50,13 @@ export function ForgotPasswordModal({ open, onOpenChange, onBack }: Props) {
 
   const forgotPassword = useMutateForgotPassword({
     onSuccess: () => {
-      toast.success("Reset code sent. Check your email.")
-      set("isResetStep", true)
+      setStep("reset")
     },
   })
 
   const resetPassword = useMutateResetPassword({
     onSuccess: () => {
-      toast.success("Password updated successfully.")
-      setForm({
-        email: "",
-        token: "",
-        newPassword: "",
-        confirmPassword: "",
-        isResetStep: false,
-      })
-      onOpenChange(false)
-      onBack()
+      setStep("success")
     },
   })
 
@@ -70,17 +67,26 @@ export function ForgotPasswordModal({ open, onOpenChange, onBack }: Props) {
 
   const handleResetPassword = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-
-    if (form.newPassword !== form.confirmPassword) {
-      toast.error("Passwords do not match.")
-      return
-    }
-
     resetPassword.mutate({
-      email: form.email,
-      token: form.token,
-      new_password: form.newPassword,
+      otp: form.otp,
+      newPassword: form.newPassword,
     })
+  }
+
+  const handleProceedToLogin = () => {
+    setStep("email")
+    setForm(initialForm)
+    onOpenChange(false)
+    onBack()
+  }
+
+  const passwordValid = passwordRules.every((r) => r.test(form.newPassword))
+  const passwordsMatch = form.confirmPassword === form.newPassword
+
+  const subtextMap: Record<Step, string> = {
+    email: "Enter your email and we'll send you an OTP to reset your password",
+    reset: "Proceed to reset your password",
+    success: "Password reset successful",
   }
 
   return (
@@ -101,13 +107,11 @@ export function ForgotPasswordModal({ open, onOpenChange, onBack }: Props) {
             Reset Password
           </DialogTitle>
           <p className="mt-1 text-sm font-semibold text-gray-500">
-            {form.isResetStep
-              ? "Enter the code from your email and choose a new password"
-              : "Enter your email and we'll send you a reset link"}
+            {subtextMap[step]}
           </p>
         </div>
 
-        {!form.isResetStep ? (
+        {step === "email" && (
           <form onSubmit={handleRequestReset} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
               <Label className="text-sm font-bold text-gray-900">Email</Label>
@@ -126,7 +130,7 @@ export function ForgotPasswordModal({ open, onOpenChange, onBack }: Props) {
               className="h-12 w-full rounded-full"
               loading={forgotPassword.isPending}
             >
-              Send Reset Link
+              Continue
             </Button>
 
             <button
@@ -138,17 +142,17 @@ export function ForgotPasswordModal({ open, onOpenChange, onBack }: Props) {
               Back to Log In
             </button>
           </form>
-        ) : (
+        )}
+
+        {step === "reset" && (
           <form onSubmit={handleResetPassword} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <Label className="text-sm font-bold text-gray-900">
-                Reset Code
-              </Label>
+              <Label className="text-sm font-bold text-gray-900">OTP</Label>
               <Input
                 variant="auth"
-                placeholder="Enter code"
-                value={form.token}
-                onChange={(e) => set("token", e.target.value)}
+                placeholder="Enter OTP"
+                value={form.otp}
+                onChange={(e) => set("otp", e.target.value)}
                 required
               />
             </div>
@@ -157,47 +161,101 @@ export function ForgotPasswordModal({ open, onOpenChange, onBack }: Props) {
               <Label className="text-sm font-bold text-gray-900">
                 New Password
               </Label>
-              <Input
-                variant="auth"
-                type="password"
-                placeholder="Type in here"
-                value={form.newPassword}
-                onChange={(e) => set("newPassword", e.target.value)}
-                required
-              />
+              <div className="relative">
+                <Input
+                  variant="auth"
+                  type={form.showPassword ? "text" : "password"}
+                  placeholder="Type in here"
+                  value={form.newPassword}
+                  onChange={(e) => set("newPassword", e.target.value)}
+                  className="pr-10"
+                  required
+                />
+                <button
+                  type="button"
+                  aria-label={form.showPassword ? "Hide password" : "Show password"}
+                  onClick={() => set("showPassword", !form.showPassword)}
+                  className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 transition-opacity hover:opacity-70"
+                >
+                  {form.showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              {form.newPassword.length > 0 && (
+                <PasswordStrength password={form.newPassword} />
+              )}
             </div>
 
             <div className="flex flex-col gap-1.5">
               <Label className="text-sm font-bold text-gray-900">
                 Confirm Password
               </Label>
-              <Input
-                variant="auth"
-                type="password"
-                placeholder="Type in here"
-                value={form.confirmPassword}
-                onChange={(e) => set("confirmPassword", e.target.value)}
-                required
-              />
+              <div className="relative">
+                <Input
+                  variant="auth"
+                  type={form.showConfirmPassword ? "text" : "password"}
+                  placeholder="Repeat your password"
+                  value={form.confirmPassword}
+                  onChange={(e) => set("confirmPassword", e.target.value)}
+                  className="pr-10"
+                  required
+                />
+                <button
+                  type="button"
+                  aria-label={
+                    form.showConfirmPassword ? "Hide password" : "Show password"
+                  }
+                  onClick={() =>
+                    set("showConfirmPassword", !form.showConfirmPassword)
+                  }
+                  className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 transition-opacity hover:opacity-70"
+                >
+                  {form.showConfirmPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
+                </button>
+              </div>
+              {form.confirmPassword.length > 0 && !passwordsMatch && (
+                <p className="text-xs font-medium text-red-500">
+                  Passwords do not match
+                </p>
+              )}
             </div>
 
             <Button
               type="submit"
               className="h-12 w-full rounded-full"
               loading={resetPassword.isPending}
+              disabled={!form.otp || !passwordValid || !passwordsMatch}
             >
-              Update Password
+              Submit
             </Button>
 
             <button
               type="button"
-              onClick={() => set("isResetStep", false)}
+              onClick={() => setStep("email")}
               className="flex items-center justify-center gap-1.5 text-sm font-semibold text-primary transition-opacity hover:opacity-70"
             >
               <ArrowLeftIcon className="size-3.5" />
               Back to Email Step
             </button>
           </form>
+        )}
+
+        {step === "success" && (
+          <div className="flex flex-col items-center gap-4 text-center">
+            <p className="text-sm font-semibold text-gray-700">
+              Proceed to login
+            </p>
+            <Button
+              type="button"
+              className="h-12 w-full rounded-full"
+              onClick={handleProceedToLogin}
+            >
+              Proceed
+            </Button>
+          </div>
         )}
       </DialogContent>
     </Dialog>
