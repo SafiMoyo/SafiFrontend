@@ -168,9 +168,9 @@ export default function DashboardPage() {
         </Link>
 
         {/* 3 small lesson cards */}
-        <div className="mt-6 grid grid-cols-3 gap-2 pb-24">
+        <div className="mt-6 flex gap-2 overflow-x-auto pb-24 sm:grid sm:grid-cols-3 sm:overflow-x-visible">
           {isLoading ? (
-            <div className="col-span-3 rounded-xl bg-white px-3 py-4 text-center text-xs text-gray-500">
+            <div className="w-full rounded-xl bg-white px-3 py-4 text-center text-xs text-gray-500 sm:col-span-3">
               Loading modules...
             </div>
           ) : otherModules.length > 0 ? (
@@ -178,14 +178,14 @@ export default function DashboardPage() {
               <Link
                 key={module.id}
                 href={moduleHref(module)}
-                className="overflow-hidden rounded-xl"
+                className="min-w-[calc(50%-4px)] flex-shrink-0 overflow-hidden rounded-xl sm:min-w-0"
               >
                 <Image
                   src={getImageUrl(module.cover_image_url, module.id, 400, 200)}
                   alt={module.module_title}
                   width={400}
                   height={200}
-                  className="h-72 w-full object-cover"
+                  className="h-40 w-full object-cover sm:h-72"
                 />
                 {/* Footer */}
                 <div className="bg-[#E4D6B3] px-2 py-2">
@@ -199,7 +199,7 @@ export default function DashboardPage() {
               </Link>
             ))
           ) : (
-            <div className="col-span-3 rounded-xl bg-white px-3 py-4 text-center text-xs text-gray-500">
+            <div className="w-full rounded-xl bg-white px-3 py-4 text-center text-xs text-gray-500 sm:col-span-3">
               No additional modules available yet.
             </div>
           )}

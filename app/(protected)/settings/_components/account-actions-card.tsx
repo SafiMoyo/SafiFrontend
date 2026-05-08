@@ -38,13 +38,13 @@ export function AccountActionsCard() {
   }
 
   return (
-    <div className="flex items-center justify-between rounded-2xl bg-white px-6 py-4 shadow-sm">
+    <div className="flex flex-col gap-3 rounded-2xl bg-white px-6 py-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:gap-0">
       <h2 className="font-bold" style={{ color: "#999999" }}>Account Actions</h2>
       <div className="flex gap-3">
         <button
           type="button"
           onClick={handleSignOut}
-          className="h-9 bg-white px-6 text-sm font-medium transition hover:bg-gray-50"
+          className="h-9 flex-1 whitespace-nowrap bg-white px-6 text-sm font-medium transition hover:bg-gray-50 sm:flex-none"
           style={{ border: "1px solid #D68BF7", borderRadius: 8, color: "#4D4D4D" }}
         >
           Sign out
@@ -52,7 +52,7 @@ export function AccountActionsCard() {
         <button
           type="button"
           onClick={() => setDeleteOpen(true)}
-          className="h-9 bg-white px-6 text-sm font-medium transition hover:bg-gray-50"
+          className="h-9 flex-1 whitespace-nowrap bg-white px-6 text-sm font-medium transition hover:bg-gray-50 sm:flex-none"
           style={{ border: "1px solid #E53935", borderRadius: 8, color: "#4D4D4D" }}
         >
           Delete account

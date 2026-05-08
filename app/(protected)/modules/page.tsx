@@ -103,12 +103,12 @@ export default function ModulesPage() {
                 <div
                   key={module.id}
                   onClick={() => router.push(href)}
-                  className={`flex h-52 cursor-pointer overflow-hidden rounded-2xl bg-white shadow-xs transition-shadow hover:shadow-md ${
+                  className={`flex cursor-pointer overflow-hidden rounded-2xl bg-white shadow-xs transition-shadow hover:shadow-md ${
                     isLocked ? "opacity-80" : ""
                   }`}
                 >
                   {/* Cover image — LEFT */}
-                  <div className="relative w-48 shrink-0 sm:w-64">
+                  <div className="relative w-28 shrink-0 self-stretch sm:w-48">
                     <Image
                       src={getImageUrl(
                         module.cover_image_url,
@@ -119,7 +119,7 @@ export default function ModulesPage() {
                       alt={module.module_title}
                       fill
                       className="object-cover"
-                      sizes="(max-width: 640px) 192px, 256px"
+                      sizes="(max-width: 640px) 112px, 192px"
                     />
                     {/* Lock overlay */}
                     {isLocked && (
@@ -132,7 +132,7 @@ export default function ModulesPage() {
                   </div>
 
                   {/* Content — RIGHT */}
-                  <div className="flex flex-1 flex-col justify-between gap-2 p-3.5 sm:p-4">
+                  <div className="flex flex-1 flex-col justify-between gap-2 p-3 sm:p-4">
                     <div>
                       <h2
                         className={`text-sm leading-snug font-bold sm:text-base ${
@@ -142,7 +142,7 @@ export default function ModulesPage() {
                         {module.module_title}
                       </h2>
                       <p
-                        className={`mt-1 line-clamp-2 text-xs leading-relaxed ${
+                        className={`mt-1 line-clamp-3 text-xs leading-relaxed ${
                           isLocked ? "text-gray-400" : "text-gray-500"
                         }`}
                       >
@@ -150,7 +150,7 @@ export default function ModulesPage() {
                       </p>
                     </div>
 
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap items-center justify-between gap-y-2">
                       <div
                         className={`flex items-center gap-1 text-xs ${
                           isLocked ? "text-gray-400" : "text-gray-500"
@@ -169,7 +169,7 @@ export default function ModulesPage() {
                           }
                           size="sm"
                           variant="outline"
-                          className="h-7 border-primary/30 px-3 text-xs text-primary/70"
+                          className="h-7 border-primary/30 px-2.5 text-xs text-primary/70"
                         >
                           {lockState?.isSubscriptionLocked ? (
                             <>
@@ -177,14 +177,14 @@ export default function ModulesPage() {
                               Unlock
                             </>
                           ) : (
-                            "Complete Previous"
+                            "Complete Prev"
                           )}
                         </Button>
                       ) : (
                         <Button
                           href={`/modules/${module.id}`}
                           size="sm"
-                          className="h-7 px-3 text-xs"
+                          className="h-7 px-2.5 text-xs"
                         >
                           View Module
                         </Button>

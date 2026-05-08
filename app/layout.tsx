@@ -27,7 +27,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-nunito bg-gray-100 antialiased">
+      <body className="font-nunito overflow-x-hidden bg-gray-100 antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>
