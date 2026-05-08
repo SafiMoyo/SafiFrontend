@@ -305,6 +305,15 @@ const Navbar = () => {
                     >
                       Profile
                     </Button>
+                    {isSettingsArea && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => navigate(ROUTE_KEYS.DASHBOARD)}
+                      >
+                        Back to Dashboard
+                      </Button>
+                    )}
                   </>
                 ) : (
                   <>

@@ -60,6 +60,13 @@ Axios.interceptors.response.use(
     const originalRequest = error.config
 
     if (error.response?.status === 401 && !originalRequest._retry) {
+      // Auth endpoints (login, etc.) return 401 for invalid credentials — not session expiry
+      const isAuthEndpoint = originalRequest.url?.includes("/auth/login")
+      if (isAuthEndpoint) {
+        handleResponseError(error)
+        return Promise.reject(error)
+      }
+
       const refreshToken = getStoredRefreshToken()
 
       if (!refreshToken) {

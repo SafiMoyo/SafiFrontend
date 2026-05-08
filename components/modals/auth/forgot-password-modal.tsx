@@ -91,19 +91,19 @@ export function ForgotPasswordModal({ open, onOpenChange, onBack }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full max-w-lg gap-0 overflow-y-auto bg-white p-6">
-        <div className="mb-4 flex justify-center">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-lg gap-0 overflow-y-auto bg-white p-4 sm:p-6 max-h-[calc(100svh-2rem)]">
+        <div className="mb-3 flex justify-center sm:mb-4">
           <Image
             src="/images/logo.svg"
             alt="Safi"
             width={120}
             height={40}
-            className="h-10 w-auto"
+            className="h-8 w-auto sm:h-10"
           />
         </div>
 
-        <div className="mb-6 text-center">
-          <DialogTitle className="text-2xl font-extrabold text-gray-900">
+        <div className="mb-5 text-center sm:mb-6">
+          <DialogTitle className="text-xl font-extrabold text-gray-900 sm:text-2xl">
             Reset Password
           </DialogTitle>
           <p className="mt-1 text-sm font-semibold text-gray-500">

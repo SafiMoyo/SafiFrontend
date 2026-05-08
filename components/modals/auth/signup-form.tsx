@@ -84,8 +84,8 @@ export function SignUpForm({ onAuthSuccess }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex max-h-[55vh] flex-col">
-      <div className="space-y-4 overflow-y-auto pr-1">
+    <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1">
         <div className="flex flex-col gap-1.5">
           <Label className="text-sm font-bold text-gray-900">First Name</Label>
           <Input
