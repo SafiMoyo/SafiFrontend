@@ -20,6 +20,7 @@ const Navbar = () => {
   const isSettingsArea = pathname?.startsWith(ROUTE_KEYS.SETTINGS)
   const isStatisticsPage = pathname === ROUTE_KEYS.SETTINGS_STATISTICS
   const isDashboardPage = pathname === ROUTE_KEYS.DASHBOARD
+  const isStaticPage = pathname === ROUTE_KEYS.ABOUT || pathname === ROUTE_KEYS.PRIVACY || pathname === ROUTE_KEYS.TERMS
   const [open, setOpen] = useState(false)
   const [authOpen, setAuthOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
@@ -68,11 +69,11 @@ const Navbar = () => {
   const navItems = [
     { label: "About Safi", href: ROUTE_KEYS.ABOUT, onClick: undefined },
     { label: "How it works", href: "", onClick: handleHowItWorks },
-    {
-      label: "Pricing",
-      href: isAuthenticated ? ROUTE_KEYS.SUBSCRIPTION : ROUTE_KEYS.PRICING,
-      onClick: undefined,
-    },
+    // {
+    //   label: "Pricing",
+    //   href: isAuthenticated ? ROUTE_KEYS.SUBSCRIPTION : ROUTE_KEYS.PRICING,
+    //   onClick: undefined,
+    // },
   ]
 
   const settingsPrimaryHref = isStatisticsPage
@@ -128,6 +129,18 @@ const Navbar = () => {
             >
               {settingsPrimaryLabel}
             </Button>
+            <Button
+              href={ROUTE_KEYS.DASHBOARD}
+              variant="outline"
+              className="rounded-xl border-primary/30 bg-white text-primary hover:bg-purple-50"
+            >
+              Back to Dashboard
+            </Button>
+          </div>
+        )}
+
+        {isAuthenticated && isStaticPage && (
+          <div className="ml-auto hidden items-center gap-3 md:flex">
             <Button
               href={ROUTE_KEYS.DASHBOARD}
               variant="outline"
@@ -305,7 +318,7 @@ const Navbar = () => {
                     >
                       Profile
                     </Button>
-                    {isSettingsArea && (
+                    {(isSettingsArea || isStaticPage) && (
                       <Button
                         type="button"
                         variant="outline"

@@ -18,6 +18,7 @@ import { useSignupUser } from "@/services/auth/mutations"
 import { parseAuthPayload, persistAuthSession, extractResponseData } from "@/services/auth/session"
 import { toast } from "sonner"
 import { useAuthContext } from "@/context"
+import { UserType } from "@/types/user"
 import { passwordRules, PasswordStrength } from "@/components/ui/password-strength"
 
 type SignupFormState = {
@@ -50,7 +51,7 @@ export function SignUpForm({ onAuthSuccess }: Props) {
     showPassword: false,
     showConfirmPassword: false,
   })
-  const { setLoggedIn } = useAuthContext()
+  const { setLoggedIn, setActiveUser } = useAuthContext()
 
   const set = <K extends keyof SignupFormState>(
     key: K,
@@ -62,8 +63,9 @@ export function SignUpForm({ onAuthSuccess }: Props) {
       const authPayload = parseAuthPayload(response)
       persistAuthSession(authPayload)
       const data = extractResponseData(response)
-      const user = data.user as Record<string, unknown> | undefined
-      const accountType = (user?.account_type as string) ?? "INDIVIDUAL"
+      const user = data.user as UserType | undefined
+      const accountType = user?.account_type ?? "INDIVIDUAL"
+      if (user) setActiveUser(user)
       setLoggedIn(true)
       toast.success("Your account has been created.")
       onAuthSuccess?.(accountType)

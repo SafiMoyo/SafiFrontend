@@ -19,6 +19,7 @@ export type AuthContextTypes = {
   setLoggedIn: (data: boolean | null) => void
   isAuthenticated: boolean
   activeUser: UserType | null
+  setActiveUser: (user: UserType | null) => void
   logout: () => void
 }
 
@@ -27,6 +28,7 @@ const defaultValues: AuthContextTypes = {
   setLoggedIn: () => undefined,
   isAuthenticated: false,
   activeUser: null,
+  setActiveUser: () => undefined,
   logout: () => undefined,
 }
 
@@ -80,9 +82,10 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       setLoggedIn,
       isAuthenticated,
       activeUser,
+      setActiveUser,
       logout,
     }),
-    [activeUser, isAuthenticated, loggedIn, logout, setLoggedIn]
+    [activeUser, isAuthenticated, loggedIn, logout, setActiveUser, setLoggedIn]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

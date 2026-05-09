@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { useLoginUser } from "@/services/auth/mutations"
 import { persistAuthSession, parseAuthPayload, extractResponseData } from "@/services/auth/session"
 import { AuthContext } from "@/context/auth"
+import { UserType } from "@/types/user"
 import { toast } from "sonner"
 
 type LoginFormState = {
@@ -30,7 +31,7 @@ export function LogInForm({ onForgotPassword, onAuthSuccess }: Props) {
     remember: false,
     showPassword: false,
   })
-  const { setLoggedIn } = useContext(AuthContext)
+  const { setLoggedIn, setActiveUser } = useContext(AuthContext)
 
   const set = <K extends keyof LoginFormState>(
     key: K,
@@ -41,8 +42,9 @@ export function LogInForm({ onForgotPassword, onAuthSuccess }: Props) {
     onSuccess: (response) => {
       persistAuthSession(parseAuthPayload(response), form.remember)
       const data = extractResponseData(response)
-      const user = data.user as Record<string, unknown> | undefined
-      const accountType = (user?.account_type as string) ?? "INDIVIDUAL"
+      const user = data.user as UserType | undefined
+      const accountType = user?.account_type ?? "INDIVIDUAL"
+      if (user) setActiveUser(user)
       setLoggedIn(true)
       toast.success("Welcome back!")
       onAuthSuccess?.(accountType)

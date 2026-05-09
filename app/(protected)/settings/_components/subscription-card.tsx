@@ -94,13 +94,13 @@ export function SubscriptionCard() {
 
       <div className="space-y-2">
         <div className="flex gap-2">
-          <Button
+          {/* <Button
             type="button"
             className="h-10 rounded-lg px-5"
             onClick={() => router.push("/subscription")}
           >
             Upgrade plan
-          </Button>
+          </Button> */}
           {!isFree && (
             <Button
               type="button"
