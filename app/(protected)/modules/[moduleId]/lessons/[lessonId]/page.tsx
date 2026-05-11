@@ -284,7 +284,6 @@ export default function LessonPage({
               controls
               controlsList="nodownload"
               autoPlay
-              muted
               playsInline
               poster={lesson.cover_image_url || undefined}
               onLoadedMetadata={handleVideoLoadedMetadata}
