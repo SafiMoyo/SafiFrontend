@@ -23,9 +23,13 @@ export default function PricingPage() {
     useQueryPublicPricing({})
 
   const plans = plansData?.data ?? []
-  const filteredPlans = plans.filter(
-    (plan) => plan.duration.toLowerCase() === billing
-  )
+  const filteredPlans = plans
+    .filter((plan) => plan.duration.toLowerCase() === billing)
+    .sort((a, b) => {
+      if (a.plan_type === ENUM_PLAN_TYPE.FAMILY) return -1
+      if (b.plan_type === ENUM_PLAN_TYPE.FAMILY) return 1
+      return 0
+    })
 
   const getPrice = (plan: PlanType) => plan.amount
 

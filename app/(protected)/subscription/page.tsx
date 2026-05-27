@@ -31,11 +31,17 @@ export default function SubscriptionPage() {
   })
 
   const plans = plansData?.data ?? []
-  const filteredPlans = plans.filter(
-    (plan) =>
-      plan.plan_type === (activeUser?.account_type as unknown as ENUM_PLAN_TYPE) &&
-      plan.duration.toLowerCase() === billing
-  )
+  const filteredPlans = plans
+    .filter(
+      (plan) =>
+        plan.plan_type === (activeUser?.account_type as unknown as ENUM_PLAN_TYPE) &&
+        plan.duration.toLowerCase() === billing
+    )
+    .sort((a, b) => {
+      if (a.plan_type === ENUM_PLAN_TYPE.FAMILY) return -1
+      if (b.plan_type === ENUM_PLAN_TYPE.FAMILY) return 1
+      return 0
+    })
   const stats = statsData?.data
 
   const { mutate: upgradePlan, isPending: isUpgrading } = useMutateUpgradePlan({
