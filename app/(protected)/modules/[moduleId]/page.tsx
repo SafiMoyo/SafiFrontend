@@ -3,7 +3,8 @@
 import { CheckCircle2, Clock, Lock, CircleDashed, ChevronLeft } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { useMemo, useEffect } from "react"
+import { LessonLimitModal } from "@/components/modals/lesson-limit-modal"
+import { useMemo, useEffect, useState, useCallback } from "react"
 import { notFound, useRouter } from "next/navigation"
 import { use } from "react"
 import Footer from "@/components/footer/footer"
@@ -11,6 +12,7 @@ import {
   useQueryModules,
   useQueryModuleLessons,
   useQueryCheckEnrolled,
+  fetchCanWatch,
 } from "@/services/module-lesson/queries"
 import { useMutateEnrolModule } from "@/services/module-lesson/mutations"
 import { useAuthContext } from "@/context"
@@ -101,6 +103,42 @@ export default function ModulePage({
     },
   })
 
+  // ── can-watch gate state ───────────────────────────────────────────────────
+  /** ID of the lesson currently being checked (shows spinner on that button) */
+  const [checkingLessonId, setCheckingLessonId] = useState<
+    string | number | null
+  >(null)
+  const [limitModalOpen, setLimitModalOpen] = useState(false)
+
+  /**
+   * Call GET /user/lessons/can-watch before navigating to any lesson.
+   * canWatch === true  → navigate
+   * canWatch === false → show the limit modal
+   */
+  const handleStartLesson = useCallback(
+    async (lessonId: string | number) => {
+      setCheckingLessonId(lessonId)
+      try {
+        const res = await fetchCanWatch(lessonId, moduleId)
+        if (res.data.canWatch) {
+          router.push(`/modules/${moduleId}/lessons/${lessonId}`)
+        } else {
+          setLimitModalOpen(true)
+        }
+      } catch {
+        // Fail open — don't block the user on unexpected API errors
+        router.push(`/modules/${moduleId}/lessons/${lessonId}`)
+      } finally {
+        setCheckingLessonId(null)
+      }
+    },
+    [moduleId, router]
+  )
+
+  const handleSubscribe = useCallback(() => {
+    router.push("/subscription")
+  }, [router])
+
   if (!modulesLoading && !lessonModule) return notFound()
 
   // Still loading or being redirected
@@ -160,9 +198,13 @@ export default function ModulePage({
             <div className="mt-4">
               {isEnrolled ? (
                 nextLesson ? (
+                  /* ── "Start / Continue / Resume" CTA — gate-checked ── */
                   <Button
-                    href={`/modules/${moduleId}/lessons/${nextLesson.id}`}
+                    type="button"
                     className="px-5"
+                    loading={checkingLessonId === nextLesson.id}
+                    disabled={checkingLessonId !== null}
+                    onClick={() => handleStartLesson(nextLesson.id)}
                   >
                     {nextLesson.status === ENUM_LESSON_STATUS.ONGOING
                       ? "Resume Learning"
@@ -227,6 +269,8 @@ export default function ModulePage({
                     : isOngoing
                       ? "Resume"
                       : "Start"
+                  const isThisChecking = checkingLessonId === lesson.id
+
                   return (
                     <div
                       key={lesson.id}
@@ -303,13 +347,18 @@ export default function ModulePage({
                                 Complete previous lesson first
                               </span>
                             )}
+                            {/* ── Start / Resume / Watch-again — gate-checked ── */}
                             {!isLocked && (
                               <Button
-                                href={`/modules/${moduleId}/lessons/${lesson.id}`}
+                                type="button"
                                 variant="outline"
                                 size="sm"
-                                loading={isOngoing && !isCompleted}
+                                loading={isThisChecking}
+                                disabled={
+                                  checkingLessonId !== null && !isThisChecking
+                                }
                                 className="ml-auto shrink-0 border-primary/40 px-4 text-xs text-primary"
+                                onClick={() => handleStartLesson(lesson.id)}
                               >
                                 {buttonLabel}
                               </Button>
@@ -327,6 +376,16 @@ export default function ModulePage({
       </div>
 
       <Footer />
+
+      {/* Limit-exceeded modal */}
+      <LessonLimitModal
+        open={limitModalOpen}
+        onOpenChange={setLimitModalOpen}
+        onSubscribe={() => {
+          setLimitModalOpen(false)
+          handleSubscribe()
+        }}
+      />
     </div>
   )
 }

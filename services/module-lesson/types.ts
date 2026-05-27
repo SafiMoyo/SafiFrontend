@@ -55,6 +55,15 @@ export type CheckEnrolledRes = {
   }
 }
 
+export type CanWatchRes = {
+  status: boolean
+  message: string
+  data: {
+    canWatch: boolean
+    reason?: string
+  }
+}
+
 export type UpgradePlanPayload = {
   plan_id: number
   billing_cycle: "monthly" | "yearly"
