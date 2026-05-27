@@ -5,6 +5,7 @@ export enum ENUM_PLAN_TYPE {
 
 export enum ENUM_PLAN_BILLING_CYCLE {
   MONTHLY = "MONTHLY",
+  QUARTERLY = "QUARTERLY",
   YEARLY = "YEARLY",
 }
 export type PlanType = {

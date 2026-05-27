@@ -1,6 +1,7 @@
 "use client"
 
 import { Check, Lock, BookOpen, ChevronLeft } from "lucide-react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import Navbar from "@/components/navbar/navbar"
 import Footer from "@/components/footer/footer"
@@ -18,6 +19,9 @@ import { ENUM_PLAN_TYPE, PlanType } from "@/types/plan"
 export default function SubscriptionPage() {
   const router = useRouter()
   const { activeUser } = useAuthContext()
+  const [billing, setBilling] = useState<ENUM_BillingCycle>(
+    ENUM_BillingCycle.MONTHLY
+  )
 
   const { data: plansData, isLoading: plansLoading } = useQueryPlans({})
   const { data: statsData } = useQueryDashboardStatistics({
@@ -29,7 +33,8 @@ export default function SubscriptionPage() {
   const plans = plansData?.data ?? []
   const filteredPlans = plans.filter(
     (plan) =>
-      plan.plan_type === (activeUser?.account_type as unknown as ENUM_PLAN_TYPE)
+      plan.plan_type === (activeUser?.account_type as unknown as ENUM_PLAN_TYPE) &&
+      plan.duration.toLowerCase() === billing
   )
   const stats = statsData?.data
 
@@ -120,6 +125,30 @@ export default function SubscriptionPage() {
           </div>
         </div>
 
+        {/* Billing toggle */}
+        <div className="mb-6 flex justify-center gap-2">
+          {(
+            [
+              { label: "Monthly", value: ENUM_BillingCycle.MONTHLY },
+              { label: "Quarterly", value: ENUM_BillingCycle.QUARTERLY },
+              { label: "Yearly", value: ENUM_BillingCycle.YEARLY },
+            ] as const
+          ).map(({ label, value }) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setBilling(value)}
+              className={`rounded-full px-6 py-2.5 text-sm font-semibold transition-all ${
+                billing === value
+                  ? "bg-primary text-white shadow-sm"
+                  : "border border-gray-200 bg-white text-gray-700 hover:border-primary/40"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
         {/* Plan cards — full width below */}
         {plansLoading ? (
           <div className="rounded-2xl border border-gray-100 bg-white px-6 py-10 text-center text-sm text-gray-500 shadow-sm">
@@ -146,7 +175,11 @@ export default function SubscriptionPage() {
                       : "Family Plan"}
                   </p>
                   <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-primary/70">
-                    {billingCycle === ENUM_BillingCycle.YEARLY ? "Yearly" : "Monthly"}
+                    {billingCycle === ENUM_BillingCycle.YEARLY
+                      ? "Yearly"
+                      : billingCycle === ENUM_BillingCycle.QUARTERLY
+                        ? "Quarterly"
+                        : "Monthly"}
                   </p>
                   {savings && (
                     <p className="mb-3 text-xs font-medium text-primary">
@@ -159,7 +192,12 @@ export default function SubscriptionPage() {
                       {formatPrice(getPrice(plan))}
                     </span>
                     <span className="text-sm text-gray-400">
-                      per {billingCycle === ENUM_BillingCycle.YEARLY ? "year" : "month"}
+                      per{" "}
+                      {billingCycle === ENUM_BillingCycle.YEARLY
+                        ? "year"
+                        : billingCycle === ENUM_BillingCycle.QUARTERLY
+                          ? "quarter"
+                          : "month"}
                     </span>
                   </div>
 

@@ -58,28 +58,26 @@ export default function PricingPage() {
 
         {/* Billing toggle */}
         <div className="mb-8 flex justify-center gap-2">
-          <button
-            type="button"
-            onClick={() => setBilling(ENUM_BillingCycle.YEARLY)}
-            className={`rounded-full px-6 py-2.5 text-sm font-semibold transition-all ${
-              billing === ENUM_BillingCycle.YEARLY
-                ? "bg-primary text-white shadow-sm"
-                : "border border-gray-200 bg-white text-gray-700 hover:border-primary/40"
-            }`}
-          >
-            Yearly
-          </button>
-          <button
-            type="button"
-            onClick={() => setBilling(ENUM_BillingCycle.MONTHLY)}
-            className={`rounded-full px-6 py-2.5 text-sm font-semibold transition-all ${
-              billing === ENUM_BillingCycle.MONTHLY
-                ? "bg-primary text-white shadow-sm"
-                : "border border-gray-200 bg-white text-gray-700 hover:border-primary/40"
-            }`}
-          >
-            Monthly
-          </button>
+          {(
+            [
+              { label: "Monthly", value: ENUM_BillingCycle.MONTHLY },
+              { label: "Quarterly", value: ENUM_BillingCycle.QUARTERLY },
+              { label: "Yearly", value: ENUM_BillingCycle.YEARLY },
+            ] as const
+          ).map(({ label, value }) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setBilling(value)}
+              className={`rounded-full px-6 py-2.5 text-sm font-semibold transition-all ${
+                billing === value
+                  ? "bg-primary text-white shadow-sm"
+                  : "border border-gray-200 bg-white text-gray-700 hover:border-primary/40"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
 
         {/* Plan cards */}
@@ -118,7 +116,11 @@ export default function PricingPage() {
                     </span>
                     <span className="text-sm text-gray-400">
                       per{" "}
-                      {billing === ENUM_BillingCycle.YEARLY ? "year" : "month"}
+                      {billing === ENUM_BillingCycle.YEARLY
+                        ? "year"
+                        : billing === ENUM_BillingCycle.QUARTERLY
+                          ? "quarter"
+                          : "month"}
                     </span>
                   </div>
 

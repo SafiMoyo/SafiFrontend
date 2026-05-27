@@ -1,6 +1,7 @@
 export enum ENUM_BillingCycle {
-  YEARLY = "yearly",
   MONTHLY = "monthly",
+  QUARTERLY = "quarterly",
+  YEARLY = "yearly",
 }
 
 export enum SubscriptionStatus {

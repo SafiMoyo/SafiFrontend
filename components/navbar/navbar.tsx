@@ -69,11 +69,11 @@ const Navbar = () => {
   const navItems = [
     { label: "About Safi", href: ROUTE_KEYS.ABOUT, onClick: undefined },
     { label: "How it works", href: "", onClick: handleHowItWorks },
-    // {
-    //   label: "Pricing",
-    //   href: isAuthenticated ? ROUTE_KEYS.SUBSCRIPTION : ROUTE_KEYS.PRICING,
-    //   onClick: undefined,
-    // },
+    {
+      label: "Pricing",
+      href: isAuthenticated ? ROUTE_KEYS.SUBSCRIPTION : ROUTE_KEYS.PRICING,
+      onClick: undefined,
+    },
   ]
 
   const settingsPrimaryHref = isStatisticsPage
