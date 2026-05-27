@@ -157,7 +157,7 @@ export default function ModulesPage() {
                         }`}
                       >
                         <Video size={11} />
-                        <span>{module.no_of_lessons} lessons</span>
+                        <span>10 lessons</span>
                       </div>
 
                       {isLocked ? (

@@ -1,8 +1,14 @@
 "use client"
 
-import { Clock, LibraryBig, ChevronLeft, ChevronRight, Lock } from "lucide-react"
+import { Clock, LibraryBig, ChevronLeft, ChevronRight, Lock, Sparkles } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { notFound, useRouter } from "next/navigation"
 import { use, useMemo, useEffect, useCallback, useRef, useState } from "react"
 import type { SyntheticEvent } from "react"
@@ -18,6 +24,109 @@ import { Skeleton } from "@/components/skeleton"
 import Footer from "@/components/footer/footer"
 import { useMutateRecordLesson } from "@/services/module-lesson/mutations"
 
+// ─── helpers ────────────────────────────────────────────────────────────────
+
+/** Returns true when the API responded with the free-tier lesson limit message */
+function isLimitExceededError(error: unknown): boolean {
+  const axiosError = error as {
+    response?: { data?: { message?: string }; status?: number }
+  }
+  const msg = axiosError?.response?.data?.message ?? ""
+  return (
+    axiosError?.response?.status === 400 &&
+    msg.toLowerCase().includes("limit exceeded")
+  )
+}
+
+// ─── paywall modal (shown when Next is clicked and hits the limit) ────────────
+
+function LessonLimitModal({
+  open,
+  onOpenChange,
+  onSubscribe,
+}: {
+  open: boolean
+  onOpenChange: (v: boolean) => void
+  onSubscribe: () => void
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        showCloseButton={false}
+        className="max-w-sm overflow-hidden rounded-2xl border border-slate-200 bg-white p-0 shadow-2xl"
+      >
+        {/* gradient header */}
+        <div className="bg-linear-to-r from-indigo-50 via-violet-50 to-cyan-50 px-6 py-6 text-center">
+          <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-violet-100 text-violet-700">
+            <Lock size={24} />
+          </div>
+          <DialogTitle className="mt-4 text-2xl font-extrabold tracking-tight text-slate-900">
+            Lesson Limit Reached
+          </DialogTitle>
+        </div>
+
+        {/* body */}
+        <div className="px-6 pb-7 pt-5">
+          <DialogDescription className="mx-auto max-w-xs text-center text-sm leading-relaxed text-slate-600">
+            You&apos;ve reached the free lesson limit. Subscribe to unlock all
+            lessons and continue your learning journey.
+          </DialogDescription>
+
+          <div className="mt-7 flex flex-col gap-3">
+            <Button
+              type="button"
+              className="h-11 w-full rounded-full font-semibold"
+              onClick={onSubscribe}
+            >
+              <Sparkles size={15} className="mr-1.5" />
+              Subscribe Now
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11 w-full rounded-full border-slate-300 text-slate-700"
+              onClick={() => onOpenChange(false)}
+            >
+              Maybe Later
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// ─── paywall inline (replaces the video player when the lesson itself is locked) ─
+
+function LessonPaywall({ onSubscribe }: { onSubscribe: () => void }) {
+  return (
+    <div className="mx-3 mb-4 flex h-[clamp(280px,65dvh,700px)] items-center justify-center overflow-hidden rounded-2xl bg-linear-to-br from-violet-950 to-slate-900 shadow-lg sm:mx-5">
+      <div className="max-w-xs px-6 text-center">
+        <div className="mx-auto mb-5 flex size-20 items-center justify-center rounded-full bg-white/10">
+          <Lock size={36} className="text-white/80" />
+        </div>
+        <h3 className="mb-2 text-xl font-bold text-white">Lesson Locked</h3>
+        <p className="mb-7 text-sm leading-relaxed text-purple-200">
+          You&apos;ve reached your free lesson limit. Subscribe to unlock all
+          lessons and keep learning.
+        </p>
+        <Button
+          type="button"
+          onClick={onSubscribe}
+          className="h-11 rounded-full bg-white px-8 font-bold text-violet-900 hover:bg-purple-50"
+        >
+          <Sparkles size={15} className="mr-1.5 text-violet-700" />
+          Subscribe Now
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+// ─── page ────────────────────────────────────────────────────────────────────
+
+type AccessState = "checking" | "granted" | "denied"
+
 export default function LessonPage({
   params,
 }: {
@@ -31,8 +140,6 @@ export default function LessonPage({
   const { data: lessonsData, isLoading } = useQueryModuleLessons({
     queryParams: { module_id: moduleId },
   })
-
-  const { mutate: recordLessonProgress } = useMutateRecordLesson({})
 
   const modules = useMemo(() => modulesData?.data ?? [], [modulesData?.data])
   const lessons = useMemo<LessonsType[]>(
@@ -58,20 +165,64 @@ export default function LessonPage({
     })
 
   const isEnrolled = enrolledData?.data?.enrolled ?? false
+
+  // ── access-gate state ──────────────────────────────────────────────────────
+  const [accessState, setAccessState] = useState<AccessState>("checking")
+  const accessCheckedForRef = useRef<string | null>(null)
+
+  // ── limit modal (shown when Next button hits the limit) ────────────────────
+  const [showLimitModal, setShowLimitModal] = useState(false)
+
+  // ── video playback tracking ────────────────────────────────────────────────
   const videoDurationRef = useRef(0)
   const lastTrackedSecondRef = useRef(0)
   const lastRecordedRateRef = useRef(0)
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const [watchedRate, setWatchedRate] = useState(0)
 
-  // Guard: no subscription → /modules
+  // ── mutations ──────────────────────────────────────────────────────────────
+
+  /** Gate-check: called once when the lesson loads to confirm the user may watch */
+  const { mutate: checkAccess } = useMutateRecordLesson({
+    onSuccess: () => setAccessState("granted"),
+    onError: (error: unknown) => {
+      if (isLimitExceededError(error)) {
+        setAccessState("denied")
+      } else {
+        // On unexpected errors don't block the user
+        setAccessState("granted")
+      }
+    },
+  })
+
+  /** During-playback progress recording */
+  const { mutate: recordLessonProgress } = useMutateRecordLesson({})
+
+  /** Pre-navigation check when the user clicks "Next" */
+  const { mutate: checkNextAccess, isPending: isCheckingNext } =
+    useMutateRecordLesson({
+      onSuccess: () => {
+        if (nextLesson) {
+          router.push(`/modules/${moduleId}/lessons/${nextLesson.id}`)
+        }
+      },
+      onError: (error: unknown) => {
+        if (isLimitExceededError(error)) {
+          setShowLimitModal(true)
+        }
+      },
+    })
+
+  // ── guards ─────────────────────────────────────────────────────────────────
+
+  // No subscription → /modules
   useEffect(() => {
     if (!modulesLoading && lessonModule && !isAccessible) {
       router.replace("/modules")
     }
   }, [modulesLoading, lessonModule, isAccessible, router])
 
-  // Guard: not enrolled → back to module page
+  // Not enrolled → back to module page
   useEffect(() => {
     if (!enrolledLoading && !isEnrolled && isAccessible && lessonModule) {
       router.replace(`/modules/${moduleId}`)
@@ -85,24 +236,7 @@ export default function LessonPage({
     router,
   ])
 
-  // Reset playback tracking when lesson changes.
-  useEffect(() => {
-    videoDurationRef.current = 0
-    lastTrackedSecondRef.current = 0
-    lastRecordedRateRef.current = 0
-    setWatchedRate(0)
-  }, [lessonId])
-
-  // Dispose video when user leaves the page so it doesn't play in background.
-  useEffect(() => {
-    return () => {
-      const video = videoRef.current
-      if (!video) return
-      video.pause()
-      video.src = ""
-      video.load()
-    }
-  }, [])
+  // ── lesson index & data ────────────────────────────────────────────────────
 
   const lessonIndex = useMemo(
     () => lessons.findIndex((l) => String(l.id) === lessonId),
@@ -113,12 +247,55 @@ export default function LessonPage({
     [lessons, lessonIndex]
   )
 
+  const prevLesson = lessonIndex > 0 ? lessons[lessonIndex - 1] : null
+  const nextLesson =
+    lessonIndex < lessons.length - 1 ? lessons[lessonIndex + 1] : null
+
+  // ── reset tracking + access state when lesson changes ─────────────────────
+  useEffect(() => {
+    videoDurationRef.current = 0
+    lastTrackedSecondRef.current = 0
+    lastRecordedRateRef.current = 0
+    setWatchedRate(0)
+    accessCheckedForRef.current = null
+    setAccessState("checking")
+  }, [lessonId])
+
+  // ── initial access gate-check ──────────────────────────────────────────────
+  useEffect(() => {
+    // Wait until lesson and enrolment are confirmed
+    if (!lesson || !isEnrolled) return
+    // Only check once per lesson
+    if (accessCheckedForRef.current === lessonId) return
+    accessCheckedForRef.current = lessonId
+
+    checkAccess({
+      lesson_id: lesson.id,
+      module_id: moduleId,
+      completion_rate: Math.max(0, lesson.completion_rate ?? 0),
+    })
+  }, [lesson, isEnrolled, lessonId, moduleId, checkAccess])
+
+  // ── seed watchedRate from lesson data ──────────────────────────────────────
   useEffect(() => {
     if (!lesson) return
     const initialRate = Math.max(0, Math.min(100, lesson.completion_rate ?? 0))
     lastRecordedRateRef.current = initialRate
     setWatchedRate(initialRate)
   }, [lesson])
+
+  // ── dispose video when leaving ─────────────────────────────────────────────
+  useEffect(() => {
+    return () => {
+      const video = videoRef.current
+      if (!video) return
+      video.pause()
+      video.src = ""
+      video.load()
+    }
+  }, [])
+
+  // ── playback handlers ──────────────────────────────────────────────────────
 
   const handleVideoTimeUpdate = useCallback(
     (event: SyntheticEvent<HTMLVideoElement>) => {
@@ -206,11 +383,30 @@ export default function LessonPage({
     router.push(`/modules/${moduleId}`)
   }, [moduleId, router])
 
+  // ── Next button handler ────────────────────────────────────────────────────
+
+  const handleNextLesson = useCallback(() => {
+    if (!nextLesson) {
+      router.push(`/modules/${moduleId}`)
+      return
+    }
+    // Pre-check access before navigating so we can intercept the limit error
+    checkNextAccess({
+      lesson_id: nextLesson.id,
+      module_id: moduleId,
+      completion_rate: 0,
+    })
+  }, [nextLesson, moduleId, router, checkNextAccess])
+
+  // ── subscribe redirect ─────────────────────────────────────────────────────
+  const handleSubscribe = useCallback(() => {
+    router.push("/subscription")
+  }, [router])
+
+  // ── not-found guard ────────────────────────────────────────────────────────
   if (!isLoading && !lesson) return notFound()
 
-  const prevLesson = lessonIndex > 0 ? lessons[lessonIndex - 1] : null
-  const nextLesson =
-    lessonIndex < lessons.length - 1 ? lessons[lessonIndex + 1] : null
+  // ── render ─────────────────────────────────────────────────────────────────
 
   return (
     <div className="flex min-h-screen flex-col bg-[#EDE6F0]">
@@ -274,8 +470,15 @@ export default function LessonPage({
         )}
       </div>
 
-      {/* Main video player */}
-      {lesson ? (
+      {/* ── Main content area: checking → skeleton | denied → paywall | granted → player ── */}
+      {!lesson || accessState === "checking" ? (
+        <div className="mx-3 mb-4 h-[clamp(220px,50dvh,560px)] rounded-2xl bg-gray-200 sm:mx-5">
+          <Skeleton className="h-full w-full rounded-2xl" />
+        </div>
+      ) : accessState === "denied" ? (
+        <LessonPaywall onSubscribe={handleSubscribe} />
+      ) : (
+        /* accessState === "granted" */
         <div className="mx-3 mb-4 h-[clamp(280px,65dvh,700px)] overflow-hidden rounded-2xl bg-black shadow-lg sm:mx-5">
           {lesson.video_url ? (
             <video
@@ -320,10 +523,6 @@ export default function LessonPage({
             </div>
           )}
         </div>
-      ) : (
-        <div className="mx-3 mb-4 h-[clamp(220px,50dvh,560px)] rounded-2xl bg-gray-200 sm:mx-5">
-          <Skeleton className="h-full w-full rounded-2xl" />
-        </div>
       )}
 
       {/* Bottom navigation */}
@@ -345,33 +544,50 @@ export default function LessonPage({
           {lessonIndex + 1} of {lessons.length}
         </div>
 
-        <Button
-          href={
-            nextLesson && watchedRate >= 90
-              ? `/modules/${moduleId}/lessons/${nextLesson.id}`
-              : !nextLesson
-                ? `/modules/${moduleId}`
+        {/* Next / Back-to-module button */}
+        {nextLesson ? (
+          <Button
+            type="button"
+            className="rounded-full px-5 text-sm font-semibold"
+            disabled={watchedRate < 90 || isCheckingNext}
+            loading={isCheckingNext}
+            title={
+              watchedRate < 90
+                ? "Watch 90% of the video to unlock"
                 : undefined
-          }
-          className="rounded-full px-5 text-sm font-semibold"
-          variant={nextLesson ? "default" : "outline"}
-          disabled={!!nextLesson && watchedRate < 90}
-          title={
-            !!nextLesson && watchedRate < 90
-              ? "Watch 90% of the video to unlock"
-              : undefined
-          }
-        >
-          {!!nextLesson && watchedRate < 90 && (
-            <Lock size={13} className="mr-1" />
-          )}
-          {nextLesson ? "Next" : "Back to Module"}
-          <ChevronRight size={16} className="ml-1" />
-        </Button>
+            }
+            onClick={handleNextLesson}
+          >
+            {watchedRate < 90 && !isCheckingNext && (
+              <Lock size={13} className="mr-1" />
+            )}
+            Next
+            <ChevronRight size={16} className="ml-1" />
+          </Button>
+        ) : (
+          <Button
+            href={`/modules/${moduleId}`}
+            className="rounded-full px-5 text-sm font-semibold"
+            variant="outline"
+          >
+            Back to Module
+            <ChevronRight size={16} className="ml-1" />
+          </Button>
+        )}
       </div>
 
       {/* Footer */}
       <Footer />
+
+      {/* Limit-exceeded modal (triggered by Next button) */}
+      <LessonLimitModal
+        open={showLimitModal}
+        onOpenChange={setShowLimitModal}
+        onSubscribe={() => {
+          setShowLimitModal(false)
+          handleSubscribe()
+        }}
+      />
     </div>
   )
 }

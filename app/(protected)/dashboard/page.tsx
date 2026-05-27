@@ -152,7 +152,7 @@ export default function DashboardPage() {
                 {freeModule.module_title}
               </span>
               <span className="text-sm text-black/90">
-                {freeModule.no_of_lessons} lessons
+                10 lessons
               </span>
             </div>
           </Link>
@@ -193,7 +193,7 @@ export default function DashboardPage() {
                     {module.module_title}
                   </p>
                   <p className="text-[10px] text-gray-500">
-                    {module.no_of_lessons} lessons
+                    10 lessons
                   </p>
                 </div>
               </Link>
