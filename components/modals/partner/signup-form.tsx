@@ -4,88 +4,72 @@ import { FormEvent, useState } from "react"
 import { Eye, EyeOff } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { AGE_GROUP_OPTIONS } from "@/components/ui/age-group-select"
 import { Button } from "@/components/ui/button"
-import { useSignupUser } from "@/services/auth/mutations"
+import { useRegisterPartner } from "@/services/auth/mutations"
 import { parseAuthPayload, persistAuthSession, extractResponseData } from "@/services/auth/session"
 import { toast } from "sonner"
 import { useAuthContext } from "@/context"
 import { UserType } from "@/types/user"
 import { passwordRules, PasswordStrength } from "@/components/ui/password-strength"
 
-type SignupFormState = {
+type PartnerSignupFormState = {
   firstName: string
   lastName: string
+  username: string
   email: string
+  organizationName: string
   password: string
   confirmPassword: string
-  ageGroup: string
-  accountType: string
-  referralCode: string
-  agreed: boolean
   showPassword: boolean
   showConfirmPassword: boolean
 }
 
 type Props = {
-  onAuthSuccess?: (accountType: string, userRole?: string) => void
+  onAuthSuccess?: (userRole?: string) => void
 }
 
-export function SignUpForm({ onAuthSuccess }: Props) {
-  const [form, setForm] = useState<SignupFormState>({
+export function PartnerSignupForm({ onAuthSuccess }: Props) {
+  const [form, setForm] = useState<PartnerSignupFormState>({
     firstName: "",
     lastName: "",
+    username: "",
     email: "",
+    organizationName: "",
     password: "",
     confirmPassword: "",
-    ageGroup: "",
-    accountType: "",
-    referralCode: "",
-    agreed: false,
     showPassword: false,
     showConfirmPassword: false,
   })
   const { setLoggedIn, setActiveUser } = useAuthContext()
 
-  const set = <K extends keyof SignupFormState>(
+  const set = <K extends keyof PartnerSignupFormState>(
     key: K,
-    value: SignupFormState[K]
+    value: PartnerSignupFormState[K]
   ) => setForm((prev) => ({ ...prev, [key]: value }))
 
-  const signup = useSignupUser({
+  const register = useRegisterPartner({
     onSuccess: (response) => {
       const authPayload = parseAuthPayload(response)
       persistAuthSession(authPayload)
       const data = extractResponseData(response)
       const user = data.user as UserType | undefined
-      const accountType = user?.account_type ?? "INDIVIDUAL"
       const userRole = user?.user_role
       if (user) setActiveUser(user)
       setLoggedIn(true)
-      toast.success("Your account has been created.")
-      onAuthSuccess?.(accountType, userRole)
+      toast.success("Your partner account has been created.")
+      onAuthSuccess?.(userRole)
     },
   })
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    signup.mutate({
+    register.mutate({
       first_name: form.firstName,
       last_name: form.lastName,
+      username: form.username,
       email_address: form.email,
+      organization_name: form.organizationName,
       password: form.password,
-      age_group: form.ageGroup,
-      account_type: form.accountType,
-      accepted_terms: form.agreed,
-      ...(form.referralCode ? { referral_code: form.referralCode } : {}),
     })
   }
 
@@ -115,13 +99,35 @@ export function SignUpForm({ onAuthSuccess }: Props) {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label className="text-sm font-bold text-gray-900">Email</Label>
+          <Label className="text-sm font-bold text-gray-900">Username</Label>
+          <Input
+            variant="auth"
+            placeholder="Type in here"
+            value={form.username}
+            onChange={(e) => set("username", e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-sm font-bold text-gray-900">Email Address</Label>
           <Input
             variant="auth"
             type="email"
             placeholder="Type in here"
             value={form.email}
             onChange={(e) => set("email", e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-sm font-bold text-gray-900">Organization Name</Label>
+          <Input
+            variant="auth"
+            placeholder="Type in here"
+            value={form.organizationName}
+            onChange={(e) => set("organizationName", e.target.value)}
             required
           />
         </div>
@@ -147,17 +153,13 @@ export function SignUpForm({ onAuthSuccess }: Props) {
               {form.showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-
-          {/* Password strength hints */}
           {form.password.length > 0 && (
             <PasswordStrength password={form.password} />
           )}
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label className="text-sm font-bold text-gray-900">
-            Confirm Password
-          </Label>
+          <Label className="text-sm font-bold text-gray-900">Confirm Password</Label>
           <div className="relative">
             <Input
               variant="auth"
@@ -181,83 +183,6 @@ export function SignUpForm({ onAuthSuccess }: Props) {
             <p className="text-xs font-medium text-red-500">Passwords do not match</p>
           )}
         </div>
-
-        <div className="flex flex-col gap-1.5">
-          <Label className="text-sm font-bold text-gray-900">
-            Referral Code{" "}
-            <span className="font-normal text-gray-400">(Optional)</span>
-          </Label>
-          <Input
-            variant="auth"
-            placeholder="Enter referral code"
-            value={form.referralCode}
-            onChange={(e) => set("referralCode", e.target.value)}
-          />
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <Label className="text-sm font-bold text-gray-900">Age group</Label>
-          <Select
-            value={form.ageGroup}
-            onValueChange={(v) => set("ageGroup", v)}
-          >
-            <SelectTrigger className="h-11!" variant="auth">
-              <SelectValue placeholder="Select age group" />
-            </SelectTrigger>
-            <SelectContent>
-              {AGE_GROUP_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <Label className="text-sm font-bold text-gray-900">Account</Label>
-          <Select
-            value={form.accountType}
-            onValueChange={(v) => set("accountType", v)}
-          >
-            <SelectTrigger className="h-11!" variant="auth">
-              <SelectValue placeholder="Account" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="INDIVIDUAL">Individual</SelectItem>
-              <SelectItem value="FAMILY">Family</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex items-start gap-2.5">
-          <Checkbox
-            id="terms"
-            checked={form.agreed}
-            onCheckedChange={(v) => set("agreed", !!v)}
-            className="mt-0.5 shrink-0"
-          />
-          <label
-            htmlFor="terms"
-            className="cursor-pointer text-xs leading-relaxed text-gray-700"
-          >
-            I agree to the{" "}
-            <a
-              href="/terms"
-              className="font-semibold text-primary hover:underline"
-            >
-              Terms of Service
-            </a>{" "}
-            and{" "}
-            <a
-              href="/privacy"
-              className="font-semibold text-primary hover:underline"
-            >
-              Privacy Policy
-            </a>
-            .
-          </label>
-        </div>
       </div>
 
       <div className="sticky bottom-0 mt-4 border-t border-purple-100 bg-white pt-4">
@@ -265,15 +190,12 @@ export function SignUpForm({ onAuthSuccess }: Props) {
           type="submit"
           className="h-12 w-full rounded-full"
           disabled={
-            !form.agreed ||
-            !form.ageGroup ||
-            !form.accountType ||
             passwordRules.some((r) => !r.test(form.password)) ||
             form.confirmPassword !== form.password
           }
-          loading={signup.isPending}
+          loading={register.isPending}
         >
-          Create Account
+          Create Partner Account
         </Button>
       </div>
     </form>

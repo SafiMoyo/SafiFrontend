@@ -145,7 +145,7 @@ export function ContactSupportModal({
                 <Mail size={16} className="mt-0.5 text-sky-700" />
                 <div>
                   <p className="font-semibold">Email</p>
-                  <p>hello@safimoyo.com</p>
+                  <p>contact@safimoyo.com</p>
                 </div>
               </div>
             </div>

@@ -72,3 +72,8 @@ export const useMutateContactSupport = createMutation<{
   url: "/contact",
   method: "POST",
 })
+
+export const useRegisterPartner = createMutation({
+  url: "/partner/register",
+  method: "POST",
+})

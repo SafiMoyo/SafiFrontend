@@ -8,6 +8,7 @@ import { LayoutDashboard, LogOut, Menu, Settings, User, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ROUTE_KEYS } from "@/lib/constants"
 import { AuthModal } from "@/components/modals/auth"
+import { PartnerModal } from "@/components/modals/partner"
 import { SelectProfileModal } from "@/components/modals/select-profile-modal"
 import { ENUM_AUTH } from "@/lib/enum"
 import { useAuthContext } from "@/context"
@@ -23,6 +24,7 @@ const Navbar = () => {
   const isStaticPage = pathname === ROUTE_KEYS.ABOUT || pathname === ROUTE_KEYS.PRIVACY || pathname === ROUTE_KEYS.TERMS
   const [open, setOpen] = useState(false)
   const [authOpen, setAuthOpen] = useState(false)
+  const [partnerOpen, setPartnerOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
   const [selectProfileOpen, setSelectProfileOpen] = useState(false)
   const [authTab, setAuthTab] = useState<ENUM_AUTH>(ENUM_AUTH.LOGIN)
@@ -254,6 +256,14 @@ const Navbar = () => {
               >
                 Sign up
               </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="border-purple-500 bg-transparent px-6 text-purple-700 shadow-xs hover:bg-purple-50"
+                onClick={() => { setPartnerOpen(true); setOpen(false) }}
+              >
+                Become a Partner
+              </Button>
             </>
           )}
         </div>
@@ -344,6 +354,14 @@ const Navbar = () => {
                     >
                       Sign up
                     </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="border-purple-500 bg-transparent text-purple-700 hover:bg-purple-50"
+                      onClick={() => { setPartnerOpen(true); setOpen(false) }}
+                    >
+                      Become a Partner
+                    </Button>
                   </>
                 )}
               </div>
@@ -357,6 +375,10 @@ const Navbar = () => {
         onOpenChange={setAuthOpen}
         authTab={authTab}
         onFamilyAuth={() => setSelectProfileOpen(true)}
+      />
+      <PartnerModal
+        open={partnerOpen}
+        onOpenChange={setPartnerOpen}
       />
       <SelectProfileModal
         open={selectProfileOpen}

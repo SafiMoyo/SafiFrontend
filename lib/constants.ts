@@ -10,4 +10,5 @@ export const ROUTE_KEYS = {
   SETTINGS: "/settings",
   SETTINGS_STATISTICS: "/settings/statistics",
   SETTINGS_PROFILE: "/settings/profile",
+  PARTNER_DASHBOARD: "/partner-dashboard",
 }

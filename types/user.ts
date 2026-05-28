@@ -3,6 +3,7 @@ import { SubscriptionType } from "./subscription"
 export enum UserRole {
   STUDENT = "STUDENT",
   ADMIN = "ADMIN",
+  PARTNER = "PARTNER",
 }
 
 export enum AccountType {

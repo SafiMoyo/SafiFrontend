@@ -1,53 +1,38 @@
 "use client"
 
-import { useRef, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { ENUM_AUTH } from "@/lib/enum"
 import { ROUTE_KEYS } from "@/lib/constants"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
-import { SignUpForm } from "./signup-form"
-import { LogInForm } from "./login-form"
-import { ForgotPasswordModal } from "./forgot-password-modal"
-import { useAuthContext } from "@/context"
+import { PartnerSignupForm } from "./signup-form"
+import { PartnerLoginForm } from "./login-form"
+import { ForgotPasswordModal } from "@/components/modals/auth/forgot-password-modal"
 import { UserRole } from "@/types/user"
 
 type Props = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  authTab: ENUM_AUTH
-  onFamilyAuth?: () => void
+  authTab?: ENUM_AUTH
 }
 
-export function AuthModal({ open, onOpenChange, authTab, onFamilyAuth }: Props) {
+export function PartnerModal({ open, onOpenChange, authTab = ENUM_AUTH.SIGNUP }: Props) {
   const router = useRouter()
-  const { isAuthenticated } = useAuthContext()
   const [tab, setTab] = useState<ENUM_AUTH>(authTab)
   const [forgotOpen, setForgotOpen] = useState(false)
-  const pendingAccountTypeRef = useRef<string | null>(null)
 
   useEffect(() => {
     if (open) setTab(authTab)
   }, [open, authTab])
 
-  useEffect(() => {
-    if (open && isAuthenticated && pendingAccountTypeRef.current === null) {
-      // User is already authenticated when modal opens — route based on stored account type
-      onOpenChange(false)
-      router.push("/dashboard")
-    }
-  }, [isAuthenticated, onOpenChange, open, router])
-
-  function handleAuthSuccess(accountType: string, userRole?: string) {
-    pendingAccountTypeRef.current = accountType
+  function handleAuthSuccess(userRole?: string) {
     onOpenChange(false)
     if (userRole === UserRole.PARTNER) {
       router.push(ROUTE_KEYS.PARTNER_DASHBOARD)
-    } else if (accountType === "FAMILY") {
-      onFamilyAuth?.()
     } else {
-      router.push(ROUTE_KEYS.DASHBOARD)
+      router.push(ROUTE_KEYS.PARTNER_DASHBOARD)
     }
   }
 
@@ -79,19 +64,18 @@ export function AuthModal({ open, onOpenChange, authTab, onFamilyAuth }: Props) 
           <div className="mb-4 text-center sm:mb-5">
             <DialogTitle className="text-xl font-extrabold text-gray-900 sm:text-2xl">
               {tab === ENUM_AUTH.SIGNUP
-                ? "Welcome to Safi!"
-                : "Welcome back to Safi!"}
+                ? "Become a Safi Partner"
+                : "Partner Login"}
             </DialogTitle>
             <p className="mt-1 text-sm font-semibold text-gray-700">
               {tab === ENUM_AUTH.SIGNUP
-                ? "Start your learning journey today"
-                : "Continue your learning journey"}
+                ? "Join our partner network and grow together"
+                : "Access your partner dashboard"}
             </p>
           </div>
 
           {/* Sliding tab switcher */}
           <div className="relative mb-4 flex rounded-xl bg-purple-100 p-1 sm:mb-6">
-            {/* Sliding pill */}
             <div
               aria-hidden
               className={cn(
@@ -122,9 +106,9 @@ export function AuthModal({ open, onOpenChange, authTab, onFamilyAuth }: Props) 
           </div>
 
           {tab === ENUM_AUTH.SIGNUP ? (
-            <SignUpForm onAuthSuccess={handleAuthSuccess} />
+            <PartnerSignupForm onAuthSuccess={handleAuthSuccess} />
           ) : (
-            <LogInForm
+            <PartnerLoginForm
               onForgotPassword={handleForgotPassword}
               onAuthSuccess={handleAuthSuccess}
             />

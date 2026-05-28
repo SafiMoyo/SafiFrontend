@@ -4,7 +4,6 @@ import { FormEvent, useContext, useState } from "react"
 import { Eye, EyeOff } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { useLoginUser } from "@/services/auth/mutations"
 import { persistAuthSession, parseAuthPayload, extractResponseData } from "@/services/auth/session"
@@ -12,43 +11,40 @@ import { AuthContext } from "@/context/auth"
 import { UserType } from "@/types/user"
 import { toast } from "sonner"
 
-type LoginFormState = {
+type PartnerLoginFormState = {
   email: string
   password: string
-  remember: boolean
   showPassword: boolean
 }
 
 type Props = {
   onForgotPassword?: () => void
-  onAuthSuccess?: (accountType: string, userRole?: string) => void
+  onAuthSuccess?: (userRole?: string) => void
 }
 
-export function LogInForm({ onForgotPassword, onAuthSuccess }: Props) {
-  const [form, setForm] = useState<LoginFormState>({
+export function PartnerLoginForm({ onForgotPassword, onAuthSuccess }: Props) {
+  const [form, setForm] = useState<PartnerLoginFormState>({
     email: "",
     password: "",
-    remember: false,
     showPassword: false,
   })
   const { setLoggedIn, setActiveUser } = useContext(AuthContext)
 
-  const set = <K extends keyof LoginFormState>(
+  const set = <K extends keyof PartnerLoginFormState>(
     key: K,
-    value: LoginFormState[K]
+    value: PartnerLoginFormState[K]
   ) => setForm((prev) => ({ ...prev, [key]: value }))
 
   const { mutate, isPending } = useLoginUser({
     onSuccess: (response) => {
-      persistAuthSession(parseAuthPayload(response), form.remember)
+      persistAuthSession(parseAuthPayload(response), false)
       const data = extractResponseData(response)
       const user = data.user as UserType | undefined
-      const accountType = user?.account_type ?? "INDIVIDUAL"
       const userRole = user?.user_role
       if (user) setActiveUser(user)
       setLoggedIn(true)
       toast.success("Welcome back!")
-      onAuthSuccess?.(accountType, userRole)
+      onAuthSuccess?.(userRole)
     },
   })
 
@@ -57,14 +53,13 @@ export function LogInForm({ onForgotPassword, onAuthSuccess }: Props) {
     mutate({
       email_address: form.email,
       password: form.password,
-      remember_me: form.remember,
     })
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
-        <Label className="text-sm font-bold text-gray-900">Email</Label>
+        <Label className="text-sm font-bold text-gray-900">Email Address</Label>
         <Input
           variant="auth"
           type="email"
@@ -98,28 +93,17 @@ export function LogInForm({ onForgotPassword, onAuthSuccess }: Props) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="remember"
-            checked={form.remember}
-            onCheckedChange={(v) => set("remember", !!v)}
-          />
-          <label
-            htmlFor="remember"
-            className="cursor-pointer text-xs text-gray-700"
+      {onForgotPassword && (
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={onForgotPassword}
+            className="text-xs font-semibold text-primary hover:underline"
           >
-            Remember me
-          </label>
+            Forgot password?
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={onForgotPassword}
-          className="text-xs font-semibold text-primary hover:underline"
-        >
-          Forgot password?
-        </button>
-      </div>
+      )}
 
       <Button type="submit" className="h-12 rounded-full" loading={isPending}>
         Log In
