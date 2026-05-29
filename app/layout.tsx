@@ -1,11 +1,29 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import Providers from "./providers"
+import { PWARegister } from "@/components/pwa-register"
 
 export const metadata: Metadata = {
-  title: "Safimoyo",
+  title: "Safi – Learn Smarter with AI",
   description:
     "Safi teaches students how artificial intelligence works and how to use it productively through real-world, practical learning.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Safi",
+  },
+  applicationName: "Safi",
+  formatDetection: {
+    telephone: false,
+  },
+}
+
+export const viewport: Viewport = {
+  themeColor: "#8900eb",
+  width: "device-width",
+  initialScale: 1,
+  minimumScale: 1,
 }
 
 export default function RootLayout({
@@ -28,6 +46,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-nunito overflow-x-hidden bg-gray-100 antialiased">
+        <PWARegister />
         <Providers>{children}</Providers>
       </body>
     </html>

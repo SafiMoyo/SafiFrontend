@@ -27,9 +27,11 @@ export type UserType = {
   email_address: string
   age_group: string
   user_role: UserRole
-  account_type: AccountType
+  account_type: AccountType | string
   profile_picture: string
   date_created: string
+  referral_code?: string
+  organization_name?: string
   subscription: SubscriptionType
   // Flat subscription fields returned directly on the user object
   subscription_status?: string

@@ -4,7 +4,7 @@ import { STORAGE_KEYS } from "@/lib/storage-keys"
 import { useQueryMe } from "@/services/auth/queries"
 import { clearAuthSession, hasStoredAccessToken, getStoredAccessToken } from "@/services/auth/session"
 
-import { UserType } from "@/types/user"
+import { UserRole, UserType } from "@/types/user"
 
 import {
   createContext,
@@ -52,9 +52,10 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
   const hasToken = hasStoredAccessToken()
   const isAuthenticated = Boolean(loggedIn || hasToken)
+  const isPartner = activeUser?.user_role === UserRole.PARTNER
 
   const { data } = useQueryMe({
-    enabled: isAuthenticated && userId?.length > 0,
+    enabled: isAuthenticated && userId?.length > 0 && !isPartner,
     queryParams: {
       user_id: userId,
     },
