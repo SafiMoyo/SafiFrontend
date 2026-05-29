@@ -51,6 +51,7 @@ type BankFormMode = "view" | "add" | "edit"
 function BankAccountCard() {
   const [mode, setMode] = useState<BankFormMode>("view")
   const [bankCode, setBankCode] = useState("")
+  const [bankName, setBankName] = useState("")
   const [accountNumber, setAccountNumber] = useState("")
   const [accountName, setAccountName] = useState("")
 
@@ -87,6 +88,7 @@ function BankAccountCard() {
 
   function resetForm() {
     setBankCode("")
+    setBankName("")
     setAccountNumber("")
     setAccountName("")
   }
@@ -116,8 +118,8 @@ function BankAccountCard() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!accountName || !bankCode || accountNumber.length !== 10) return
-    const payload = { account_name: accountName, account_number: accountNumber, bank_code: bankCode }
+    if (!accountName || !bankCode || !bankName || accountNumber.length !== 10) return
+    const payload = { account_name: accountName, account_number: accountNumber, bank_name: bankName, bank_code: bankCode }
     if (mode === "edit") {
       updateBankAccount(payload)
     } else {
@@ -199,6 +201,7 @@ function BankAccountCard() {
                   value={bankCode}
                   onValueChange={(v) => {
                     setBankCode(v)
+                    setBankName(banks.find((b) => b.code === v)?.name ?? "")
                     setAccountName("")
                   }}
                 >
@@ -274,7 +277,7 @@ function BankAccountCard() {
               <Button
                 type="submit"
                 className={`h-12 rounded-full ${mode === "edit" ? "flex-1" : "w-full"}`}
-                disabled={!accountName || !bankCode || accountNumber.length !== 10}
+                disabled={!accountName || !bankCode || !bankName || accountNumber.length !== 10}
                 loading={isPending}
               >
                 {mode === "edit" ? "Update Information" : "Submit Information"}
