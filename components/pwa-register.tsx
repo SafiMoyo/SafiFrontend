@@ -85,38 +85,38 @@ export function PWARegister() {
 
       {/* iOS "Add to Home Screen" instructions */}
       <Dialog open={showIOSDialog} onOpenChange={setShowIOSDialog}>
-        <DialogContent className="max-w-xs">
+        <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>Install Safi on iOS</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-gray-700 text-sm">
               Add Safi to your home screen for the full app experience.
             </DialogDescription>
           </DialogHeader>
 
-          <ol className="space-y-3 text-xs text-gray-700">
-            <li className="flex items-start gap-2.5">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
+          <ol className="space-y-4 text-sm text-gray-900">
+            <li className="flex items-start gap-3">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
                 1
               </span>
-              <span>
+              <span className="leading-snug">
                 Tap the{" "}
-                <Share size={12} className="inline align-text-bottom mx-0.5" />
+                <Share size={14} className="inline align-text-bottom mx-0.5" />
                 <strong>Share</strong> button at the bottom of Safari
               </span>
             </li>
-            <li className="flex items-start gap-2.5">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
+            <li className="flex items-start gap-3">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
                 2
               </span>
-              <span>
+              <span className="leading-snug">
                 Scroll down and tap <strong>"Add to Home Screen"</strong>
               </span>
             </li>
-            <li className="flex items-start gap-2.5">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
+            <li className="flex items-start gap-3">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
                 3
               </span>
-              <span>
+              <span className="leading-snug">
                 Tap <strong>"Add"</strong> in the top-right corner
               </span>
             </li>
