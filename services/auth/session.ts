@@ -94,6 +94,19 @@ export const persistAuthSession = (
   }
 }
 
+// Copies tokens from sessionStorage → localStorage so they survive a cross-origin
+// redirect (e.g. Paystack payment) where sessionStorage may not be restored.
+export const promoteSessionToLocalStorage = () => {
+  if (typeof window === "undefined") return
+  const keys = [STORAGE_KEYS.accessToken, STORAGE_KEYS.refreshToken, STORAGE_KEYS.userId]
+  keys.forEach((k) => {
+    const val = sessionStorage.getItem(k)
+    if (val && !localStorage.getItem(k)) {
+      localStorage.setItem(k, val)
+    }
+  })
+}
+
 export const clearAuthSession = () => {
   if (typeof window === "undefined") return
 

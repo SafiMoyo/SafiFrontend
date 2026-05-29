@@ -11,6 +11,7 @@ import {
   parseAuthPayload,
   clearAuthSession,
 } from "@/services/auth/session"
+import { STORAGE_KEYS } from "@/lib/storage-keys"
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL || ""
 
@@ -93,7 +94,8 @@ Axios.interceptors.response.use(
           refresh_token: refreshToken,
         })
         const payload = parseAuthPayload(response.data)
-        persistAuthSession(payload)
+        const rememberMe = Boolean(localStorage.getItem(STORAGE_KEYS.accessToken))
+        persistAuthSession(payload, rememberMe)
 
         const newToken = payload.accessToken!
         processQueue(null, newToken)

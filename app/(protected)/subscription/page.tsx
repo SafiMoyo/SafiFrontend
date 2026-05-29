@@ -14,6 +14,7 @@ import { useAuthContext } from "@/context"
 import { useQueryPlans } from "@/services/subscription/queries"
 import { useQueryDashboardStatistics } from "@/services/module-lesson/queries"
 import { useMutateUpgradePlan } from "@/services/subscription/mutations"
+import { promoteSessionToLocalStorage } from "@/services/auth/session"
 import { ENUM_PLAN_TYPE, PlanType } from "@/types/plan"
 
 export default function SubscriptionPage() {
@@ -49,6 +50,7 @@ export default function SubscriptionPage() {
     onSuccess: (res: any) => {
       const url = res?.data?.authorization_url
       if (url) {
+        promoteSessionToLocalStorage()
         window.location.href = url
       } else {
         toast.success("Plan upgraded successfully!")
