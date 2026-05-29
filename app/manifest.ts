@@ -32,6 +32,15 @@ export default function manifest(): MetadataRoute.Manifest {
         purpose: "maskable",
       },
     ],
-    screenshots: [],
+    prefer_related_applications: false,
+    screenshots: [
+      {
+        src: "/images/icon-512.png",
+        sizes: "512x512",
+        type: "image/png",
+        form_factor: "narrow",
+        label: "Safi – Learn Smarter with AI",
+      },
+    ],
   }
 }
