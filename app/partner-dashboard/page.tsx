@@ -54,8 +54,8 @@ export default function PartnerOverviewPage() {
 
   function copyCode() {
     if (!dashboard) return
-    navigator.clipboard.writeText(dashboard.referral_code)
-    toast.success("Referral code copied!")
+    navigator.clipboard.writeText(referralLink)
+    toast.success("Link copied!")
   }
 
   const referralLink = dashboard?.referral_code
@@ -137,7 +137,7 @@ export default function PartnerOverviewPage() {
               className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2.5 text-xs font-extrabold text-white shadow-[0_10px_24px_rgba(137,0,235,0.20)] transition hover:bg-purple-800"
             >
               <Copy size={13} />
-              Copy Code
+              Copy Link
             </button>
           </div>
         </div>
