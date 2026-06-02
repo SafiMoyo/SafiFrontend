@@ -37,9 +37,10 @@ type SignupFormState = {
 
 type Props = {
   onAuthSuccess?: (accountType: string, userRole?: string) => void
+  initialReferralCode?: string
 }
 
-export function SignUpForm({ onAuthSuccess }: Props) {
+export function SignUpForm({ onAuthSuccess, initialReferralCode }: Props) {
   const [form, setForm] = useState<SignupFormState>({
     firstName: "",
     lastName: "",
@@ -48,7 +49,7 @@ export function SignUpForm({ onAuthSuccess }: Props) {
     confirmPassword: "",
     ageGroup: "",
     accountType: "",
-    referralCode: "",
+    referralCode: initialReferralCode ?? "",
     agreed: false,
     showPassword: false,
     showConfirmPassword: false,

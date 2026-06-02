@@ -58,8 +58,12 @@ export default function PartnerOverviewPage() {
     toast.success("Referral code copied!")
   }
 
+  const referralLink = dashboard?.referral_code
+    ? `https://safimoyo.com/signup/${dashboard.referral_code}`
+    : "https://safimoyo.com"
+
   function copyLink() {
-    navigator.clipboard.writeText("https://safimoyo.com")
+    navigator.clipboard.writeText(referralLink)
     toast.success("Link copied!")
   }
 
@@ -124,8 +128,8 @@ export default function PartnerOverviewPage() {
               <code className="text-xl font-extrabold text-primary">
                 {dashboard?.referral_code ?? "—"}
               </code>
-              <small className="mt-1 block text-xs font-extrabold text-gray-500">
-                Referral link: https://safimoyo.com
+              <small className="mt-1 block truncate text-xs font-extrabold text-gray-500">
+                {referralLink}
               </small>
             </div>
             <button
