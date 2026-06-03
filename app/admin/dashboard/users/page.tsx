@@ -178,15 +178,21 @@ export default function AdminUsersPage() {
   const router = useRouter()
   const [page, setPage] = useState(0)
   const [search, setSearch] = useState("")
-  const [filters, setFilters] = useState({
-    inactive: false,
-    active: false,
-    new: false,
-  })
+  const [activeFilter, setActiveFilter] = useState<"active" | "inactive" | "new" | null>(null)
+
+  const STATUS_PARAM: Record<string, string> = {
+    active: "ACTIVE",
+    inactive: "INACTIVE",
+    new: "NEW",
+  }
 
   const { data: overviewRes, isLoading: loadingOverview } =
     useAdminUsersOverview()
-  const { data: usersRes, isLoading: loadingUsers } = useAdminAllUsers(page, 10)
+  const { data: usersRes, isLoading: loadingUsers } = useAdminAllUsers(
+    page,
+    10,
+    activeFilter ? STATUS_PARAM[activeFilter] : undefined
+  )
 
   const overview = overviewRes?.data
   const userPage = usersRes?.data
@@ -231,7 +237,8 @@ export default function AdminUsersPage() {
   ]
 
   function toggleFilter(key: "inactive" | "active" | "new") {
-    setFilters((f) => ({ ...f, [key]: !f[key] }))
+    setActiveFilter((prev) => (prev === key ? null : key))
+    setPage(0)
   }
 
   function handlePageChange(p: number) {
@@ -268,14 +275,14 @@ export default function AdminUsersPage() {
           <span className="flex items-center gap-1.5 text-xs font-extrabold text-gray-500">
             <SlidersHorizontal size={13} /> Filter
           </span>
-          {(["inactive", "active", "new"] as const).map((key) => (
+          {(["active", "inactive", "new"] as const).map((key) => (
             <label
               key={key}
               className="flex cursor-pointer items-center gap-1.5 text-xs font-extrabold text-gray-600"
             >
               <input
                 type="checkbox"
-                checked={filters[key]}
+                checked={activeFilter === key}
                 onChange={() => toggleFilter(key)}
                 className="h-4 w-4 rounded accent-primary"
               />

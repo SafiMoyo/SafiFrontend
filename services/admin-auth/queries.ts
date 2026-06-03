@@ -216,12 +216,12 @@ export const useAdminUsersOverview = () =>
       adminAxios.get("/admin/users/overview").then((r) => r.data),
   })
 
-export const useAdminAllUsers = (page: number, size = 10) =>
+export const useAdminAllUsers = (page: number, size = 10, status?: string) =>
   useQuery<{ data: AdminUserPage }>({
-    queryKey: ["admin-all-users", page, size],
+    queryKey: ["admin-all-users", page, size, status],
     queryFn: () =>
       adminAxios
-        .get("/admin/all-users", { params: { page, size } })
+        .get("/admin/all-users", { params: { page, size, ...(status ? { status } : {}) } })
         .then((r) => r.data),
   })
 
@@ -266,6 +266,41 @@ export const useAdminEnquiries = (page: number, size = 20) =>
     queryFn: () =>
       adminAxios
         .get("/admin/support-enquiries", { params: { page, size } })
+        .then((r) => r.data),
+  })
+
+// ── Partners ──────────────────────────────────────────────────────────────────
+
+export type AdminPartner = {
+  id: number
+  first_name: string
+  last_name: string
+  email?: string
+  phone_number?: string
+  business_name?: string
+  status?: string
+  account_status?: string
+  created_at?: string
+  registered_at?: string
+  profile_picture?: string
+  referral_code?: string
+  total_referrals?: number
+}
+
+export type AdminPartnerPage = {
+  content: AdminPartner[]
+  page: number
+  size: number
+  total_elements: number
+  total_pages: number
+}
+
+export const useAdminPartners = (page: number, size = 10) =>
+  useQuery<{ data: AdminPartnerPage }>({
+    queryKey: ["admin-partners", page, size],
+    queryFn: () =>
+      adminAxios
+        .get("/admin/partners", { params: { page, size } })
         .then((r) => r.data),
   })
 
