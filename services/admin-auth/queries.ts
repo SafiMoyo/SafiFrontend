@@ -181,6 +181,9 @@ export type AdminUserDetail = {
   registered_at: string
   last_login_at: string
   subscription_status: string
+  subscription_plan?: string
+  subscription_end_date?: string
+  account_status?: string
   is_active?: boolean
   status?: string
   profile_picture?: string

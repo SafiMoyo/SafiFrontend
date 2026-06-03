@@ -207,7 +207,9 @@ export default function AdminUserDetailPage() {
   // Sync deactivation state from API data on initial load and after refetches
   useEffect(() => {
     if (!user) return
-    if (user.is_active !== undefined) {
+    if (user.account_status !== undefined) {
+      setIsDeactivated(user.account_status !== "ACTIVE")
+    } else if (user.is_active !== undefined) {
       setIsDeactivated(!user.is_active)
     } else if (user.status !== undefined) {
       setIsDeactivated(user.status === "INACTIVE" || user.status === "DEACTIVATED")
@@ -277,11 +279,8 @@ export default function AdminUserDetailPage() {
     }
   }
 
-  const deactivated =
-    isDeactivated ??
-    (user?.is_active === false ||
-      user?.status === "INACTIVE" ||
-      user?.status === "DEACTIVATED")
+  const accountStatus = user?.account_status ?? (user?.is_active === false || user?.status === "INACTIVE" || user?.status === "DEACTIVATED" ? "INACTIVE" : "ACTIVE")
+  const deactivated = isDeactivated ?? (accountStatus !== "ACTIVE")
 
   if (isLoading) {
     return (
@@ -364,10 +363,14 @@ export default function AdminUserDetailPage() {
               Status:{" "}
               <span
                 className={
-                  deactivated ? "font-extrabold text-red-500" : "font-extrabold text-emerald-600"
+                  accountStatus === "ACTIVE"
+                    ? "font-extrabold text-emerald-600"
+                    : accountStatus === "RESTRICTED"
+                    ? "font-extrabold text-amber-500"
+                    : "font-extrabold text-red-500"
                 }
               >
-                {deactivated ? "Deactivated" : "Active"}
+                {accountStatus === "ACTIVE" ? "Active" : accountStatus === "RESTRICTED" ? "Restricted" : accountStatus ?? "Inactive"}
               </span>
             </p>
             <p className="text-sm font-semibold text-gray-500">
