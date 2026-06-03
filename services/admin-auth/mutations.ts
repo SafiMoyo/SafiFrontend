@@ -117,6 +117,64 @@ export const useAdminDeleteUser = () => {
   })
 }
 
+// ── Partners ──────────────────────────────────────────────────────────────────
+
+export const useAdminPartnerPayout = () => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ partnerId, amount, note }: { partnerId: number; amount: number; note: string }) =>
+      adminAxios
+        .post(`/admin/partners/${partnerId}/payout`, { amount, note })
+        .then((r) => r.data),
+    onSuccess: (_data, { partnerId }) => {
+      qc.invalidateQueries({ queryKey: ["admin-partner-detail", partnerId] })
+    },
+  })
+}
+
+// ── Subscription Plans ────────────────────────────────────────────────────────
+
+export type SubscriptionPlanPayload = {
+  amount: number
+  duration: string
+  discount: number
+  plan_type: string
+  subscription_benefits: string[]
+}
+
+export const useAdminCreateSubscriptionPlan = () => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: SubscriptionPlanPayload) =>
+      adminAxios.post("/admin/subscription-plans", payload).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-subscription-plans"] })
+    },
+  })
+}
+
+export const useAdminUpdateSubscriptionPlan = () => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ planId, ...payload }: SubscriptionPlanPayload & { planId: number }) =>
+      adminAxios.put(`/admin/subscription-plans/${planId}`, payload).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-subscription-plans"] })
+    },
+  })
+}
+
+export const useAdminDeleteSubscriptionPlan = () => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (planId: number) =>
+      adminAxios.delete(`/admin/subscription-plans/${planId}`).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-subscription-plans"] })
+    },
+  })
+}
+
 // ── Courses ───────────────────────────────────────────────────────────────────
 
 export type CreateModulePayload = {

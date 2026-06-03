@@ -14,6 +14,7 @@ import {
   BookOpen,
   CheckCircle,
   FileStack,
+  CreditCard,
   LogOut,
   X,
   Menu,
@@ -31,6 +32,7 @@ const NAV_ITEMS = [
   { label: "Create Course", href: "/admin/dashboard/create-course", icon: BookOpen },
   { label: "Published Modules", href: "/admin/dashboard/modules/published", icon: CheckCircle },
   { label: "Unpublished Modules", href: "/admin/dashboard/modules/unpublished", icon: FileStack },
+  { label: "Subscriptions", href: "/admin/dashboard/subscriptions", icon: CreditCard },
 ]
 
 function isActive(href: string, pathname: string) {

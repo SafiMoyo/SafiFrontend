@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { ChevronLeft, ChevronRight, Search } from "lucide-react"
 import { useAdminPartners, type AdminPartner } from "@/services/admin-auth/queries"
 
@@ -107,6 +108,7 @@ function formatDate(iso?: string) {
 }
 
 export default function AdminPartnersPage() {
+  const router = useRouter()
   const [page, setPage] = useState(0)
   const [search, setSearch] = useState("")
 
@@ -189,7 +191,8 @@ export default function AdminPartnersPage() {
                 filtered.map((partner) => (
                   <tr
                     key={partner.id}
-                    className="border-t border-gray-100 transition-colors hover:bg-gray-50"
+                    onClick={() => router.push(`/admin/dashboard/partners/${partner.id}`)}
+                    className="cursor-pointer border-t border-gray-100 transition-colors hover:bg-gray-50"
                   >
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">

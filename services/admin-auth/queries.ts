@@ -304,6 +304,56 @@ export const useAdminPartners = (page: number, size = 10) =>
         .then((r) => r.data),
   })
 
+export type AdminPartnerDetail = {
+  id: number
+  email: string
+  first_name: string
+  last_name: string
+  organization_name?: string
+  referral_code?: string
+  total_signups: number
+  paid_customers: number
+  total_commission_earned: number
+  pending_payout: number
+  total_paid_out: number
+  created_at: string
+  last_payout_date?: string | null
+  bank_account?: {
+    account_name: string
+    account_number: string
+    bank_name: string
+  }
+}
+
+export const useAdminPartnerDetail = (partnerId: number) =>
+  useQuery<{ status: boolean; message: string; data: AdminPartnerDetail }>({
+    queryKey: ["admin-partner-detail", partnerId],
+    queryFn: () => adminAxios.get(`/admin/partners/${partnerId}`).then((r) => r.data),
+    enabled: !!partnerId,
+  })
+
+// ── Subscription Plans ────────────────────────────────────────────────────────
+
+export type SubscriptionBenefit = {
+  id: number
+  benefit: string
+}
+
+export type SubscriptionPlan = {
+  id: number
+  amount: number
+  discount: number
+  duration: string
+  plan_type: string
+  subscription_benefits: SubscriptionBenefit[]
+}
+
+export const useAdminSubscriptionPlans = () =>
+  useQuery<{ status: boolean; message: string; data: SubscriptionPlan[] }>({
+    queryKey: ["admin-subscription-plans"],
+    queryFn: () => adminAxios.get("/admin/subscription-plans").then((r) => r.data),
+  })
+
 // ── Modules ───────────────────────────────────────────────────────────────────
 
 export type AdminModule = {
