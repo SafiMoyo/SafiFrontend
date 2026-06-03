@@ -62,7 +62,9 @@ function ModuleCard({ mod, index }: { mod: AdminModule; index: number }) {
   const ageColor = mod.age_group ? AGE_GROUP_COLOR[mod.age_group] ?? "bg-gray-100 text-gray-600" : ""
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100 transition-shadow hover:shadow-md">
+    <Link
+      href={`/admin/dashboard/modules/published/${mod.id}`}
+      className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100 transition-shadow hover:shadow-md cursor-pointer">
       {/* Cover */}
       <div className={`relative h-[140px] bg-gradient-to-br ${gradient} flex items-center justify-center`}>
         {mod.cover_image_url ? (
@@ -109,7 +111,7 @@ function ModuleCard({ mod, index }: { mod: AdminModule; index: number }) {
           )}
         </div>
       </div>
-    </div>
+    </Link>
   )
 }
 

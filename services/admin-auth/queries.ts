@@ -314,3 +314,22 @@ export const useAdminUnpublishedModules = () =>
     queryKey: ["admin-unpublished-modules"],
     queryFn: () => adminAxios.get("/admin/modules/unpublished").then((r) => r.data),
   })
+
+export type AdminLesson = {
+  id: number
+  lesson_title: string
+  lesson_duration: string
+  lesson_description: string
+  module_id: string
+  serial_number: number
+  video_url?: string
+  cover_image_url?: string
+  publish_status?: string
+}
+
+export const useAdminModuleLessons = (moduleId: string) =>
+  useQuery<{ data: AdminLesson[] }>({
+    queryKey: ["admin-module-lessons", moduleId],
+    queryFn: () => adminAxios.get(`/admin/modules/${moduleId}/lessons`).then((r) => r.data),
+    enabled: !!moduleId,
+  })
