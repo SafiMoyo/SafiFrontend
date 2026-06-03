@@ -215,6 +215,32 @@ export const useAdminCreateModule = () =>
         .then((r) => r.data),
   })
 
+export const useAdminEditModule = () => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ moduleId, ...payload }: CreateModulePayload & { moduleId: string }) =>
+      adminAxios
+        .put(`/admin/edit-module/${moduleId}`, buildModuleForm(payload), {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+        .then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-published-modules"] })
+    },
+  })
+}
+
+export const useAdminDeleteModule = () => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (moduleId: string) =>
+      adminAxios.delete("/admin/delete-module", { params: { module_id: moduleId } }).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-published-modules"] })
+    },
+  })
+}
+
 export const useAdminCreateModuleDraft = () =>
   useMutation({
     mutationFn: (payload: CreateModulePayload) =>
@@ -262,6 +288,21 @@ export const useAdminCreateLesson = () =>
         })
         .then((r) => r.data),
   })
+
+export const useAdminEditLesson = () => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ lessonId, ...payload }: CreateLessonPayload & { lessonId: number }) =>
+      adminAxios
+        .put(`/admin/edit-lesson/${lessonId}`, buildLessonForm(payload), {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+        .then((r) => r.data),
+    onSuccess: (_data, { module_id }) => {
+      qc.invalidateQueries({ queryKey: ["admin-module-lessons", module_id] })
+    },
+  })
+}
 
 export const useAdminCreateLessonDraft = () =>
   useMutation({
