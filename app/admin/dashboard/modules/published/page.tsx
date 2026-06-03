@@ -2,7 +2,37 @@
 
 import Link from "next/link"
 import { BookOpen, Lock, Unlock, AlertCircle } from "lucide-react"
-import { useAdminPublishedModules, type AdminModule } from "@/services/admin-auth/queries"
+import { useAdminPublishedModules, type AdminModule, type PublishedModulesResponse } from "@/services/admin-auth/queries"
+
+function normalizeModules(data: PublishedModulesResponse | undefined): {
+  EARLY: AdminModule[]
+  MIDDLE: AdminModule[]
+  ADVANCED: AdminModule[]
+  OTHER: AdminModule[]
+} {
+  const empty = { EARLY: [], MIDDLE: [], ADVANCED: [], OTHER: [] }
+  if (!data?.data) return empty
+
+  // Server returns grouped object: { early: [...], middle: [...], ... }
+  if (!Array.isArray(data.data)) {
+    const grouped = data.data as { early?: AdminModule[]; middle?: AdminModule[]; advanced?: AdminModule[]; unassigned?: AdminModule[] }
+    return {
+      EARLY: grouped.early ?? [],
+      MIDDLE: grouped.middle ?? [],
+      ADVANCED: grouped.advanced ?? [],
+      OTHER: grouped.unassigned ?? [],
+    }
+  }
+
+  // Server returns flat array
+  const flat = data.data as AdminModule[]
+  return {
+    EARLY: flat.filter((m) => m.age_group === "EARLY"),
+    MIDDLE: flat.filter((m) => m.age_group === "MIDDLE"),
+    ADVANCED: flat.filter((m) => m.age_group === "ADVANCED"),
+    OTHER: flat.filter((m) => !m.age_group || !["EARLY", "MIDDLE", "ADVANCED"].includes(m.age_group)),
+  }
+}
 
 const AGE_GROUP_LABEL: Record<string, string> = {
   EARLY: "Early",
@@ -104,14 +134,8 @@ function GroupSection({ label, color, modules }: { label: string; color: string;
 
 export default function PublishedModulesPage() {
   const { data, isLoading, isError } = useAdminPublishedModules()
-  const modules = data?.data ?? []
-
-  const grouped = {
-    EARLY: modules.filter((m) => m.age_group === "EARLY"),
-    MIDDLE: modules.filter((m) => m.age_group === "MIDDLE"),
-    ADVANCED: modules.filter((m) => m.age_group === "ADVANCED"),
-    OTHER: modules.filter((m) => !m.age_group || !["EARLY", "MIDDLE", "ADVANCED"].includes(m.age_group)),
-  }
+  const grouped = normalizeModules(data)
+  const totalCount = grouped.EARLY.length + grouped.MIDDLE.length + grouped.ADVANCED.length + grouped.OTHER.length
 
   return (
     <div className="space-y-8">
@@ -120,7 +144,7 @@ export default function PublishedModulesPage() {
         <div>
           <h1 className="text-2xl font-black text-gray-900">Published Modules</h1>
           <p className="mt-1 text-sm text-gray-500">
-            {isLoading ? "Loading..." : `${modules.length} published ${modules.length === 1 ? "module" : "modules"}`}
+            {isLoading ? "Loading..." : `${totalCount} published ${totalCount === 1 ? "module" : "modules"}`}
           </p>
         </div>
         <Link
@@ -147,7 +171,7 @@ export default function PublishedModulesPage() {
         </div>
       )}
 
-      {!isLoading && !isError && modules.length === 0 && (
+      {!isLoading && !isError && totalCount === 0 && (
         <div className="flex flex-col items-center gap-4 py-20 text-center">
           <div className="flex size-16 items-center justify-center rounded-full bg-purple-50">
             <BookOpen size={28} className="text-primary" />
@@ -165,7 +189,7 @@ export default function PublishedModulesPage() {
         </div>
       )}
 
-      {!isLoading && !isError && modules.length > 0 && (
+      {!isLoading && !isError && totalCount > 0 && (
         <div className="space-y-10">
           <GroupSection label="Early" color="bg-green-100 text-green-700" modules={grouped.EARLY} />
           <GroupSection label="Middle" color="bg-blue-100 text-blue-700" modules={grouped.MIDDLE} />

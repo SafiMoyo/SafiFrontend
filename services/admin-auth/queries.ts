@@ -299,8 +299,12 @@ export type DraftModule = {
   lessons: DraftLesson[]
 }
 
+export type PublishedModulesResponse =
+  | { data: AdminModule[] }
+  | { data: { early?: AdminModule[]; middle?: AdminModule[]; advanced?: AdminModule[]; unassigned?: AdminModule[] } }
+
 export const useAdminPublishedModules = () =>
-  useQuery<{ data: AdminModule[] }>({
+  useQuery<PublishedModulesResponse>({
     queryKey: ["admin-published-modules"],
     queryFn: () => adminAxios.get("/admin/modules").then((r) => r.data),
   })
