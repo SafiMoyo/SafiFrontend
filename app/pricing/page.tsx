@@ -14,7 +14,7 @@ import { ENUM_AUTH } from "@/lib/enum"
 
 export default function PricingPage() {
   const [billing, setBilling] = useState<ENUM_BillingCycle>(
-    ENUM_BillingCycle.YEARLY
+    ENUM_BillingCycle.MONTHLY
   )
   const [authOpen, setAuthOpen] = useState(false)
   const [selectProfileOpen, setSelectProfileOpen] = useState(false)

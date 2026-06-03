@@ -131,3 +131,137 @@ export const useAdminTransactionsFilter = (
         .then((r) => r.data),
     enabled: !!(status || date),
   })
+
+// ── Users ─────────────────────────────────────────────────────────────────────
+
+export type UsersOverview = {
+  total_students: number
+  active_students: number
+  inactive_students: number
+  new_students: number
+}
+
+export type AdminUser = {
+  user_id: number
+  first_name: string
+  last_name: string
+  email: string
+  age_group: string
+  registered_at: string
+  subscription_status: string
+  profile_picture?: string
+}
+
+export type AdminUserPage = {
+  content: AdminUser[]
+  page: number
+  size: number
+  total_elements: number
+  total_pages: number
+}
+
+export type Enrollment = {
+  module_id: string
+  module_title: string
+  progress_percentage: number
+}
+
+export type ActivityLogEntry = {
+  event_type: string
+  description: string
+  timestamp: string
+}
+
+export type AdminUserDetail = {
+  user_id: number
+  first_name: string
+  last_name: string
+  email: string
+  age_group: string
+  registered_at: string
+  last_login_at: string
+  subscription_status: string
+  is_active?: boolean
+  status?: string
+  profile_picture?: string
+  current_enrollments: Enrollment[]
+  completed_modules: Enrollment[]
+  activity_log: ActivityLogEntry[]
+}
+
+export type AuditLogEntry = {
+  id: number
+  admin_name: string
+  action_type: string
+  title: string
+  message: string
+  performed_at: string
+}
+
+export type AuditLogPage = {
+  content: AuditLogEntry[]
+  page: number
+  size: number
+  total_elements: number
+  total_pages: number
+}
+
+export const useAdminUsersOverview = () =>
+  useQuery<{ data: UsersOverview }>({
+    queryKey: ["admin-users-overview"],
+    queryFn: () =>
+      adminAxios.get("/admin/users/overview").then((r) => r.data),
+  })
+
+export const useAdminAllUsers = (page: number, size = 10) =>
+  useQuery<{ data: AdminUserPage }>({
+    queryKey: ["admin-all-users", page, size],
+    queryFn: () =>
+      adminAxios
+        .get("/admin/all-users", { params: { page, size } })
+        .then((r) => r.data),
+  })
+
+export const useAdminUserDetail = (userId: number) =>
+  useQuery<{ data: AdminUserDetail }>({
+    queryKey: ["admin-user-detail", userId],
+    queryFn: () =>
+      adminAxios.get(`/admin/users/${userId}`).then((r) => r.data),
+    enabled: !!userId,
+  })
+
+export const useAdminAuditLogs = (page: number, size = 20) =>
+  useQuery<{ data: AuditLogPage }>({
+    queryKey: ["admin-audit-logs", page, size],
+    queryFn: () =>
+      adminAxios
+        .get("/admin/audit-trail", { params: { page, size } })
+        .then((r) => r.data),
+  })
+
+// ── Enquiries ─────────────────────────────────────────────────────────────────
+
+export type Enquiry = {
+  id: number
+  name: string
+  email: string
+  message: string
+  created_at: string
+}
+
+export type EnquiryPage = {
+  content: Enquiry[]
+  page: number
+  size: number
+  total_elements: number
+  total_pages: number
+}
+
+export const useAdminEnquiries = (page: number, size = 20) =>
+  useQuery<{ data: EnquiryPage }>({
+    queryKey: ["admin-enquiries", page, size],
+    queryFn: () =>
+      adminAxios
+        .get("/admin/support-enquiries", { params: { page, size } })
+        .then((r) => r.data),
+  })

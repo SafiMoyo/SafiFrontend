@@ -4,14 +4,31 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { LayoutDashboard, ArrowLeftRight, LogOut, X, Menu } from "lucide-react"
+import {
+  LayoutDashboard,
+  ArrowLeftRight,
+  Users,
+  ClipboardList,
+  MessageSquare,
+  LogOut,
+  X,
+  Menu,
+} from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AnimatePresence, motion } from "framer-motion"
 
-const navItems = [
+const NAV_ITEMS = [
   { label: "Overview", href: "/admin/dashboard", icon: LayoutDashboard },
   { label: "Transactions", href: "/admin/dashboard/transactions", icon: ArrowLeftRight },
+  { label: "Users", href: "/admin/dashboard/users", icon: Users },
+  { label: "Audit Logs", href: "/admin/dashboard/audit-logs", icon: ClipboardList },
+  { label: "Enquiries", href: "/admin/dashboard/enquiries", icon: MessageSquare },
 ]
+
+function isActive(href: string, pathname: string) {
+  if (href === "/admin/dashboard") return pathname === href
+  return pathname.startsWith(href)
+}
 
 function clearAdminSession() {
   localStorage.removeItem("admin_access_token")
@@ -57,8 +74,8 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
       </div>
 
       <nav className="flex flex-col gap-2">
-        {navItems.map(({ label, href, icon: Icon }) => {
-          const active = pathname === href
+        {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
+          const active = isActive(href, pathname)
           return (
             <Link
               key={href}

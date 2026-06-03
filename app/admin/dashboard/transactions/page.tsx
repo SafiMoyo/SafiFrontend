@@ -259,19 +259,20 @@ function Pagination({
   totalPages: number
   onChange: (p: number) => void
 }) {
-  if (totalPages <= 1) return null
+  if (!totalPages || totalPages <= 1) return null
 
   const pages: (number | "…")[] = []
   if (totalPages <= 7) {
     for (let i = 0; i < totalPages; i++) pages.push(i)
   } else {
+    const last = totalPages - 1
     const left = Math.max(1, page - 1)
-    const right = Math.min(totalPages - 2, page + 1)
+    const right = Math.min(last - 1, page + 1)
     pages.push(0)
     if (left > 1) pages.push("…")
     for (let i = left; i <= right; i++) pages.push(i)
-    if (right < totalPages - 2) pages.push("…")
-    pages.push(totalPages - 1)
+    if (right < last - 1) pages.push("…")
+    pages.push(last)
   }
 
   return (
