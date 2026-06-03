@@ -265,3 +265,48 @@ export const useAdminEnquiries = (page: number, size = 20) =>
         .get("/admin/support-enquiries", { params: { page, size } })
         .then((r) => r.data),
   })
+
+// ── Modules ───────────────────────────────────────────────────────────────────
+
+export type AdminModule = {
+  id: string
+  module_title: string
+  module_description?: string
+  cover_image_url?: string
+  module_tier?: string
+  age_group?: string
+  no_of_lessons?: number
+  sequence_num?: number
+}
+
+export type DraftLesson = {
+  id: number
+  lesson_title: string
+  publish_status: string
+  lesson_duration?: string
+  lesson_description?: string
+  cover_image_url?: string
+  serial_number?: number
+}
+
+export type DraftModule = {
+  id: string
+  module_title: string
+  module_description?: string
+  cover_image_url?: string
+  module_tier?: string
+  age_group?: string
+  lessons: DraftLesson[]
+}
+
+export const useAdminPublishedModules = () =>
+  useQuery<{ data: AdminModule[] }>({
+    queryKey: ["admin-published-modules"],
+    queryFn: () => adminAxios.get("/admin/modules").then((r) => r.data),
+  })
+
+export const useAdminUnpublishedModules = () =>
+  useQuery<{ data: DraftModule[] }>({
+    queryKey: ["admin-unpublished-modules"],
+    queryFn: () => adminAxios.get("/admin/modules/unpublished").then((r) => r.data),
+  })

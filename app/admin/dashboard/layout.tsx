@@ -10,6 +10,9 @@ import {
   Users,
   ClipboardList,
   MessageSquare,
+  BookOpen,
+  CheckCircle,
+  FileStack,
   LogOut,
   X,
   Menu,
@@ -23,6 +26,9 @@ const NAV_ITEMS = [
   { label: "Users", href: "/admin/dashboard/users", icon: Users },
   { label: "Audit Logs", href: "/admin/dashboard/audit-logs", icon: ClipboardList },
   { label: "Enquiries", href: "/admin/dashboard/enquiries", icon: MessageSquare },
+  { label: "Create Course", href: "/admin/dashboard/create-course", icon: BookOpen },
+  { label: "Published Modules", href: "/admin/dashboard/modules/published", icon: CheckCircle },
+  { label: "Unpublished Modules", href: "/admin/dashboard/modules/unpublished", icon: FileStack },
 ]
 
 function isActive(href: string, pathname: string) {
@@ -73,7 +79,7 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
         Admin Dashboard
       </div>
 
-      <nav className="flex flex-col gap-2">
+      <nav className="flex flex-1 flex-col gap-2 overflow-y-auto">
         {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
           const active = isActive(href, pathname)
           return (
