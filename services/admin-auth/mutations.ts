@@ -122,10 +122,17 @@ export const useAdminDeleteUser = () => {
 export const useAdminPartnerPayout = () => {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ partnerId, amount, note }: { partnerId: number; amount: number; note: string }) =>
-      adminAxios
-        .post(`/admin/partners/${partnerId}/payout`, { amount, note })
-        .then((r) => r.data),
+    mutationFn: ({ partnerId, amount, note, receipt }: { partnerId: number; amount: number; note: string; receipt?: File }) => {
+      const form = new FormData()
+      form.append("amount", String(amount))
+      form.append("note", note)
+      if (receipt) form.append("receipt", receipt)
+      return adminAxios
+        .post(`/admin/partners/${partnerId}/payout`, form, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+        .then((r) => r.data)
+    },
     onSuccess: (_data, { partnerId }) => {
       qc.invalidateQueries({ queryKey: ["admin-partner-detail", partnerId] })
     },

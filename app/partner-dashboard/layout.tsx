@@ -4,13 +4,14 @@ import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { LayoutDashboard, LogOut, Settings, X, Menu } from "lucide-react"
+import { LayoutDashboard, LogOut, Settings, Banknote, X, Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AnimatePresence, motion } from "framer-motion"
 import { useAuthContext } from "@/context"
 
 const navItems = [
   { label: "Overview", href: "/partner-dashboard", icon: LayoutDashboard },
+  { label: "Payouts", href: "/partner-dashboard/payouts", icon: Banknote },
   { label: "Settings", href: "/partner-dashboard/settings", icon: Settings },
 ]
 

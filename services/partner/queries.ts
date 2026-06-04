@@ -4,6 +4,15 @@ import { PartnerDashboardData, Bank, BankAccount, BankVerification } from "@/typ
 export const keyPartnerDashboard = ["partner-dashboard"]
 export const keyPartnerBanks = ["partner-banks"]
 export const keyPartnerBankAccount = ["partner-bank-account"]
+export const keyIncomingPayouts = ["partner-incoming-payouts"]
+
+export type IncomingPayout = {
+  payout_id: number
+  amount: number
+  note: string
+  receipt_url?: string | null
+  initiated_at: string
+}
 
 export const useQueryPartnerDashboard = createQuery<{ data: PartnerDashboardData }>({
   key: keyPartnerDashboard,
@@ -26,4 +35,9 @@ export const useQueryVerifyBankAccount = createQuery<{ data: BankVerification }>
 export const useQueryPartnerBankAccount = createQuery<{ data: BankAccount }>({
   key: keyPartnerBankAccount,
   url: "/partner/bank-account",
+})
+
+export const useQueryIncomingPayouts = createQuery<{ data: IncomingPayout[] }>({
+  key: keyIncomingPayouts,
+  url: "/partner/payout/incoming",
 })

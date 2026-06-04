@@ -1,13 +1,14 @@
 "use client"
 
-import { use, useState } from "react"
+import { use, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Building2, CreditCard, Calendar, Users, DollarSign, Clock, Banknote } from "lucide-react"
+import { ArrowLeft, Building2, CreditCard, Calendar, Users, DollarSign, Clock, Banknote, ImageIcon, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { useAdminPartnerDetail } from "@/services/admin-auth/queries"
 import { useAdminPartnerPayout } from "@/services/admin-auth/mutations"
+import { validateCoverImage } from "@/lib/validate-media"
 import { toast } from "sonner"
 
 function formatMoney(val: number) {
@@ -43,18 +44,35 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ partne
 
   const [amount, setAmount] = useState("")
   const [note, setNote] = useState("")
+  const [receiptFile, setReceiptFile] = useState<File | null>(null)
+  const [receiptPreview, setReceiptPreview] = useState<string | null>(null)
+  const receiptRef = useRef<HTMLInputElement>(null)
   const payout = useAdminPartnerPayout()
+
+  function handleReceiptSelect(file: File) {
+    const result = validateCoverImage(file)
+    if (!result.ok) { toast.error(result.error); return }
+    setReceiptFile(file)
+    setReceiptPreview(URL.createObjectURL(file))
+  }
+
+  function handleReceiptRemove() {
+    if (receiptPreview) URL.revokeObjectURL(receiptPreview)
+    setReceiptFile(null)
+    setReceiptPreview(null)
+  }
 
   function handlePayout() {
     const amt = parseFloat(amount)
     if (!amt || amt <= 0) return
     payout.mutate(
-      { partnerId: id, amount: amt, note: note.trim() },
+      { partnerId: id, amount: amt, note: note.trim(), receipt: receiptFile ?? undefined },
       {
         onSuccess: () => {
           toast.success("Payout initiated successfully")
           setAmount("")
           setNote("")
+          handleReceiptRemove()
         },
       }
     )
@@ -175,6 +193,48 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ partne
               placeholder="e.g. March commission payout"
               value={note}
               onChange={(e) => setNote(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* Receipt upload */}
+        <div className="mt-4 flex flex-col gap-1.5">
+          <Label className="text-sm font-bold text-gray-900">
+            Receipt <span className="text-xs font-normal text-gray-400">(optional)</span>
+          </Label>
+          <div
+            className="relative flex min-h-[110px] cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-purple-200 bg-purple-50/40 transition-colors hover:border-purple-400"
+            onClick={() => !receiptFile && receiptRef.current?.click()}
+          >
+            {receiptPreview ? (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={receiptPreview} alt="receipt" className="max-h-[200px] w-full object-contain" />
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); handleReceiptRemove() }}
+                  className="absolute top-2 right-2 flex size-7 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
+                >
+                  <X size={13} />
+                </button>
+              </>
+            ) : (
+              <div className="flex flex-col items-center gap-2 p-4 text-center">
+                <div className="flex size-10 items-center justify-center rounded-full bg-purple-100">
+                  <ImageIcon size={18} className="text-primary" />
+                </div>
+                <p className="text-xs font-semibold text-gray-600">
+                  Click to upload receipt image
+                </p>
+                <p className="text-xs text-gray-400">JPG, PNG, HEIC · max 10 MB</p>
+              </div>
+            )}
+            <input
+              ref={receiptRef}
+              type="file"
+              accept=".jpg,.jpeg,.png,.heic,.heif,image/jpeg,image/png,image/heic"
+              className="hidden"
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) handleReceiptSelect(f); e.target.value = "" }}
             />
           </div>
         </div>
