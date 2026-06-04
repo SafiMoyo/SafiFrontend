@@ -132,7 +132,7 @@ function LogRow({ log }: { log: AuditLogEntry }) {
 export default function AdminAuditLogsPage() {
   const [page, setPage] = useState(0)
 
-  const { data: res, isLoading } = useAdminAuditLogs(page, 20)
+  const { data: res, isLoading } = useAdminAuditLogs(page, 10)
 
   const logPage = res?.data
   const logs = logPage?.content ?? []
