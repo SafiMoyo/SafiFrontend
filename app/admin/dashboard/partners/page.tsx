@@ -34,7 +34,7 @@ function Pagination({
       <button
         onClick={() => onChange(page - 1)}
         disabled={page === 0}
-        className="flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-extrabold text-gray-500 hover:bg-gray-100 disabled:opacity-40"
+        className="flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-extrabold text-gray-500 hover:bg-gray-100 disabled:opacity-40 dark:text-gray-400 dark:hover:bg-gray-700"
       >
         <ChevronLeft size={14} /> Prev
       </button>
@@ -46,7 +46,7 @@ function Pagination({
             key={p}
             onClick={() => onChange(p as number)}
             className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs font-extrabold transition ${
-              p === page ? "bg-primary text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"
+              p === page ? "bg-primary text-white shadow-sm" : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
             }`}
           >
             {(p as number) + 1}
@@ -56,7 +56,7 @@ function Pagination({
       <button
         onClick={() => onChange(page + 1)}
         disabled={page >= totalPages - 1}
-        className="flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-extrabold text-gray-500 hover:bg-gray-100 disabled:opacity-40"
+        className="flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-extrabold text-gray-500 hover:bg-gray-100 disabled:opacity-40 dark:text-gray-400 dark:hover:bg-gray-700"
       >
         Next <ChevronRight size={14} />
       </button>
@@ -90,7 +90,7 @@ function StatusBadge({ status }: { status?: string }) {
       ? "bg-emerald-50 text-emerald-600"
       : s === "RESTRICTED"
       ? "bg-amber-50 text-amber-600"
-      : "bg-gray-100 text-gray-500"
+      : "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
   return (
     <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-extrabold ${styles}`}>
       {s === "ACTIVE" ? "Active" : s === "RESTRICTED" ? "Restricted" : status}
@@ -136,8 +136,8 @@ export default function AdminPartnersPage() {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">Partners</h1>
-        <p className="mt-1 text-sm font-semibold text-gray-500">Manage all platform partners</p>
+        <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">Partners</h1>
+        <p className="mt-1 text-sm font-semibold text-gray-500 dark:text-gray-400">Manage all platform partners</p>
       </div>
 
       {/* Search */}
@@ -147,15 +147,15 @@ export default function AdminPartnersPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by name, email or business"
-          className="w-full rounded-xl border border-gray-200 bg-white py-2 pr-4 pl-9 text-sm font-semibold text-gray-700 outline-none focus:border-primary"
+          className="w-full rounded-xl border border-gray-200 bg-white py-2 pr-4 pl-9 text-sm font-semibold text-gray-700 outline-none focus:border-primary dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500"
         />
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.07)]">
-        <div className="border-b border-gray-100 px-5 py-4">
-          <h2 className="text-base font-extrabold text-gray-900">All Partners</h2>
-          <p className="mt-0.5 text-xs font-semibold text-gray-500">
+      <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.07)] dark:border-gray-700 dark:bg-gray-900">
+        <div className="border-b border-gray-100 px-5 py-4 dark:border-gray-700">
+          <h2 className="text-base font-extrabold text-gray-900 dark:text-white">All Partners</h2>
+          <p className="mt-0.5 text-xs font-semibold text-gray-500 dark:text-gray-400">
             {totalElements} partner{totalElements !== 1 ? "s" : ""} total
           </p>
         </div>
@@ -167,7 +167,7 @@ export default function AdminPartnersPage() {
                 {["Name", "Email Address", "Business", "Status", "Joined"].map((h) => (
                   <th
                     key={h}
-                    className="bg-gray-50 px-5 py-3 text-left text-xs font-extrabold uppercase tracking-widest text-gray-400"
+                    className="bg-gray-50 px-5 py-3 text-left text-xs font-extrabold uppercase tracking-widest text-gray-400 dark:bg-gray-800 dark:text-gray-500"
                   >
                     {h}
                   </th>
@@ -192,26 +192,26 @@ export default function AdminPartnersPage() {
                   <tr
                     key={partner.id}
                     onClick={() => router.push(`/admin/dashboard/partners/${partner.id}`)}
-                    className="cursor-pointer border-t border-gray-100 transition-colors hover:bg-gray-50"
+                    className="cursor-pointer border-t border-gray-100 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
                   >
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
                         <PartnerAvatar partner={partner} />
-                        <span className="text-sm font-extrabold text-gray-900">
+                        <span className="text-sm font-extrabold text-gray-900 dark:text-white">
                           {partner.first_name} {partner.last_name}
                         </span>
                       </div>
                     </td>
-                    <td className="px-5 py-3.5 text-sm font-semibold text-gray-600">
+                    <td className="px-5 py-3.5 text-sm font-semibold text-gray-600 dark:text-gray-300">
                       {partner.email ?? "—"}
                     </td>
-                    <td className="px-5 py-3.5 text-sm font-semibold text-gray-600">
+                    <td className="px-5 py-3.5 text-sm font-semibold text-gray-600 dark:text-gray-300">
                       {partner.business_name ?? "—"}
                     </td>
                     <td className="px-5 py-3.5">
                       <StatusBadge status={partner.account_status ?? partner.status} />
                     </td>
-                    <td className="px-5 py-3.5 text-xs font-semibold text-gray-500">
+                    <td className="px-5 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400">
                       {formatDate(partner.registered_at ?? partner.created_at)}
                     </td>
                   </tr>
@@ -221,7 +221,7 @@ export default function AdminPartnersPage() {
           </table>
         </div>
 
-        <div className="flex items-center justify-between border-t border-gray-100 px-5 py-3">
+        <div className="flex items-center justify-between border-t border-gray-100 px-5 py-3 dark:border-gray-700">
           <p className="text-xs font-semibold text-gray-400">
             Page {page + 1} of {totalPages}
           </p>

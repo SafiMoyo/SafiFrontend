@@ -49,7 +49,7 @@ const INITIAL_LESSON = {
 function FieldRow({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <Label className="text-sm font-bold text-gray-900">
+      <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">
         {label}
         {required && <span className="ml-0.5 text-red-500">*</span>}
       </Label>
@@ -81,11 +81,11 @@ function ImageUploadBox({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <Label className="text-sm font-bold text-gray-900">{label}</Label>
+      <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">{label}</Label>
       <div
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
-        className="relative flex min-h-[180px] items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-purple-200 bg-purple-50/40 transition-colors hover:border-purple-400"
+        className="relative flex min-h-[180px] items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-purple-200 bg-purple-50/40 transition-colors hover:border-purple-400 dark:border-purple-800 dark:bg-purple-900/10"
       >
         {previewUrl ? (
           <>
@@ -105,11 +105,11 @@ function ImageUploadBox({
           </>
         ) : (
           <div className="flex flex-col items-center gap-3 p-6 text-center">
-            <div className="flex size-12 items-center justify-center rounded-full bg-purple-100">
+            <div className="flex size-12 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/30">
               <ImageIcon size={22} className="text-primary" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-700">
+              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Drag & drop or{" "}
                 <button
                   type="button"
@@ -122,7 +122,7 @@ function ImageUploadBox({
               <p className="mt-1 text-xs text-gray-400">JPG, JPEG, PNG, HEIC · max 10 MB</p>
             </div>
             {file && (
-              <p className="text-xs font-medium text-gray-600">{file.name}</p>
+              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">{file.name}</p>
             )}
           </div>
         )}
@@ -161,38 +161,38 @@ function VideoUploadBox({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <Label className="text-sm font-bold text-gray-900">Lesson Video</Label>
+      <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">Lesson Video</Label>
       <div
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
-        className="relative flex min-h-[140px] items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-purple-200 bg-purple-50/40 transition-colors hover:border-purple-400"
+        className="relative flex min-h-[140px] items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-purple-200 bg-purple-50/40 transition-colors hover:border-purple-400 dark:border-purple-800 dark:bg-purple-900/10"
       >
         {file ? (
           <div className="flex w-full items-center justify-between px-4 py-3">
             <div className="flex items-center gap-3">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-purple-100">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-900/30">
                 <Film size={18} className="text-primary" />
               </div>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-gray-800">{file.name}</p>
+                <p className="truncate text-sm font-semibold text-gray-800 dark:text-gray-200">{file.name}</p>
                 <p className="text-xs text-gray-400">{(file.size / (1024 * 1024)).toFixed(1)} MB</p>
               </div>
             </div>
             <button
               type="button"
               onClick={onRemove}
-              className="ml-3 flex size-7 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-500 hover:bg-red-100"
+              className="ml-3 flex size-7 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-500 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40"
             >
               <X size={14} />
             </button>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-3 p-6 text-center">
-            <div className="flex size-12 items-center justify-center rounded-full bg-purple-100">
+            <div className="flex size-12 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/30">
               <Film size={22} className="text-primary" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-700">
+              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Drag & drop or{" "}
                 <button
                   type="button"
@@ -426,21 +426,21 @@ export default function CreateCoursePage() {
     <div className="mx-auto max-w-5xl space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-black text-gray-900">Create Course</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-black text-gray-900 dark:text-white">Create Course</h1>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
           First create a module, then add lessons to it.
         </p>
       </div>
 
       {/* ── MODULE SECTION ─────────────────────────────────────────────────── */}
-      <section className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
+      <section className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-100 dark:bg-gray-900 dark:ring-gray-700">
         <div className="mb-6 flex items-center gap-3">
           <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10">
             <span className="text-sm font-black text-primary">1</span>
           </div>
           <div>
-            <h2 className="text-base font-black text-gray-900">Create Module</h2>
-            <p className="text-xs text-gray-500">Fill in the module details below</p>
+            <h2 className="text-base font-black text-gray-900 dark:text-white">Create Module</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Fill in the module details below</p>
           </div>
         </div>
 
@@ -462,7 +462,7 @@ export default function CreateCoursePage() {
                 value={mod.module_description}
                 onChange={(e) => setM("module_description", e.target.value)}
                 rows={4}
-                className="w-full resize-none rounded-xl border border-purple-200 bg-purple-50 px-3 py-3 text-sm placeholder:text-purple-300 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100"
+                className="w-full resize-none rounded-xl border border-purple-200 bg-purple-50 px-3 py-3 text-sm text-gray-900 placeholder:text-purple-300 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:ring-gray-700"
               />
             </FieldRow>
 
@@ -548,14 +548,14 @@ export default function CreateCoursePage() {
       {createdModuleId && <ModuleIdBanner moduleId={createdModuleId} />}
 
       {/* ── LESSON SECTION ─────────────────────────────────────────────────── */}
-      <section className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
+      <section className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-100 dark:bg-gray-900 dark:ring-gray-700">
         <div className="mb-6 flex items-center gap-3">
           <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10">
             <span className="text-sm font-black text-primary">2</span>
           </div>
           <div>
-            <h2 className="text-base font-black text-gray-900">Add Lesson to Module</h2>
-            <p className="text-xs text-gray-500">
+            <h2 className="text-base font-black text-gray-900 dark:text-white">Add Lesson to Module</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
               Enter the Module ID from step 1, or paste a previously created one
             </p>
           </div>
@@ -598,7 +598,7 @@ export default function CreateCoursePage() {
                   value={lesson.lesson_description}
                   onChange={(e) => setL("lesson_description", e.target.value)}
                   rows={4}
-                  className="w-full resize-none rounded-xl border border-purple-200 bg-purple-50 px-3 py-3 text-sm placeholder:text-purple-300 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100"
+                  className="w-full resize-none rounded-xl border border-purple-200 bg-purple-50 px-3 py-3 text-sm text-gray-900 placeholder:text-purple-300 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:ring-gray-700"
                 />
               </FieldRow>
 
@@ -652,17 +652,17 @@ export default function CreateCoursePage() {
 
       {/* ── PUBLISH CONFIRMATION MODAL ────────────────────────────────────── */}
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent className="max-w-sm bg-white p-6" showCloseButton={false}>
+        <DialogContent className="max-w-sm bg-white p-6 dark:bg-gray-900" showCloseButton={false}>
           <DialogHeader>
             <div className="mb-3 flex justify-center">
               <div className="flex size-14 items-center justify-center rounded-full bg-amber-100">
                 <AlertTriangle size={26} className="text-amber-500" />
               </div>
             </div>
-            <DialogTitle className="text-center text-base font-black text-gray-900">
+            <DialogTitle className="text-center text-base font-black text-gray-900 dark:text-white">
               Publish this module?
             </DialogTitle>
-            <p className="mt-1 text-center text-sm text-gray-500">
+            <p className="mt-1 text-center text-sm text-gray-500 dark:text-gray-400">
               This will make the module available in the system. You can add lessons to it afterwards.
             </p>
           </DialogHeader>
@@ -681,7 +681,7 @@ export default function CreateCoursePage() {
             <Button
               type="button"
               variant="outline"
-              className="h-12 w-full rounded-full border-gray-200 text-sm font-bold text-gray-600"
+              className="h-12 w-full rounded-full border-gray-200 text-sm font-bold text-gray-600 dark:border-gray-700 dark:text-gray-300"
               loading={createModuleDraft.isPending}
               disabled={createModule.isPending}
               onClick={handleSaveModuleDraft}
@@ -704,17 +704,17 @@ export default function CreateCoursePage() {
 
       {/* ── LESSON CONFIRMATION MODAL ─────────────────────────────────────── */}
       <Dialog open={lessonConfirmOpen} onOpenChange={setLessonConfirmOpen}>
-        <DialogContent className="max-w-sm bg-white p-6" showCloseButton={false}>
+        <DialogContent className="max-w-sm bg-white p-6 dark:bg-gray-900" showCloseButton={false}>
           <DialogHeader>
             <div className="mb-3 flex justify-center">
               <div className="flex size-14 items-center justify-center rounded-full bg-amber-100">
                 <AlertTriangle size={26} className="text-amber-500" />
               </div>
             </div>
-            <DialogTitle className="text-center text-base font-black text-gray-900">
+            <DialogTitle className="text-center text-base font-black text-gray-900 dark:text-white">
               Add this lesson?
             </DialogTitle>
-            <p className="mt-1 text-center text-sm text-gray-500">
+            <p className="mt-1 text-center text-sm text-gray-500 dark:text-gray-400">
               Choose to publish immediately or save as a draft for later.
             </p>
           </DialogHeader>
@@ -733,7 +733,7 @@ export default function CreateCoursePage() {
             <Button
               type="button"
               variant="outline"
-              className="h-12 w-full rounded-full border-gray-200 text-sm font-bold text-gray-600"
+              className="h-12 w-full rounded-full border-gray-200 text-sm font-bold text-gray-600 dark:border-gray-700 dark:text-gray-300"
               loading={createLessonDraft.isPending}
               disabled={createLesson.isPending}
               onClick={submitSaveLessonDraft}

@@ -40,14 +40,14 @@ function LessonRow({ lesson, moduleId }: { lesson: DraftLesson; moduleId: string
   }
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-xl bg-gray-50 px-4 py-3 ring-1 ring-gray-100">
-      <div className="flex items-center gap-3 min-w-0">
-        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-purple-100">
+    <div className="flex items-center justify-between gap-4 rounded-xl bg-gray-50 px-4 py-3 ring-1 ring-gray-100 dark:bg-gray-800 dark:ring-gray-700">
+      <div className="flex min-w-0 items-center gap-3">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/30">
           <Film size={14} className="text-primary" />
         </div>
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-gray-800">{lesson.lesson_title}</p>
-          <div className="flex items-center gap-2 mt-0.5">
+          <p className="truncate text-sm font-semibold text-gray-800 dark:text-gray-200">{lesson.lesson_title}</p>
+          <div className="mt-0.5 flex items-center gap-2">
             {lesson.lesson_duration && (
               <span className="text-xs text-gray-400">{lesson.lesson_duration}</span>
             )}
@@ -89,7 +89,7 @@ function ModuleCard({ mod }: { mod: DraftModule }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
+    <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100 dark:bg-gray-900 dark:ring-gray-700">
       {/* Module header row */}
       <div className="flex items-center gap-4 p-4">
         {/* Cover thumbnail */}
@@ -105,9 +105,9 @@ function ModuleCard({ mod }: { mod: DraftModule }) {
         </div>
 
         {/* Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-2 mb-1">
-            <h3 className="text-sm font-extrabold text-gray-900 truncate">{mod.module_title}</h3>
+        <div className="min-w-0 flex-1">
+          <div className="mb-1 flex flex-wrap items-center gap-2">
+            <h3 className="truncate text-sm font-extrabold text-gray-900 dark:text-white">{mod.module_title}</h3>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {ageLabel && (
@@ -131,7 +131,7 @@ function ModuleCard({ mod }: { mod: DraftModule }) {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex shrink-0 items-center gap-2">
           <Button
             type="button"
             className="h-9 rounded-full px-4 text-xs font-bold"
@@ -146,7 +146,7 @@ function ModuleCard({ mod }: { mod: DraftModule }) {
             <button
               type="button"
               onClick={() => setExpanded((p) => !p)}
-              className="flex size-9 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition-colors hover:bg-gray-50"
+              className="flex size-9 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
             >
               {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
             </button>
@@ -156,7 +156,7 @@ function ModuleCard({ mod }: { mod: DraftModule }) {
 
       {/* Lessons list */}
       {expanded && mod.lessons.length > 0 && (
-        <div className="border-t border-gray-100 px-4 pb-4 pt-3 space-y-2">
+        <div className="space-y-2 border-t border-gray-100 px-4 pb-4 pt-3 dark:border-gray-700">
           <p className="mb-2 text-xs font-extrabold uppercase tracking-wide text-gray-400">Lessons</p>
           {mod.lessons.map((lesson) => (
             <LessonRow key={lesson.id} lesson={lesson} moduleId={mod.id} />
@@ -165,7 +165,7 @@ function ModuleCard({ mod }: { mod: DraftModule }) {
       )}
 
       {expanded && mod.lessons.length === 0 && (
-        <div className="border-t border-gray-100 px-4 pb-4 pt-3 text-center text-xs text-gray-400">
+        <div className="border-t border-gray-100 px-4 pb-4 pt-3 text-center text-xs text-gray-400 dark:border-gray-700">
           No lessons added yet.{" "}
           <Link href="/admin/dashboard/create-course" className="text-primary underline underline-offset-2">
             Add a lesson
@@ -185,8 +185,8 @@ export default function UnpublishedModulesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-gray-900">Unpublished Modules</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-black text-gray-900 dark:text-white">Unpublished Modules</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             {isLoading ? "Loading..." : `${modules.length} draft ${modules.length === 1 ? "module" : "modules"}`}
           </p>
         </div>
@@ -198,30 +198,32 @@ export default function UnpublishedModulesPage() {
         </Link>
       </div>
 
-      {/* States */}
+      {/* Loading skeletons */}
       {isLoading && (
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-[88px] animate-pulse rounded-2xl bg-gray-100" />
+            <div key={i} className="h-[88px] animate-pulse rounded-2xl bg-gray-100 dark:bg-gray-800" />
           ))}
         </div>
       )}
 
+      {/* Error */}
       {isError && (
-        <div className="flex items-center gap-3 rounded-2xl border border-red-100 bg-red-50 px-5 py-4 text-sm text-red-600">
+        <div className="flex items-center gap-3 rounded-2xl border border-red-100 bg-red-50 px-5 py-4 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
           <AlertCircle size={18} />
           Failed to load draft modules. Please refresh the page.
         </div>
       )}
 
+      {/* Empty state */}
       {!isLoading && !isError && modules.length === 0 && (
         <div className="flex flex-col items-center gap-4 py-20 text-center">
-          <div className="flex size-16 items-center justify-center rounded-full bg-purple-50">
+          <div className="flex size-16 items-center justify-center rounded-full bg-purple-50 dark:bg-purple-900/30">
             <BookOpen size={28} className="text-primary" />
           </div>
           <div>
-            <p className="text-base font-bold text-gray-800">No draft modules</p>
-            <p className="mt-1 text-sm text-gray-500">Save a module as draft and it will appear here.</p>
+            <p className="text-base font-bold text-gray-800 dark:text-gray-100">No draft modules</p>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Save a module as draft and it will appear here.</p>
           </div>
           <Link
             href="/admin/dashboard/create-course"
@@ -232,6 +234,7 @@ export default function UnpublishedModulesPage() {
         </div>
       )}
 
+      {/* Module list */}
       {!isLoading && !isError && modules.length > 0 && (
         <div className="space-y-3">
           {modules.map((mod) => (

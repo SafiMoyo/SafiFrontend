@@ -21,6 +21,8 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AnimatePresence, motion } from "framer-motion"
+import { useTheme } from "next-themes"
+import { DarkModeToggle } from "@/components/admin/dark-mode-toggle"
 
 const NAV_ITEMS = [
   { label: "Overview", href: "/admin/dashboard", icon: LayoutDashboard },
@@ -69,17 +71,20 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
             className="h-7 w-auto"
           />
         </Link>
-        {onClose && (
-          <button
-            onClick={onClose}
-            className="rounded-lg p-1 text-gray-500 hover:bg-gray-100 md:hidden"
-          >
-            <X size={20} />
-          </button>
-        )}
+        <div className="flex items-center gap-1.5">
+          <DarkModeToggle />
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="rounded-lg p-1 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 md:hidden"
+            >
+              <X size={20} />
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="text-xs font-extrabold uppercase tracking-widest text-gray-400">
+      <div className="text-xs font-extrabold uppercase tracking-widest text-gray-400 dark:text-gray-500">
         Admin Dashboard
       </div>
 
@@ -95,7 +100,7 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
                 "flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-extrabold transition-colors",
                 active
                   ? "bg-primary text-white shadow-[0_10px_24px_rgba(137,0,235,0.18)]"
-                  : "text-[#475467] hover:bg-purple-50 hover:text-primary"
+                  : "text-[#475467] hover:bg-purple-50 hover:text-primary dark:text-gray-400 dark:hover:bg-purple-900/30 dark:hover:text-purple-300"
               )}
             >
               <span className="flex items-center gap-3">
@@ -112,7 +117,7 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
         <button
           type="button"
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-extrabold text-red-500 transition-colors hover:bg-red-50"
+          className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-extrabold text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20"
         >
           <LogOut size={17} />
           Logout
@@ -130,6 +135,7 @@ export default function AdminDashboardLayout({
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [checked, setChecked] = useState(false)
+  const { theme } = useTheme()
 
   useEffect(() => {
     const token = localStorage.getItem("admin_access_token")
@@ -142,21 +148,23 @@ export default function AdminDashboardLayout({
 
   if (!checked) return null
 
+  const bgGradient =
+    theme === "dark"
+      ? "radial-gradient(circle at top left, rgba(137,0,235,0.15), transparent 34%), #0f172a"
+      : "radial-gradient(circle at top left, rgba(137,0,235,0.09), transparent 34%), #f3f4f6"
+
   return (
     <div
-      className="min-h-screen"
-      style={{
-        background:
-          "radial-gradient(circle at top left, rgba(137,0,235,0.09), transparent 34%), #f3f4f6",
-      }}
+      className="min-h-screen transition-colors"
+      style={{ background: bgGradient }}
     >
       {/* Desktop sidebar */}
-      <aside className="fixed top-0 left-0 hidden h-full w-[260px] border-r border-gray-200 bg-white md:block">
+      <aside className="fixed top-0 left-0 hidden h-full w-[260px] border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900 md:block">
         <Sidebar />
       </aside>
 
       {/* Mobile header */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-200 bg-white/90 px-4 py-3 backdrop-blur-md md:hidden">
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-200 bg-white/90 px-4 py-3 backdrop-blur-md dark:border-gray-700 dark:bg-gray-900/90 md:hidden">
         <Link href="/admin/dashboard">
           <Image
             src="/images/logo.svg"
@@ -166,12 +174,15 @@ export default function AdminDashboardLayout({
             className="h-6 w-auto"
           />
         </Link>
-        <button
-          onClick={() => setMobileOpen(true)}
-          className="rounded-xl border border-gray-200 p-2 text-gray-600"
-        >
-          <Menu size={20} />
-        </button>
+        <div className="flex items-center gap-2">
+          <DarkModeToggle />
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="rounded-xl border border-gray-200 p-2 text-gray-600 dark:border-gray-700 dark:text-gray-300"
+          >
+            <Menu size={20} />
+          </button>
+        </div>
       </header>
 
       {/* Mobile drawer */}
@@ -190,7 +201,7 @@ export default function AdminDashboardLayout({
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "tween", duration: 0.22 }}
-              className="fixed top-0 left-0 z-50 h-full w-[80vw] max-w-[300px] bg-white md:hidden"
+              className="fixed top-0 left-0 z-50 h-full w-[80vw] max-w-[300px] bg-white dark:bg-gray-900 md:hidden"
             >
               <Sidebar onClose={() => setMobileOpen(false)} />
             </motion.aside>

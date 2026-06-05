@@ -87,7 +87,7 @@ function BenefitInputs({
             <button
               type="button"
               onClick={() => remove(i)}
-              className="flex size-8 shrink-0 items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500"
+              className="flex size-8 shrink-0 items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20"
             >
               <X size={14} />
             </button>
@@ -152,17 +152,17 @@ function PlanFormFields({ form, onChange }: { form: PlanForm; onChange: (f: Plan
     <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
-          <Label className="text-sm font-bold text-gray-900">Amount (₦) <span className="text-red-500">*</span></Label>
+          <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">Amount (₦) <span className="text-red-500">*</span></Label>
           <Input variant="auth" type="number" min="0" placeholder="e.g. 10000" value={form.amount} onChange={(e) => set("amount", e.target.value)} />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label className="text-sm font-bold text-gray-900">Discount (₦)</Label>
+          <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">Discount (₦)</Label>
           <Input variant="auth" type="number" min="0" placeholder="0" value={form.discount} onChange={(e) => set("discount", e.target.value)} />
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
-          <Label className="text-sm font-bold text-gray-900">Duration <span className="text-red-500">*</span></Label>
+          <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">Duration <span className="text-red-500">*</span></Label>
           <Select value={form.duration} onValueChange={(v) => set("duration", v)}>
             <SelectTrigger variant="auth" className="h-12!"><SelectValue /></SelectTrigger>
             <SelectContent position="popper">
@@ -171,7 +171,7 @@ function PlanFormFields({ form, onChange }: { form: PlanForm; onChange: (f: Plan
           </Select>
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label className="text-sm font-bold text-gray-900">Plan Type <span className="text-red-500">*</span></Label>
+          <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">Plan Type <span className="text-red-500">*</span></Label>
           <Select value={form.plan_type} onValueChange={(v) => set("plan_type", v)}>
             <SelectTrigger variant="auth" className="h-12!"><SelectValue /></SelectTrigger>
             <SelectContent position="popper">
@@ -181,7 +181,7 @@ function PlanFormFields({ form, onChange }: { form: PlanForm; onChange: (f: Plan
         </div>
       </div>
       <div className="flex flex-col gap-1.5">
-        <Label className="text-sm font-bold text-gray-900">Benefits <span className="text-xs font-normal text-gray-400">(up to {MAX_BENEFITS})</span></Label>
+        <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">Benefits <span className="text-xs font-normal text-gray-400">(up to {MAX_BENEFITS})</span></Label>
         <BenefitInputs benefits={form.benefits} onChange={(b) => set("benefits", b)} />
       </div>
     </div>
@@ -200,7 +200,7 @@ function PlanCard({
   onDelete: (plan: SubscriptionPlan) => void
 }) {
   return (
-    <div className="flex flex-col rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
+    <div className="flex flex-col rounded-2xl bg-white shadow-sm ring-1 ring-gray-100 dark:bg-gray-900 dark:ring-gray-700">
       {/* Header */}
       <div className="flex items-start justify-between gap-3 p-5 pb-4">
         <div className="min-w-0">
@@ -212,7 +212,7 @@ function PlanCard({
               {plan.duration[0] + plan.duration.slice(1).toLowerCase()}
             </span>
           </div>
-          <p className="mt-2 text-2xl font-black text-gray-900">{formatMoney(plan.amount)}</p>
+          <p className="mt-2 text-2xl font-black text-gray-900 dark:text-white">{formatMoney(plan.amount)}</p>
           {plan.discount > 0 && (
             <p className="mt-0.5 text-xs font-semibold text-emerald-600">
               {formatMoney(plan.discount)} discount applied
@@ -222,14 +222,14 @@ function PlanCard({
         <div className="flex shrink-0 items-center gap-1">
           <button
             onClick={() => onEdit(plan)}
-            className="flex size-8 items-center justify-center rounded-lg text-gray-400 hover:bg-purple-50 hover:text-primary"
+            className="flex size-8 items-center justify-center rounded-lg text-gray-400 hover:bg-purple-50 hover:text-primary dark:hover:bg-purple-900/30"
             title="Edit plan"
           >
             <Pencil size={15} />
           </button>
           <button
             onClick={() => onDelete(plan)}
-            className="flex size-8 items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500"
+            className="flex size-8 items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20"
             title="Delete plan"
           >
             <Trash2 size={15} />
@@ -238,13 +238,13 @@ function PlanCard({
       </div>
 
       {/* Benefits */}
-      <div className="flex flex-1 flex-col gap-2 border-t border-gray-100 px-5 py-4">
+      <div className="flex flex-1 flex-col gap-2 border-t border-gray-100 px-5 py-4 dark:border-gray-700">
         {plan.subscription_benefits.map((b) => (
           <div key={b.id} className="flex items-start gap-2">
             <div className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full bg-primary/10">
               <Check size={10} className="text-primary" />
             </div>
-            <span className="text-xs font-semibold text-gray-700">{b.benefit}</span>
+            <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{b.benefit}</span>
           </div>
         ))}
       </div>
@@ -321,8 +321,8 @@ export default function SubscriptionsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-gray-900">Subscriptions</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-black text-gray-900 dark:text-white">Subscriptions</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             {isLoading ? "Loading..." : `${plans.length} plan${plans.length !== 1 ? "s" : ""}`}
           </p>
         </div>
@@ -339,12 +339,12 @@ export default function SubscriptionsPage() {
       {isLoading ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-[260px] animate-pulse rounded-2xl bg-gray-100" />
+            <div key={i} className="h-[260px] animate-pulse rounded-2xl bg-gray-100 dark:bg-gray-800" />
           ))}
         </div>
       ) : plans.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-20 text-center">
-          <p className="text-sm font-bold text-gray-700">No subscription plans yet</p>
+          <p className="text-sm font-bold text-gray-700 dark:text-gray-300">No subscription plans yet</p>
           <p className="text-xs text-gray-400">Create a plan to get started.</p>
         </div>
       ) : (
@@ -362,9 +362,9 @@ export default function SubscriptionsPage() {
 
       {/* ── CREATE MODAL ─────────────────────────────────────────────────── */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="max-w-lg bg-white p-6 sm:max-w-xl" showCloseButton>
+        <DialogContent className="max-w-lg bg-white p-6 dark:bg-gray-900 sm:max-w-xl" showCloseButton>
           <DialogHeader>
-            <DialogTitle className="text-base font-black text-gray-900">Create Subscription Plan</DialogTitle>
+            <DialogTitle className="text-base font-black text-gray-900 dark:text-white">Create Subscription Plan</DialogTitle>
           </DialogHeader>
           <div className="mt-4 max-h-[60vh] overflow-y-auto pr-1">
             <PlanFormFields form={createForm} onChange={setCreateForm} />
@@ -386,9 +386,9 @@ export default function SubscriptionsPage() {
 
       {/* ── EDIT PANEL ───────────────────────────────────────────────────── */}
       <Dialog open={!!editPlan && !editConfirmOpen} onOpenChange={(o) => { if (!o) setEditPlan(null) }}>
-        <DialogContent className="max-w-lg bg-white p-6 sm:max-w-xl" showCloseButton>
+        <DialogContent className="max-w-lg bg-white p-6 dark:bg-gray-900 sm:max-w-xl" showCloseButton>
           <DialogHeader>
-            <DialogTitle className="text-base font-black text-gray-900">Edit Plan</DialogTitle>
+            <DialogTitle className="text-base font-black text-gray-900 dark:text-white">Edit Plan</DialogTitle>
           </DialogHeader>
           <div className="mt-4 max-h-[60vh] overflow-y-auto pr-1">
             <PlanFormFields form={editForm} onChange={setEditForm} />
@@ -409,13 +409,13 @@ export default function SubscriptionsPage() {
 
       {/* ── EDIT CONFIRM ─────────────────────────────────────────────────── */}
       <Dialog open={editConfirmOpen} onOpenChange={setEditConfirmOpen}>
-        <DialogContent className="max-w-sm bg-white p-6" showCloseButton={false}>
+        <DialogContent className="max-w-sm bg-white p-6 dark:bg-gray-900" showCloseButton={false}>
           <div className="flex flex-col items-center gap-3 text-center">
-            <div className="flex size-14 items-center justify-center rounded-full bg-amber-100">
+            <div className="flex size-14 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
               <AlertTriangle size={26} className="text-amber-500" />
             </div>
-            <h3 className="text-base font-black text-gray-900">Save changes?</h3>
-            <p className="text-sm text-gray-500">This will update the subscription plan immediately.</p>
+            <h3 className="text-base font-black text-gray-900 dark:text-white">Save changes?</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">This will update the subscription plan immediately.</p>
           </div>
           <div className="mt-5 space-y-3">
             <Button
@@ -441,14 +441,14 @@ export default function SubscriptionsPage() {
 
       {/* ── DELETE CONFIRM ───────────────────────────────────────────────── */}
       <Dialog open={!!deletingPlan} onOpenChange={(o) => { if (!o) setDeletingPlan(null) }}>
-        <DialogContent className="max-w-sm bg-white p-6" showCloseButton={false}>
+        <DialogContent className="max-w-sm bg-white p-6 dark:bg-gray-900" showCloseButton={false}>
           <div className="flex flex-col items-center gap-3 text-center">
-            <div className="flex size-14 items-center justify-center rounded-full bg-red-100">
+            <div className="flex size-14 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
               <Trash2 size={24} className="text-red-500" />
             </div>
-            <h3 className="text-base font-black text-gray-900">Delete this plan?</h3>
-            <p className="text-sm text-gray-500">
-              <span className="font-bold text-gray-800">{deletingPlan?.plan_type} — {deletingPlan?.duration}</span> will be permanently removed.
+            <h3 className="text-base font-black text-gray-900 dark:text-white">Delete this plan?</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="font-bold text-gray-800 dark:text-gray-200">{deletingPlan?.plan_type} — {deletingPlan?.duration}</span> will be permanently removed.
               This cannot be undone.
             </p>
           </div>

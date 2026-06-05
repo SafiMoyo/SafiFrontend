@@ -22,13 +22,13 @@ function formatDate(iso?: string | null) {
 
 function StatCard({ icon: Icon, label, value, color }: { icon: React.ElementType; label: string; value: string; color: string }) {
   return (
-    <div className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
+    <div className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100 dark:bg-gray-900 dark:ring-gray-700">
       <div className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${color}`}>
         <Icon size={20} className="text-white" />
       </div>
       <div className="min-w-0">
-        <p className="text-xs font-semibold text-gray-500">{label}</p>
-        <p className="mt-0.5 truncate text-base font-black text-gray-900">{value}</p>
+        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">{label}</p>
+        <p className="mt-0.5 truncate text-base font-black text-gray-900 dark:text-white">{value}</p>
       </div>
     </div>
   )
@@ -102,32 +102,32 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ partne
       {/* Back */}
       <button
         onClick={() => router.push("/admin/dashboard/partners")}
-        className="flex items-center gap-2 text-sm font-extrabold text-gray-500 hover:text-gray-900"
+        className="flex items-center gap-2 text-sm font-extrabold text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
       >
         <ArrowLeft size={16} /> Partners
       </button>
 
       {/* Profile card */}
-      <div className="flex flex-col items-center gap-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-100 sm:flex-row sm:items-start">
+      <div className="flex flex-col items-center gap-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-100 dark:bg-gray-900 dark:ring-gray-700 sm:flex-row sm:items-start">
         <div className="flex size-20 shrink-0 items-center justify-center rounded-full bg-primary text-3xl font-black text-white">
           {initial}
         </div>
         <div className="flex-1 text-center sm:text-left">
-          <h1 className="text-2xl font-black text-gray-900">{partner.first_name} {partner.last_name}</h1>
-          <p className="mt-1 text-sm font-semibold text-gray-500">{partner.email}</p>
+          <h1 className="text-2xl font-black text-gray-900 dark:text-white">{partner.first_name} {partner.last_name}</h1>
+          <p className="mt-1 text-sm font-semibold text-gray-500 dark:text-gray-400">{partner.email}</p>
           {partner.organization_name && (
             <div className="mt-1 flex items-center justify-center gap-1.5 sm:justify-start">
               <Building2 size={13} className="text-gray-400" />
-              <span className="text-sm font-semibold text-gray-600">{partner.organization_name}</span>
+              <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">{partner.organization_name}</span>
             </div>
           )}
           <div className="mt-3 flex flex-wrap justify-center gap-3 sm:justify-start">
             {partner.referral_code && (
-              <span className="flex items-center gap-1.5 rounded-full bg-purple-50 px-3 py-1 text-xs font-extrabold text-primary">
+              <span className="flex items-center gap-1.5 rounded-full bg-purple-50 px-3 py-1 text-xs font-extrabold text-primary dark:bg-purple-900/30">
                 <CreditCard size={11} /> Code: {partner.referral_code}
               </span>
             )}
-            <span className="flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
+            <span className="flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600 dark:bg-gray-700 dark:text-gray-300">
               <Calendar size={11} /> Joined {formatDate(partner.created_at)}
             </span>
           </div>
@@ -146,34 +146,34 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ partne
 
       {/* Bank account */}
       {partner.bank_account && (
-        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-          <h2 className="mb-4 text-sm font-extrabold uppercase tracking-widest text-gray-500">Bank Account</h2>
+        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100 dark:bg-gray-900 dark:ring-gray-700">
+          <h2 className="mb-4 text-sm font-extrabold uppercase tracking-widest text-gray-500 dark:text-gray-400">Bank Account</h2>
           <div className="grid gap-3 sm:grid-cols-3">
             <div>
               <p className="text-xs font-semibold text-gray-400">Bank</p>
-              <p className="mt-0.5 text-sm font-extrabold text-gray-900">{partner.bank_account.bank_name}</p>
+              <p className="mt-0.5 text-sm font-extrabold text-gray-900 dark:text-white">{partner.bank_account.bank_name}</p>
             </div>
             <div>
               <p className="text-xs font-semibold text-gray-400">Account Number</p>
-              <p className="mt-0.5 text-sm font-extrabold text-gray-900 font-mono">{partner.bank_account.account_number}</p>
+              <p className="mt-0.5 font-mono text-sm font-extrabold text-gray-900 dark:text-white">{partner.bank_account.account_number}</p>
             </div>
             <div>
               <p className="text-xs font-semibold text-gray-400">Account Name</p>
-              <p className="mt-0.5 text-sm font-extrabold text-gray-900">{partner.bank_account.account_name}</p>
+              <p className="mt-0.5 text-sm font-extrabold text-gray-900 dark:text-white">{partner.bank_account.account_name}</p>
             </div>
           </div>
         </div>
       )}
 
       {/* Payout card */}
-      <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-        <h2 className="mb-1 text-sm font-extrabold uppercase tracking-widest text-gray-500">Disburse Payment</h2>
+      <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100 dark:bg-gray-900 dark:ring-gray-700">
+        <h2 className="mb-1 text-sm font-extrabold uppercase tracking-widest text-gray-500 dark:text-gray-400">Disburse Payment</h2>
         <p className="mb-5 text-xs text-gray-400">
           Pending payout: <span className="font-bold text-amber-600">{formatMoney(partner.pending_payout)}</span>
         </p>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
-            <Label className="text-sm font-bold text-gray-900">
+            <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">
               Amount (₦) <span className="text-red-500">*</span>
             </Label>
             <Input
@@ -187,7 +187,7 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ partne
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="text-sm font-bold text-gray-900">Note</Label>
+            <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">Note</Label>
             <Input
               variant="auth"
               placeholder="e.g. March commission payout"
@@ -199,11 +199,11 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ partne
 
         {/* Receipt upload */}
         <div className="mt-4 flex flex-col gap-1.5">
-          <Label className="text-sm font-bold text-gray-900">
+          <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">
             Receipt <span className="text-xs font-normal text-gray-400">(optional)</span>
           </Label>
           <div
-            className="relative flex min-h-[110px] cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-purple-200 bg-purple-50/40 transition-colors hover:border-purple-400"
+            className="relative flex min-h-[110px] cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-purple-200 bg-purple-50/40 transition-colors hover:border-purple-400 dark:border-purple-800 dark:bg-purple-900/10"
             onClick={() => !receiptFile && receiptRef.current?.click()}
           >
             {receiptPreview ? (
@@ -220,10 +220,10 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ partne
               </>
             ) : (
               <div className="flex flex-col items-center gap-2 p-4 text-center">
-                <div className="flex size-10 items-center justify-center rounded-full bg-purple-100">
+                <div className="flex size-10 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/30">
                   <ImageIcon size={18} className="text-primary" />
                 </div>
-                <p className="text-xs font-semibold text-gray-600">
+                <p className="text-xs font-semibold text-gray-600 dark:text-gray-300">
                   Click to upload receipt image
                 </p>
                 <p className="text-xs text-gray-400">JPG, PNG, HEIC · max 10 MB</p>

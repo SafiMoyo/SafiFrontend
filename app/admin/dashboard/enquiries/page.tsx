@@ -43,7 +43,7 @@ function Pagination({
       <button
         onClick={() => onChange(page - 1)}
         disabled={page === 0}
-        className="flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-extrabold text-gray-500 hover:bg-gray-100 disabled:opacity-40"
+        className="flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-extrabold text-gray-500 hover:bg-gray-100 disabled:opacity-40 dark:text-gray-400 dark:hover:bg-gray-700"
       >
         <ChevronLeft size={14} /> Prev
       </button>
@@ -57,7 +57,7 @@ function Pagination({
             className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs font-extrabold transition ${
               p === page
                 ? "bg-primary text-white shadow-sm"
-                : "text-gray-500 hover:bg-gray-100"
+                : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
             }`}
           >
             {(p as number) + 1}
@@ -67,7 +67,7 @@ function Pagination({
       <button
         onClick={() => onChange(page + 1)}
         disabled={page >= totalPages - 1}
-        className="flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-extrabold text-gray-500 hover:bg-gray-100 disabled:opacity-40"
+        className="flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-extrabold text-gray-500 hover:bg-gray-100 disabled:opacity-40 dark:text-gray-400 dark:hover:bg-gray-700"
       >
         Next <ChevronRight size={14} />
       </button>
@@ -80,14 +80,14 @@ function EnquiryCard({ enquiry }: { enquiry: Enquiry }) {
   const isLong = enquiry.message.length > 120
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-gray-100 bg-gray-50 p-4 transition hover:border-primary/20 hover:bg-purple-50/30">
+    <div className="flex flex-col gap-3 rounded-2xl border border-gray-100 bg-gray-50 p-4 transition hover:border-primary/20 hover:bg-purple-50/30 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-purple-900/10">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-[#bb2efa] text-sm font-black text-white">
             {enquiry.name[0]?.toUpperCase() ?? "?"}
           </div>
           <div>
-            <p className="text-sm font-extrabold text-gray-900">{enquiry.name}</p>
+            <p className="text-sm font-extrabold text-gray-900 dark:text-white">{enquiry.name}</p>
             <p className="text-xs font-semibold text-primary">{enquiry.email}</p>
           </div>
         </div>
@@ -97,7 +97,7 @@ function EnquiryCard({ enquiry }: { enquiry: Enquiry }) {
       </div>
 
       <div className="pl-12">
-        <p className={`text-sm font-semibold leading-relaxed text-gray-700 ${!expanded && isLong ? "line-clamp-3" : ""}`}>
+        <p className={`text-sm font-semibold leading-relaxed text-gray-700 dark:text-gray-300 ${!expanded && isLong ? "line-clamp-3" : ""}`}>
           {enquiry.message}
         </p>
         {isLong && (
@@ -130,18 +130,18 @@ export default function AdminEnquiriesPage() {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">
+        <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
           Enquiries
         </h1>
-        <p className="mt-1 text-sm font-semibold text-gray-500">
+        <p className="mt-1 text-sm font-semibold text-gray-500 dark:text-gray-400">
           Support messages from users
         </p>
       </div>
 
-      <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.07)]">
-        <div className="border-b border-gray-100 px-5 py-4">
-          <h2 className="text-base font-extrabold text-gray-900">All Enquiries</h2>
-          <p className="mt-0.5 text-xs font-semibold text-gray-500">
+      <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.07)] dark:border-gray-700 dark:bg-gray-900">
+        <div className="border-b border-gray-100 px-5 py-4 dark:border-gray-700">
+          <h2 className="text-base font-extrabold text-gray-900 dark:text-white">All Enquiries</h2>
+          <p className="mt-0.5 text-xs font-semibold text-gray-500 dark:text-gray-400">
             {totalElements} message{totalElements !== 1 ? "s" : ""} received
           </p>
         </div>
@@ -153,10 +153,10 @@ export default function AdminEnquiriesPage() {
             </div>
           ) : enquiries.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-16">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
                 <MessageSquare size={22} className="text-gray-400" />
               </div>
-              <p className="text-sm font-extrabold text-gray-500">No enquiries yet</p>
+              <p className="text-sm font-extrabold text-gray-500 dark:text-gray-400">No enquiries yet</p>
               <p className="text-xs font-semibold text-gray-400">User messages will appear here</p>
             </div>
           ) : (
@@ -166,7 +166,7 @@ export default function AdminEnquiriesPage() {
           )}
         </div>
 
-        <div className="flex items-center justify-between border-t border-gray-100 px-5 py-3">
+        <div className="flex items-center justify-between border-t border-gray-100 px-5 py-3 dark:border-gray-700">
           <p className="text-xs font-semibold text-gray-400">
             Page {page + 1} of {totalPages}
           </p>

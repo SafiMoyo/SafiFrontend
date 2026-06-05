@@ -52,11 +52,11 @@ function ImageUploadBox({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <Label className="text-sm font-bold text-gray-900">{label}</Label>
+      <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">{label}</Label>
       <div
         onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) onSelect(f) }}
         onDragOver={(e) => e.preventDefault()}
-        className="relative flex min-h-[140px] items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-purple-200 bg-purple-50/40 hover:border-purple-400"
+        className="relative flex min-h-[140px] items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-purple-200 bg-purple-50/40 hover:border-purple-400 dark:border-purple-800 dark:bg-purple-900/10"
       >
         {previewUrl ? (
           <>
@@ -66,8 +66,8 @@ function ImageUploadBox({
           </>
         ) : (
           <div className="flex flex-col items-center gap-2 p-4 text-center">
-            <div className="flex size-10 items-center justify-center rounded-full bg-purple-100"><ImageIcon size={18} className="text-primary" /></div>
-            <p className="text-xs font-semibold text-gray-600">
+            <div className="flex size-10 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/30"><ImageIcon size={18} className="text-primary" /></div>
+            <p className="text-xs font-semibold text-gray-600 dark:text-gray-300">
               <button type="button" className="text-primary underline" onClick={() => inputRef.current?.click()}>Browse</button> or drag & drop
             </p>
             <p className="text-xs text-gray-400">JPG, PNG, HEIC · max 10 MB</p>
@@ -128,44 +128,44 @@ function EditModuleModal({ mod, open, onClose }: { mod: AdminModule; open: boole
 
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) onClose() }}>
-      <DialogContent className="max-w-xl bg-white p-6" showCloseButton>
+      <DialogContent className="max-w-xl bg-white p-6 dark:bg-gray-900" showCloseButton>
         <DialogHeader>
-          <DialogTitle className="text-base font-black text-gray-900">Edit Module</DialogTitle>
+          <DialogTitle className="text-base font-black text-gray-900 dark:text-white">Edit Module</DialogTitle>
         </DialogHeader>
         <div className="mt-4 max-h-[65vh] overflow-y-auto space-y-4 pr-1">
           <div className="flex flex-col gap-1.5">
-            <Label className="text-sm font-bold text-gray-900">Module Title <span className="text-red-500">*</span></Label>
+            <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">Module Title <span className="text-red-500">*</span></Label>
             <Input variant="auth" value={form.module_title} onChange={(e) => setF("module_title", e.target.value)} placeholder="Module title" />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="text-sm font-bold text-gray-900">Description</Label>
+            <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">Description</Label>
             <textarea value={form.module_description} onChange={(e) => setF("module_description", e.target.value)} rows={3}
-              className="w-full resize-none rounded-xl border border-purple-200 bg-purple-50 px-3 py-3 text-sm placeholder:text-purple-300 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100" />
+              className="w-full resize-none rounded-xl border border-purple-200 bg-purple-50 px-3 py-3 text-sm text-gray-900 placeholder:text-purple-300 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:ring-gray-700" />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-1.5">
-              <Label className="text-sm font-bold text-gray-900">No. of Lessons <span className="text-red-500">*</span></Label>
+              <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">No. of Lessons <span className="text-red-500">*</span></Label>
               <Select value={form.no_of_lessons} onValueChange={(v) => setF("no_of_lessons", v)}>
                 <SelectTrigger variant="auth" className="h-12!"><SelectValue placeholder="Select" /></SelectTrigger>
                 <SelectContent position="popper">{SEQ_OPTIONS.map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label className="text-sm font-bold text-gray-900">Sequence No. <span className="text-red-500">*</span></Label>
+              <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">Sequence No. <span className="text-red-500">*</span></Label>
               <Select value={form.sequence_num} onValueChange={(v) => setF("sequence_num", v)}>
                 <SelectTrigger variant="auth" className="h-12!"><SelectValue placeholder="Select" /></SelectTrigger>
                 <SelectContent position="popper">{SEQ_OPTIONS.map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label className="text-sm font-bold text-gray-900">Module Tier</Label>
+              <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">Module Tier</Label>
               <Select value={form.module_tier} onValueChange={(v) => setF("module_tier", v)}>
                 <SelectTrigger variant="auth" className="h-12!"><SelectValue placeholder="Select tier" /></SelectTrigger>
                 <SelectContent position="popper"><SelectItem value="FREE">Free</SelectItem><SelectItem value="PAID">Paid</SelectItem></SelectContent>
               </Select>
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label className="text-sm font-bold text-gray-900">Age Group</Label>
+              <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">Age Group</Label>
               <Select value={form.age_group} onValueChange={(v) => setF("age_group", v)}>
                 <SelectTrigger variant="auth" className="h-12!"><SelectValue placeholder="Select age group" /></SelectTrigger>
                 <SelectContent position="popper"><SelectItem value="EARLY">Early</SelectItem><SelectItem value="MIDDLE">Middle</SelectItem><SelectItem value="ADVANCED">Advanced</SelectItem></SelectContent>
@@ -235,22 +235,22 @@ function EditLessonModal({ lesson, moduleId, open, onClose }: { lesson: AdminLes
 
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) onClose() }}>
-      <DialogContent className="max-w-xl bg-white p-6" showCloseButton>
+      <DialogContent className="max-w-xl bg-white p-6 dark:bg-gray-900" showCloseButton>
         <DialogHeader>
-          <DialogTitle className="text-base font-black text-gray-900">Edit Lesson</DialogTitle>
+          <DialogTitle className="text-base font-black text-gray-900 dark:text-white">Edit Lesson</DialogTitle>
         </DialogHeader>
         <div className="mt-4 max-h-[65vh] overflow-y-auto space-y-4 pr-1">
           <div className="flex flex-col gap-1.5">
-            <Label className="text-sm font-bold text-gray-900">Lesson Title <span className="text-red-500">*</span></Label>
+            <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">Lesson Title <span className="text-red-500">*</span></Label>
             <Input variant="auth" value={form.lesson_title} onChange={(e) => setF("lesson_title", e.target.value)} />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-1.5">
-              <Label className="text-sm font-bold text-gray-900">Duration <span className="text-red-500">*</span></Label>
+              <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">Duration <span className="text-red-500">*</span></Label>
               <Input variant="auth" value={form.lesson_duration} onChange={(e) => setF("lesson_duration", e.target.value)} placeholder="e.g. 5:30" />
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label className="text-sm font-bold text-gray-900">Serial Number <span className="text-red-500">*</span></Label>
+              <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">Serial Number <span className="text-red-500">*</span></Label>
               <Select value={form.serial_number} onValueChange={(v) => setF("serial_number", v)}>
                 <SelectTrigger variant="auth" className="h-12!"><SelectValue placeholder="Select" /></SelectTrigger>
                 <SelectContent position="popper">{SEQ_OPTIONS.map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}</SelectContent>
@@ -258,23 +258,23 @@ function EditLessonModal({ lesson, moduleId, open, onClose }: { lesson: AdminLes
             </div>
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="text-sm font-bold text-gray-900">Description <span className="text-red-500">*</span></Label>
+            <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">Description <span className="text-red-500">*</span></Label>
             <textarea value={form.lesson_description} onChange={(e) => setF("lesson_description", e.target.value)} rows={3}
-              className="w-full resize-none rounded-xl border border-purple-200 bg-purple-50 px-3 py-3 text-sm placeholder:text-purple-300 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100" />
+              className="w-full resize-none rounded-xl border border-purple-200 bg-purple-50 px-3 py-3 text-sm text-gray-900 placeholder:text-purple-300 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:ring-gray-700" />
           </div>
           {/* Video upload */}
           <div className="flex flex-col gap-1.5">
-            <Label className="text-sm font-bold text-gray-900">Replace Video <span className="text-xs font-normal text-gray-400">(optional)</span></Label>
-            <div className="flex items-center gap-3 rounded-xl border border-purple-200 bg-purple-50 px-3 py-2.5">
+            <Label className="text-sm font-bold text-gray-900 dark:text-gray-200">Replace Video <span className="text-xs font-normal text-gray-400">(optional)</span></Label>
+            <div className="flex items-center gap-3 rounded-xl border border-purple-200 bg-purple-50 px-3 py-2.5 dark:border-gray-600 dark:bg-gray-800">
               {videoFile ? (
                 <>
                   <Film size={15} className="shrink-0 text-primary" />
-                  <span className="flex-1 truncate text-sm font-semibold text-gray-700">{videoFile.name}</span>
+                  <span className="flex-1 truncate text-sm font-semibold text-gray-700 dark:text-gray-200">{videoFile.name}</span>
                   <button type="button" onClick={() => setVideoFile(null)} className="shrink-0 text-gray-400 hover:text-red-500"><X size={14} /></button>
                 </>
               ) : (
                 <>
-                  <Film size={15} className="shrink-0 text-purple-300" />
+                  <Film size={15} className="shrink-0 text-purple-300 dark:text-gray-500" />
                   <button type="button" className="text-sm text-primary underline underline-offset-2" onClick={() => videoRef.current?.click()}>Choose video file</button>
                 </>
               )}
@@ -299,7 +299,7 @@ function LessonCard({ lesson, moduleId }: { lesson: AdminLesson; index: number; 
 
   return (
     <>
-      <div className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
+      <div className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100 dark:bg-gray-900 dark:ring-gray-700">
         <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10">
           <span className="text-sm font-black text-primary">{lesson.serial_number}</span>
         </div>
@@ -312,8 +312,8 @@ function LessonCard({ lesson, moduleId }: { lesson: AdminLesson; index: number; 
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="truncate text-sm font-extrabold text-gray-900">{lesson.lesson_title}</p>
-          {lesson.lesson_description && <p className="mt-0.5 line-clamp-1 text-xs text-gray-500">{lesson.lesson_description}</p>}
+          <p className="truncate text-sm font-extrabold text-gray-900 dark:text-white">{lesson.lesson_title}</p>
+          {lesson.lesson_description && <p className="mt-0.5 line-clamp-1 text-xs text-gray-500 dark:text-gray-400">{lesson.lesson_description}</p>}
           <div className="mt-1.5 flex items-center gap-3">
             {lesson.lesson_duration && (
               <span className="flex items-center gap-1 text-xs text-gray-400"><Clock size={11} />{lesson.lesson_duration}</span>
@@ -328,12 +328,12 @@ function LessonCard({ lesson, moduleId }: { lesson: AdminLesson; index: number; 
         <div className="flex shrink-0 items-center gap-1">
           {lesson.video_url && (
             <a href={lesson.video_url} target="_blank" rel="noopener noreferrer"
-              className="flex size-8 items-center justify-center rounded-full bg-purple-50 text-primary hover:bg-purple-100" title="View video">
+              className="flex size-8 items-center justify-center rounded-full bg-purple-50 text-primary hover:bg-purple-100 dark:bg-purple-900/20 dark:hover:bg-purple-900/40" title="View video">
               <Film size={15} />
             </a>
           )}
           <button onClick={() => setEditOpen(true)}
-            className="flex size-8 items-center justify-center rounded-full text-gray-400 hover:bg-purple-50 hover:text-primary" title="Edit lesson">
+            className="flex size-8 items-center justify-center rounded-full text-gray-400 hover:bg-purple-50 hover:text-primary dark:hover:bg-purple-900/20" title="Edit lesson">
             <Pencil size={15} />
           </button>
         </div>
@@ -379,31 +379,31 @@ export default function ModuleDetailPage({ params }: { params: Promise<{ moduleI
     <div className="mx-auto max-w-4xl space-y-6">
       {/* Back */}
       <Link href="/admin/dashboard/modules/published"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-primary">
+        className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-white">
         <ArrowLeft size={16} /> Back to Published Modules
       </Link>
 
       {/* Module header card */}
       {(mod || modulesLoading) && (
-        <div className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-gray-100">
+        <div className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-gray-100 dark:bg-gray-900 dark:ring-gray-700">
           <div className="relative h-[200px] bg-gradient-to-br from-purple-500 to-pink-500">
             {mod?.cover_image_url && (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={mod.cover_image_url} alt={mod.module_title} className="h-full w-full object-cover" />
             )}
-            {modulesLoading && <div className="h-full w-full animate-pulse bg-gray-200" />}
+            {modulesLoading && <div className="h-full w-full animate-pulse bg-gray-200 dark:bg-gray-700" />}
           </div>
 
           <div className="p-6">
             {modulesLoading ? (
               <div className="space-y-2">
-                <div className="h-6 w-1/2 animate-pulse rounded-lg bg-gray-100" />
-                <div className="h-4 w-3/4 animate-pulse rounded-lg bg-gray-100" />
+                <div className="h-6 w-1/2 animate-pulse rounded-lg bg-gray-100 dark:bg-gray-800" />
+                <div className="h-4 w-3/4 animate-pulse rounded-lg bg-gray-100 dark:bg-gray-800" />
               </div>
             ) : mod ? (
               <>
                 <div className="flex flex-wrap items-start justify-between gap-3">
-                  <h1 className="text-xl font-black text-gray-900">{mod.module_title}</h1>
+                  <h1 className="text-xl font-black text-gray-900 dark:text-white">{mod.module_title}</h1>
                   <div className="flex flex-wrap items-center gap-2">
                     {ageLabel && <span className={`rounded-full px-3 py-1 text-xs font-semibold ${ageColor}`}>{ageLabel}</span>}
                     {mod.module_tier && (
@@ -414,23 +414,23 @@ export default function ModuleDetailPage({ params }: { params: Promise<{ moduleI
                     )}
                     {/* Edit & Delete */}
                     <button onClick={() => setEditModuleOpen(true)}
-                      className="flex items-center gap-1.5 rounded-full border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-600 hover:border-primary hover:text-primary">
+                      className="flex items-center gap-1.5 rounded-full border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-600 hover:border-primary hover:text-primary dark:border-gray-700 dark:text-gray-300 dark:hover:border-primary dark:hover:text-primary">
                       <Pencil size={12} /> Edit
                     </button>
                     <button onClick={() => setDeleteConfirmOpen(true)}
-                      className="flex items-center gap-1.5 rounded-full border border-red-100 px-3 py-1.5 text-xs font-bold text-red-500 hover:bg-red-50">
+                      className="flex items-center gap-1.5 rounded-full border border-red-100 px-3 py-1.5 text-xs font-bold text-red-500 hover:bg-red-50 dark:border-red-900/40 dark:hover:bg-red-900/20">
                       <Trash2 size={12} /> Delete
                     </button>
                   </div>
                 </div>
-                {mod.module_description && <p className="mt-2 text-sm text-gray-500">{mod.module_description}</p>}
+                {mod.module_description && <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{mod.module_description}</p>}
                 <div className="mt-4 flex items-center gap-4 text-xs text-gray-400">
                   <span className="flex items-center gap-1"><ListOrdered size={13} /> Sequence {mod.sequence_num}</span>
                   <span className="flex items-center gap-1"><BookOpen size={13} /> {mod.no_of_lessons} {mod.no_of_lessons === 1 ? "lesson" : "lessons"}</span>
                 </div>
               </>
             ) : (
-              <p className="text-sm text-gray-500">Module not found.</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Module not found.</p>
             )}
           </div>
         </div>
@@ -439,7 +439,7 @@ export default function ModuleDetailPage({ params }: { params: Promise<{ moduleI
       {/* Lessons */}
       <div>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-base font-black text-gray-900">
+          <h2 className="text-base font-black text-gray-900 dark:text-white">
             Lessons {!isLoading && <span className="ml-2 text-sm font-semibold text-gray-400">({lessons.length})</span>}
           </h2>
           <Link href="/admin/dashboard/create-course"
@@ -450,22 +450,22 @@ export default function ModuleDetailPage({ params }: { params: Promise<{ moduleI
 
         {isLoading && (
           <div className="space-y-3">
-            {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-[80px] animate-pulse rounded-2xl bg-gray-100" />)}
+            {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-[80px] animate-pulse rounded-2xl bg-gray-100 dark:bg-gray-800" />)}
           </div>
         )}
 
         {lessonsError && (
-          <div className="flex items-center gap-3 rounded-2xl border border-red-100 bg-red-50 px-5 py-4 text-sm text-red-600">
+          <div className="flex items-center gap-3 rounded-2xl border border-red-100 bg-red-50 px-5 py-4 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
             <AlertCircle size={18} /> Failed to load lessons. Please refresh.
           </div>
         )}
 
         {!isLoading && !lessonsError && lessons.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-16 text-center">
-            <div className="flex size-14 items-center justify-center rounded-full bg-purple-50"><Film size={24} className="text-primary" /></div>
+            <div className="flex size-14 items-center justify-center rounded-full bg-purple-50 dark:bg-purple-900/30"><Film size={24} className="text-primary" /></div>
             <div>
-              <p className="text-sm font-bold text-gray-800">No lessons yet</p>
-              <p className="mt-1 text-xs text-gray-500">Add lessons from the Create Course page.</p>
+              <p className="text-sm font-bold text-gray-800 dark:text-gray-100">No lessons yet</p>
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Add lessons from the Create Course page.</p>
             </div>
             <Link href="/admin/dashboard/create-course" className="rounded-full bg-primary px-4 py-2 text-xs font-bold text-white hover:bg-primary/90">Add Lesson</Link>
           </div>
@@ -487,14 +487,14 @@ export default function ModuleDetailPage({ params }: { params: Promise<{ moduleI
 
       {/* Delete Module Confirm */}
       <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <DialogContent className="max-w-sm bg-white p-6" showCloseButton={false}>
+        <DialogContent className="max-w-sm bg-white p-6 dark:bg-gray-900" showCloseButton={false}>
           <div className="flex flex-col items-center gap-3 text-center">
-            <div className="flex size-14 items-center justify-center rounded-full bg-red-100">
+            <div className="flex size-14 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
               <AlertTriangle size={26} className="text-red-500" />
             </div>
-            <h3 className="text-base font-black text-gray-900">Delete this module?</h3>
-            <p className="text-sm text-gray-500">
-              <span className="font-bold text-gray-800">{mod?.module_title}</span> and all its lessons will be permanently removed. This cannot be undone.
+            <h3 className="text-base font-black text-gray-900 dark:text-white">Delete this module?</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="font-bold text-gray-800 dark:text-gray-200">{mod?.module_title}</span> and all its lessons will be permanently removed. This cannot be undone.
             </p>
           </div>
           <div className="mt-5 space-y-3">
@@ -502,7 +502,7 @@ export default function ModuleDetailPage({ params }: { params: Promise<{ moduleI
               loading={deleteModule.isPending} onClick={handleDeleteModule}>
               Delete Module
             </Button>
-            <Button type="button" variant="ghost" className="h-12 w-full rounded-full font-bold text-gray-500"
+            <Button type="button" variant="ghost" className="h-12 w-full rounded-full font-bold text-gray-500 dark:text-gray-400"
               disabled={deleteModule.isPending} onClick={() => setDeleteConfirmOpen(false)}>
               Cancel
             </Button>

@@ -84,19 +84,19 @@ function ConfirmModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+      <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 rounded-lg p-1 text-gray-400 hover:bg-gray-100"
+          className="absolute top-4 right-4 rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
         >
           <X size={18} />
         </button>
-        <h3 className="text-lg font-extrabold text-gray-900">{titles[type]}</h3>
-        <p className="mt-2 text-sm font-semibold text-gray-500">{descriptions[type]}</p>
+        <h3 className="text-lg font-extrabold text-gray-900 dark:text-white">{titles[type]}</h3>
+        <p className="mt-2 text-sm font-semibold text-gray-500 dark:text-gray-400">{descriptions[type]}</p>
 
         {isDelete && (
           <div className="mt-4">
-            <label className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-gray-500">
+            <label className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-gray-500 dark:text-gray-400">
               Reason <span className="text-red-500">*</span>
             </label>
             <div className="flex flex-wrap gap-2">
@@ -108,7 +108,7 @@ function ConfirmModal({
                   className={`rounded-full px-3 py-1 text-xs font-extrabold transition ${
                     selectedChip === r
                       ? "bg-primary text-white"
-                      : "border border-gray-200 bg-gray-50 text-gray-600 hover:border-primary hover:text-primary"
+                      : "border border-gray-200 bg-gray-50 text-gray-600 hover:border-primary hover:text-primary dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
                   }`}
                 >
                   {r}
@@ -124,18 +124,18 @@ function ConfirmModal({
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="Describe the reason…"
                 rows={2}
-                className="mt-3 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-700 outline-none focus:border-primary"
+                className="mt-3 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-700 outline-none focus:border-primary dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
               />
             )}
             <div className="mt-4">
-              <label className="mb-1.5 block text-xs font-extrabold uppercase tracking-wide text-gray-500">
-                Type <span className="font-black text-gray-900">DELETE</span> to confirm
+              <label className="mb-1.5 block text-xs font-extrabold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                Type <span className="font-black text-gray-900 dark:text-white">DELETE</span> to confirm
               </label>
               <input
                 value={confirmText}
                 onChange={(e) => setConfirmText(e.target.value)}
                 placeholder="DELETE"
-                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-700 outline-none focus:border-red-400"
+                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-700 outline-none focus:border-red-400 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
               />
               {attempted && confirmText !== "DELETE" && (
                 <p className="mt-1.5 text-xs font-semibold text-red-500">You must type DELETE to confirm.</p>
@@ -146,7 +146,7 @@ function ConfirmModal({
 
         {!isDelete && needsReason && (
           <div className="mt-4">
-            <label className="mb-1.5 block text-xs font-extrabold uppercase tracking-wide text-gray-500">
+            <label className="mb-1.5 block text-xs font-extrabold uppercase tracking-wide text-gray-500 dark:text-gray-400">
               Reason <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -154,7 +154,7 @@ function ConfirmModal({
               onChange={(e) => setReason(e.target.value)}
               placeholder={type === "reset" ? "e.g. User requested password reset" : "e.g. Violated community guidelines"}
               rows={3}
-              className="w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-700 outline-none focus:border-primary"
+              className="w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-700 outline-none focus:border-primary dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
             />
             {attempted && !reason.trim() && (
               <p className="mt-1.5 text-xs font-semibold text-red-500">Please enter a reason.</p>
@@ -165,7 +165,7 @@ function ConfirmModal({
         <div className="mt-5 flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-extrabold text-gray-600 hover:bg-gray-50"
+            className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-extrabold text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
           >
             Cancel
           </button>
@@ -204,7 +204,6 @@ export default function AdminUserDetailPage() {
   const { data: res, isLoading } = useAdminUserDetail(userId)
   const user = res?.data
 
-  // Sync deactivation state from API data on initial load and after refetches
   useEffect(() => {
     if (!user) return
     if (user.account_status !== undefined) {
@@ -327,7 +326,7 @@ export default function AdminUserDetailPage() {
         <div className="flex items-center justify-between">
           <button
             onClick={() => router.push("/admin/dashboard/users")}
-            className="flex items-center gap-2 text-sm font-extrabold text-gray-500 hover:text-gray-900"
+            className="flex items-center gap-2 text-sm font-extrabold text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
           >
             <ArrowLeft size={16} /> Students
           </button>
@@ -337,7 +336,7 @@ export default function AdminUserDetailPage() {
         </div>
 
         {/* Profile card */}
-        <div className="flex flex-col items-center gap-4 rounded-3xl border border-gray-200 bg-white p-6 shadow-[0_18px_50px_rgba(16,24,40,0.07)] sm:flex-row sm:items-start">
+        <div className="flex flex-col items-center gap-4 rounded-3xl border border-gray-200 bg-white p-6 shadow-[0_18px_50px_rgba(16,24,40,0.07)] dark:border-gray-700 dark:bg-gray-900 sm:flex-row sm:items-start">
           {user.profile_picture ? (
             <img
               src={user.profile_picture}
@@ -350,16 +349,16 @@ export default function AdminUserDetailPage() {
             </div>
           )}
           <div className="flex flex-col gap-1.5 text-center sm:text-left">
-            <h2 className="text-2xl font-black text-gray-900">
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white">
               {user.first_name} {user.last_name}
             </h2>
-            <p className="text-sm font-semibold text-gray-500">
+            <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
               Email: {user.email}
             </p>
-            <p className="text-sm font-semibold text-gray-500">
+            <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
               Age Group: {user.age_group}
             </p>
-            <p className="text-sm font-semibold text-gray-500">
+            <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
               Status:{" "}
               <span
                 className={
@@ -373,17 +372,17 @@ export default function AdminUserDetailPage() {
                 {accountStatus === "ACTIVE" ? "Active" : accountStatus === "RESTRICTED" ? "Restricted" : accountStatus ?? "Inactive"}
               </span>
             </p>
-            <p className="text-sm font-semibold text-gray-500">
+            <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
               Subscription:{" "}
-              <span className="font-extrabold text-gray-800">
+              <span className="font-extrabold text-gray-800 dark:text-gray-200">
                 {user.subscription_status}
               </span>
             </p>
-            <p className="text-sm font-semibold text-gray-500">
+            <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
               Registration Date: {formatDate(user.registered_at)}
             </p>
             {user.last_login_at && (
-              <p className="text-sm font-semibold text-gray-500">
+              <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
                 Last Login: {formatDateTime(user.last_login_at)}
               </p>
             )}
@@ -430,14 +429,14 @@ export default function AdminUserDetailPage() {
         {/* Academic + Activity row */}
         <div className="grid gap-4 lg:grid-cols-2">
           {/* Academic & Course Info */}
-          <div className="flex flex-col gap-5 rounded-3xl border border-gray-200 bg-white p-6 shadow-[0_18px_50px_rgba(16,24,40,0.07)]">
-            <h3 className="text-sm font-extrabold uppercase tracking-widest text-gray-900">
+          <div className="flex flex-col gap-5 rounded-3xl border border-gray-200 bg-white p-6 shadow-[0_18px_50px_rgba(16,24,40,0.07)] dark:border-gray-700 dark:bg-gray-900">
+            <h3 className="text-sm font-extrabold uppercase tracking-widest text-gray-900 dark:text-white">
               Academic &amp; Course Info
             </h3>
 
             {/* Current Enrollments */}
             <div>
-              <p className="mb-3 text-sm font-extrabold text-gray-700">
+              <p className="mb-3 text-sm font-extrabold text-gray-700 dark:text-gray-300">
                 Current Enrollments
               </p>
               {user.current_enrollments.length === 0 ? (
@@ -449,17 +448,17 @@ export default function AdminUserDetailPage() {
                   {user.current_enrollments.map((e, i) => (
                     <div key={e.module_id} className="flex flex-col gap-1">
                       <div className="flex items-center justify-between">
-                        <p className="text-xs font-semibold text-gray-700">
-                          <span className="font-extrabold text-gray-500">
+                        <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                          <span className="font-extrabold text-gray-500 dark:text-gray-400">
                             Module {i + 1}:
                           </span>{" "}
                           {e.module_title}
                         </p>
-                        <span className="ml-3 shrink-0 text-xs font-extrabold text-gray-600">
+                        <span className="ml-3 shrink-0 text-xs font-extrabold text-gray-600 dark:text-gray-300">
                           Progress: {e.progress_percentage}%
                         </span>
                       </div>
-                      <div className="h-1.5 overflow-hidden rounded-full bg-gray-100">
+                      <div className="h-1.5 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
                         <div
                           className="h-full rounded-full bg-gradient-to-r from-primary to-[#bb2efa] transition-all"
                           style={{ width: `${Math.max(e.progress_percentage, e.progress_percentage > 0 ? 4 : 0)}%` }}
@@ -473,7 +472,7 @@ export default function AdminUserDetailPage() {
 
             {/* Completed Modules */}
             <div>
-              <p className="mb-3 text-sm font-extrabold text-gray-700">
+              <p className="mb-3 text-sm font-extrabold text-gray-700 dark:text-gray-300">
                 Completed Modules
               </p>
               {user.completed_modules.length === 0 ? (
@@ -485,9 +484,9 @@ export default function AdminUserDetailPage() {
                   {user.completed_modules.map((m) => (
                     <div
                       key={m.module_id}
-                      className="flex items-center justify-between rounded-xl bg-emerald-50 px-3 py-2"
+                      className="flex items-center justify-between rounded-xl bg-emerald-50 px-3 py-2 dark:bg-emerald-900/20"
                     >
-                      <p className="text-xs font-semibold text-gray-700">
+                      <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">
                         {m.module_title}
                       </p>
                       <span className="text-xs font-extrabold text-emerald-600">
@@ -501,12 +500,12 @@ export default function AdminUserDetailPage() {
           </div>
 
           {/* Activity Log */}
-          <div className="flex flex-col gap-4 rounded-3xl border border-gray-200 bg-white p-6 shadow-[0_18px_50px_rgba(16,24,40,0.07)]">
-            <h3 className="text-sm font-extrabold uppercase tracking-widest text-gray-900">
+          <div className="flex flex-col gap-4 rounded-3xl border border-gray-200 bg-white p-6 shadow-[0_18px_50px_rgba(16,24,40,0.07)] dark:border-gray-700 dark:bg-gray-900">
+            <h3 className="text-sm font-extrabold uppercase tracking-widest text-gray-900 dark:text-white">
               Activity Log
             </h3>
             <div>
-              <p className="mb-3 text-sm font-extrabold text-gray-700">
+              <p className="mb-3 text-sm font-extrabold text-gray-700 dark:text-gray-300">
                 Recent Activities
               </p>
               {user.activity_log.length === 0 ? (
@@ -518,18 +517,18 @@ export default function AdminUserDetailPage() {
                   {user.activity_log.map((entry, i) => (
                     <div
                       key={i}
-                      className="flex items-start gap-3 rounded-xl border border-gray-100 p-3"
+                      className="flex items-start gap-3 rounded-xl border border-gray-100 p-3 dark:border-gray-700"
                     >
                       <div className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-primary" />
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs font-extrabold text-gray-700">
+                        <p className="text-xs font-extrabold text-gray-700 dark:text-gray-300">
                           {entry.description}
                         </p>
                         <p className="mt-0.5 text-xs font-semibold text-gray-400">
                           {formatDateTime(entry.timestamp)}
                         </p>
                       </div>
-                      <span className="shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-extrabold text-gray-500">
+                      <span className="shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-extrabold text-gray-500 dark:bg-gray-700 dark:text-gray-400">
                         {entry.event_type}
                       </span>
                     </div>

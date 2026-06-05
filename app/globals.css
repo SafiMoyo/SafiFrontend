@@ -26,7 +26,8 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-white;
+    @apply bg-white dark:bg-gray-950;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
   button {
     @apply cursor-pointer;

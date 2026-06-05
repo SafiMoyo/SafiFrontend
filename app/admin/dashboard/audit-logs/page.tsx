@@ -9,7 +9,7 @@ const ACTION_COLORS: Record<string, { bg: string; text: string }> = {
   DEACTIVATE_USER: { bg: "bg-orange-50", text: "text-orange-600" },
   REACTIVATE_USER: { bg: "bg-emerald-50", text: "text-emerald-600" },
   RESET_PASSWORD: { bg: "bg-blue-50", text: "text-blue-600" },
-  DEFAULT: { bg: "bg-gray-100", text: "text-gray-600" },
+  DEFAULT: { bg: "bg-gray-100 dark:bg-gray-700", text: "text-gray-600 dark:text-gray-300" },
 }
 
 function ActionBadge({ type }: { type: string }) {
@@ -62,7 +62,7 @@ function Pagination({
       <button
         onClick={() => onChange(page - 1)}
         disabled={page === 0}
-        className="flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-extrabold text-gray-500 hover:bg-gray-100 disabled:opacity-40"
+        className="flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-extrabold text-gray-500 hover:bg-gray-100 disabled:opacity-40 dark:text-gray-400 dark:hover:bg-gray-700"
       >
         <ChevronLeft size={14} /> Prev
       </button>
@@ -78,7 +78,7 @@ function Pagination({
             className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs font-extrabold transition ${
               p === page
                 ? "bg-primary text-white shadow-sm"
-                : "text-gray-500 hover:bg-gray-100"
+                : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
             }`}
           >
             {(p as number) + 1}
@@ -88,7 +88,7 @@ function Pagination({
       <button
         onClick={() => onChange(page + 1)}
         disabled={page >= totalPages - 1}
-        className="flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-extrabold text-gray-500 hover:bg-gray-100 disabled:opacity-40"
+        className="flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-extrabold text-gray-500 hover:bg-gray-100 disabled:opacity-40 dark:text-gray-400 dark:hover:bg-gray-700"
       >
         Next <ChevronRight size={14} />
       </button>
@@ -101,28 +101,28 @@ function LogRow({ log }: { log: AuditLogEntry }) {
 
   return (
     <tr
-      className="cursor-pointer border-t border-gray-100 transition-colors hover:bg-gray-50"
+      className="cursor-pointer border-t border-gray-100 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
       onClick={() => setExpanded((e) => !e)}
     >
       <td className="px-5 py-3.5">
-        <p className="text-sm font-extrabold text-gray-900">{log.admin_name}</p>
+        <p className="text-sm font-extrabold text-gray-900 dark:text-white">{log.admin_name}</p>
       </td>
       <td className="px-5 py-3.5">
         <ActionBadge type={log.action_type} />
       </td>
       <td className="px-5 py-3.5">
-        <p className="text-sm font-extrabold text-gray-800">{log.title}</p>
+        <p className="text-sm font-extrabold text-gray-800 dark:text-gray-100">{log.title}</p>
       </td>
       <td className="max-w-xs px-5 py-3.5">
         <p
-          className={`text-xs font-semibold text-gray-600 ${
+          className={`text-xs font-semibold text-gray-600 dark:text-gray-300 ${
             expanded ? "" : "line-clamp-2"
           }`}
         >
           {log.message}
         </p>
       </td>
-      <td className="px-5 py-3.5 text-xs font-semibold text-gray-500 whitespace-nowrap">
+      <td className="whitespace-nowrap px-5 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400">
         {formatDateTime(log.performed_at)}
       </td>
     </tr>
@@ -142,20 +142,20 @@ export default function AdminAuditLogsPage() {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">
+        <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
           Audit Logs
         </h1>
-        <p className="mt-1 text-sm font-semibold text-gray-500">
+        <p className="mt-1 text-sm font-semibold text-gray-500 dark:text-gray-400">
           All admin actions, newest first
         </p>
       </div>
 
-      <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.07)]">
-        <div className="border-b border-gray-100 px-5 py-4">
-          <h2 className="text-base font-extrabold text-gray-900">
+      <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.07)] dark:border-gray-700 dark:bg-gray-900">
+        <div className="border-b border-gray-100 px-5 py-4 dark:border-gray-700">
+          <h2 className="text-base font-extrabold text-gray-900 dark:text-white">
             Action History
           </h2>
-          <p className="mt-0.5 text-xs font-semibold text-gray-500">
+          <p className="mt-0.5 text-xs font-semibold text-gray-500 dark:text-gray-400">
             {totalElements} action{totalElements !== 1 ? "s" : ""} recorded
           </p>
         </div>
@@ -167,7 +167,7 @@ export default function AdminAuditLogsPage() {
                 {["Admin", "Action", "Title", "Message", "Date"].map((h) => (
                   <th
                     key={h}
-                    className="bg-gray-50 px-5 py-3 text-left text-xs font-extrabold uppercase tracking-widest text-gray-400"
+                    className="bg-gray-50 px-5 py-3 text-left text-xs font-extrabold uppercase tracking-widest text-gray-400 dark:bg-gray-800 dark:text-gray-500"
                   >
                     {h}
                   </th>
@@ -185,10 +185,10 @@ export default function AdminAuditLogsPage() {
                 <tr>
                   <td colSpan={5} className="px-5 py-16 text-center">
                     <div className="mx-auto flex flex-col items-center gap-3">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
                         <ClipboardList size={22} className="text-gray-400" />
                       </div>
-                      <p className="text-sm font-extrabold text-gray-500">
+                      <p className="text-sm font-extrabold text-gray-500 dark:text-gray-400">
                         No audit logs yet
                       </p>
                       <p className="text-xs font-semibold text-gray-400">
@@ -204,7 +204,7 @@ export default function AdminAuditLogsPage() {
           </table>
         </div>
 
-        <div className="flex items-center justify-between border-t border-gray-100 px-5 py-3">
+        <div className="flex items-center justify-between border-t border-gray-100 px-5 py-3 dark:border-gray-700">
           <p className="text-xs font-semibold text-gray-400">
             Page {page + 1} of {totalPages}
           </p>

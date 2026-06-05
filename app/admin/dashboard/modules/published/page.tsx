@@ -64,7 +64,7 @@ function ModuleCard({ mod, index }: { mod: AdminModule; index: number }) {
   return (
     <Link
       href={`/admin/dashboard/modules/published/${mod.id}`}
-      className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100 transition-shadow hover:shadow-md cursor-pointer">
+      className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100 transition-shadow hover:shadow-md cursor-pointer dark:bg-gray-900 dark:ring-gray-700">
       {/* Cover */}
       <div className={`relative h-[140px] bg-gradient-to-br ${gradient} flex items-center justify-center`}>
         {mod.cover_image_url ? (
@@ -87,12 +87,12 @@ function ModuleCard({ mod, index }: { mod: AdminModule; index: number }) {
 
       {/* Body */}
       <div className="flex flex-1 flex-col gap-3 p-4">
-        <h3 className="line-clamp-2 text-sm font-extrabold leading-snug text-gray-900">
+        <h3 className="line-clamp-2 text-sm font-extrabold leading-snug text-gray-900 dark:text-white">
           {mod.module_title}
         </h3>
 
         {mod.module_description && (
-          <p className="line-clamp-2 text-xs text-gray-500">{mod.module_description}</p>
+          <p className="line-clamp-2 text-xs text-gray-500 dark:text-gray-400">{mod.module_description}</p>
         )}
 
         <div className="mt-auto flex items-center justify-between">
@@ -144,8 +144,8 @@ export default function PublishedModulesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-gray-900">Published Modules</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-black text-gray-900 dark:text-white">Published Modules</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             {isLoading ? "Loading..." : `${totalCount} published ${totalCount === 1 ? "module" : "modules"}`}
           </p>
         </div>
@@ -161,13 +161,13 @@ export default function PublishedModulesPage() {
       {isLoading && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-[220px] animate-pulse rounded-2xl bg-gray-100" />
+            <div key={i} className="h-[220px] animate-pulse rounded-2xl bg-gray-100 dark:bg-gray-800" />
           ))}
         </div>
       )}
 
       {isError && (
-        <div className="flex items-center gap-3 rounded-2xl border border-red-100 bg-red-50 px-5 py-4 text-sm text-red-600">
+        <div className="flex items-center gap-3 rounded-2xl border border-red-100 bg-red-50 px-5 py-4 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
           <AlertCircle size={18} />
           Failed to load modules. Please refresh the page.
         </div>
@@ -175,12 +175,12 @@ export default function PublishedModulesPage() {
 
       {!isLoading && !isError && totalCount === 0 && (
         <div className="flex flex-col items-center gap-4 py-20 text-center">
-          <div className="flex size-16 items-center justify-center rounded-full bg-purple-50">
+          <div className="flex size-16 items-center justify-center rounded-full bg-purple-50 dark:bg-purple-900/30">
             <BookOpen size={28} className="text-primary" />
           </div>
           <div>
-            <p className="text-base font-bold text-gray-800">No published modules yet</p>
-            <p className="mt-1 text-sm text-gray-500">Create a course and publish it to see it here.</p>
+            <p className="text-base font-bold text-gray-800 dark:text-gray-100">No published modules yet</p>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Create a course and publish it to see it here.</p>
           </div>
           <Link
             href="/admin/dashboard/create-course"

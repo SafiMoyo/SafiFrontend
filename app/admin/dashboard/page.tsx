@@ -20,6 +20,7 @@ import {
   useAdminTopLessons,
   useAdminFinancialAnalysis,
 } from "@/services/admin-auth/queries"
+import { useTheme } from "next-themes"
 
 const CURRENT_YEAR = new Date().getFullYear()
 const YEAR_OPTIONS = [CURRENT_YEAR, CURRENT_YEAR - 1, CURRENT_YEAR - 2]
@@ -30,14 +31,13 @@ function formatNaira(n: number) {
   return `₦${n.toLocaleString()}`
 }
 
-// Circular donut for course completion
-function DonutChart({ pct }: { pct: number }) {
+function DonutChart({ pct, isDark }: { pct: number; isDark: boolean }) {
   const r = 54
   const circ = 2 * Math.PI * r
   const offset = circ * (1 - pct / 100)
   return (
     <svg width={140} height={140} viewBox="0 0 140 140">
-      <circle cx={70} cy={70} r={r} fill="none" stroke="#f3e8ff" strokeWidth={14} />
+      <circle cx={70} cy={70} r={r} fill="none" stroke={isDark ? "#374151" : "#f3e8ff"} strokeWidth={14} />
       <circle
         cx={70}
         cy={70}
@@ -57,7 +57,13 @@ function DonutChart({ pct }: { pct: number }) {
           <stop offset="100%" stopColor="#bb2efa" />
         </linearGradient>
       </defs>
-      <text x={70} y={70} textAnchor="middle" dominantBaseline="central" className="fill-gray-900 text-[22px] font-black" style={{ fontSize: 22, fontWeight: 900, fill: "#111827" }}>
+      <text
+        x={70}
+        y={70}
+        textAnchor="middle"
+        dominantBaseline="central"
+        style={{ fontSize: 22, fontWeight: 900, fill: isDark ? "#f9fafb" : "#111827" }}
+      >
         {Math.round(pct)}%
       </text>
     </svg>
@@ -75,7 +81,7 @@ function YearSelector({
     <select
       value={value}
       onChange={(e) => onChange(Number(e.target.value))}
-      className="rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs font-extrabold text-gray-600 outline-none focus:border-primary"
+      className="rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs font-extrabold text-gray-600 outline-none focus:border-primary dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
     >
       {YEAR_OPTIONS.map((y) => (
         <option key={y} value={y}>
@@ -89,6 +95,8 @@ function YearSelector({
 export default function AdminOverviewPage() {
   const [activityYear, setActivityYear] = useState(CURRENT_YEAR)
   const [financialYear, setFinancialYear] = useState(CURRENT_YEAR)
+  const { theme } = useTheme()
+  const isDark = theme === "dark"
 
   const { data: overviewRes, isLoading: loadingOverview } =
     useAdminDashboardOverview()
@@ -140,14 +148,25 @@ export default function AdminOverviewPage() {
     },
   ]
 
+  const gridColor = isDark ? "#374151" : "#f3f4f6"
+  const tickColor = "#9ca3af"
+  const tooltipStyle = {
+    borderRadius: 12,
+    border: `1px solid ${isDark ? "#374151" : "#f3f4f6"}`,
+    fontSize: 12,
+    fontWeight: 700,
+    background: isDark ? "#1f2937" : "#ffffff",
+    color: isDark ? "#f9fafb" : "#111827",
+  }
+
   return (
     <div className="flex flex-col gap-5">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">
+        <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
           Overview
         </h1>
-        <p className="mt-1 text-sm font-semibold text-gray-500">
+        <p className="mt-1 text-sm font-semibold text-gray-500 dark:text-gray-400">
           Platform-wide snapshot
         </p>
       </div>
@@ -160,12 +179,12 @@ export default function AdminOverviewPage() {
             className={`rounded-[18px] border p-4 shadow-[0_12px_28px_rgba(16,24,40,0.05)] sm:p-5 ${
               highlight
                 ? "border-transparent bg-gradient-to-br from-primary to-[#bb2efa] text-white"
-                : "border-gray-200 bg-white"
+                : "border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900"
             }`}
           >
             <div
               className={`mb-3 flex h-9 w-9 items-center justify-center rounded-xl ${
-                highlight ? "bg-white/20" : "bg-purple-50"
+                highlight ? "bg-white/20" : "bg-purple-50 dark:bg-purple-900/30"
               }`}
             >
               <Icon
@@ -175,14 +194,14 @@ export default function AdminOverviewPage() {
             </div>
             <p
               className={`text-2xl font-black tracking-tight ${
-                highlight ? "text-white" : "text-gray-900"
+                highlight ? "text-white" : "text-gray-900 dark:text-white"
               }`}
             >
               {loadingOverview ? "—" : value.toLocaleString()}
             </p>
             <p
               className={`mt-1 text-xs font-extrabold uppercase tracking-wide ${
-                highlight ? "text-white/80" : "text-gray-500"
+                highlight ? "text-white/80" : "text-gray-500 dark:text-gray-400"
               }`}
             >
               {label}
@@ -194,13 +213,13 @@ export default function AdminOverviewPage() {
       {/* Charts row */}
       <div className="grid gap-4 lg:grid-cols-[1.4fr_0.6fr]">
         {/* User Activities */}
-        <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.07)]">
-          <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-5 py-4">
+        <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.07)] dark:border-gray-700 dark:bg-gray-900">
+          <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-5 py-4 dark:border-gray-700">
             <div>
-              <h2 className="text-base font-extrabold text-gray-900">
+              <h2 className="text-base font-extrabold text-gray-900 dark:text-white">
                 User Activities
               </h2>
-              <p className="mt-0.5 text-xs font-semibold text-gray-500">
+              <p className="mt-0.5 text-xs font-semibold text-gray-500 dark:text-gray-400">
                 Monthly active users
               </p>
             </div>
@@ -237,26 +256,21 @@ export default function AdminOverviewPage() {
                       />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                   <XAxis
                     dataKey="month_label"
-                    tick={{ fontSize: 11, fill: "#9ca3af", fontWeight: 700 }}
+                    tick={{ fontSize: 11, fill: tickColor, fontWeight: 700 }}
                     axisLine={false}
                     tickLine={false}
                   />
                   <YAxis
-                    tick={{ fontSize: 11, fill: "#9ca3af", fontWeight: 700 }}
+                    tick={{ fontSize: 11, fill: tickColor, fontWeight: 700 }}
                     axisLine={false}
                     tickLine={false}
                     allowDecimals={false}
                   />
                   <Tooltip
-                    contentStyle={{
-                      borderRadius: 12,
-                      border: "1px solid #f3f4f6",
-                      fontSize: 12,
-                      fontWeight: 700,
-                    }}
+                    contentStyle={tooltipStyle}
                     formatter={(v) => [v, "Active Users"]}
                   />
                   <Area
@@ -275,12 +289,12 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* Course Completion */}
-        <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.07)]">
-          <div className="border-b border-gray-100 px-5 py-4">
-            <h2 className="text-base font-extrabold text-gray-900">
+        <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.07)] dark:border-gray-700 dark:bg-gray-900">
+          <div className="border-b border-gray-100 px-5 py-4 dark:border-gray-700">
+            <h2 className="text-base font-extrabold text-gray-900 dark:text-white">
               Course Completion
             </h2>
-            <p className="mt-0.5 text-xs font-semibold text-gray-500">
+            <p className="mt-0.5 text-xs font-semibold text-gray-500 dark:text-gray-400">
               Lessons completed vs total
             </p>
           </div>
@@ -289,17 +303,17 @@ export default function AdminOverviewPage() {
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
             ) : (
               <>
-                <DonutChart pct={completionPct} />
+                <DonutChart pct={completionPct} isDark={isDark} />
                 <div className="flex w-full flex-col gap-2 text-center">
-                  <div className="flex justify-around text-xs font-extrabold text-gray-500">
+                  <div className="flex justify-around text-xs font-extrabold text-gray-500 dark:text-gray-400">
                     <span>
-                      <span className="block text-xl font-black text-gray-900">
+                      <span className="block text-xl font-black text-gray-900 dark:text-white">
                         {overview?.total_completed_lessons ?? 0}
                       </span>
                       Completed
                     </span>
                     <span>
-                      <span className="block text-xl font-black text-gray-900">
+                      <span className="block text-xl font-black text-gray-900 dark:text-white">
                         {(overview?.total_lessons ?? 0) -
                           (overview?.total_completed_lessons ?? 0)}
                       </span>
@@ -316,13 +330,13 @@ export default function AdminOverviewPage() {
       {/* Bottom row */}
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Top Performing Courses */}
-        <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.07)]">
-          <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+        <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.07)] dark:border-gray-700 dark:bg-gray-900">
+          <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-gray-700">
             <div>
-              <h2 className="text-base font-extrabold text-gray-900">
+              <h2 className="text-base font-extrabold text-gray-900 dark:text-white">
                 Top Performing Courses
               </h2>
-              <p className="mt-0.5 text-xs font-semibold text-gray-500">
+              <p className="mt-0.5 text-xs font-semibold text-gray-500 dark:text-gray-400">
                 Ranked by view count
               </p>
             </div>
@@ -341,18 +355,18 @@ export default function AdminOverviewPage() {
                 <div key={lesson.lesson_id} className="flex flex-col gap-1.5">
                   <div className="flex items-center justify-between">
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-extrabold text-gray-900">
+                      <p className="truncate text-sm font-extrabold text-gray-900 dark:text-white">
                         {lesson.lesson_title}
                       </p>
                       <p className="truncate text-xs font-semibold text-gray-400">
                         {lesson.module_title}
                       </p>
                     </div>
-                    <span className="ml-3 shrink-0 text-xs font-extrabold text-gray-500">
+                    <span className="ml-3 shrink-0 text-xs font-extrabold text-gray-500 dark:text-gray-400">
                       {lesson.view_count} views
                     </span>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-gray-100">
+                  <div className="h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
                     <div
                       className="h-full rounded-full bg-gradient-to-r from-primary to-[#bb2efa] transition-all"
                       style={{
@@ -367,13 +381,13 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* Financial Analysis */}
-        <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.07)]">
-          <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-5 py-4">
+        <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.07)] dark:border-gray-700 dark:bg-gray-900">
+          <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-5 py-4 dark:border-gray-700">
             <div>
-              <h2 className="text-base font-extrabold text-gray-900">
+              <h2 className="text-base font-extrabold text-gray-900 dark:text-white">
                 Financial Analysis
               </h2>
-              <p className="mt-0.5 text-xs font-semibold text-gray-500">
+              <p className="mt-0.5 text-xs font-semibold text-gray-500 dark:text-gray-400">
                 Revenue &amp; courses sold
               </p>
             </div>
@@ -392,16 +406,16 @@ export default function AdminOverviewPage() {
                   barCategoryGap="30%"
                   barGap={3}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
                   <XAxis
                     dataKey="month_label"
-                    tick={{ fontSize: 10, fill: "#9ca3af", fontWeight: 700 }}
+                    tick={{ fontSize: 10, fill: tickColor, fontWeight: 700 }}
                     axisLine={false}
                     tickLine={false}
                   />
                   <YAxis
                     yAxisId="revenue"
-                    tick={{ fontSize: 10, fill: "#9ca3af", fontWeight: 700 }}
+                    tick={{ fontSize: 10, fill: tickColor, fontWeight: 700 }}
                     axisLine={false}
                     tickLine={false}
                     tickFormatter={(v) => (v >= 1000 ? `₦${v / 1000}k` : `₦${v}`)}
@@ -409,18 +423,13 @@ export default function AdminOverviewPage() {
                   <YAxis
                     yAxisId="sold"
                     orientation="right"
-                    tick={{ fontSize: 10, fill: "#9ca3af", fontWeight: 700 }}
+                    tick={{ fontSize: 10, fill: tickColor, fontWeight: 700 }}
                     axisLine={false}
                     tickLine={false}
                     allowDecimals={false}
                   />
                   <Tooltip
-                    contentStyle={{
-                      borderRadius: 12,
-                      border: "1px solid #f3f4f6",
-                      fontSize: 12,
-                      fontWeight: 700,
-                    }}
+                    contentStyle={tooltipStyle}
                     formatter={(value, name) =>
                       name === "total_revenue"
                         ? [formatNaira(Number(value)), "Total Revenue"]
@@ -431,7 +440,7 @@ export default function AdminOverviewPage() {
                     formatter={(v) =>
                       v === "total_revenue" ? "Total Revenue" : "Courses Sold"
                     }
-                    wrapperStyle={{ fontSize: 11, fontWeight: 700 }}
+                    wrapperStyle={{ fontSize: 11, fontWeight: 700, color: isDark ? "#d1d5db" : undefined }}
                   />
                   <Bar
                     yAxisId="revenue"

@@ -17,6 +17,7 @@ import {
   type Transaction,
   type TransactionOverview,
 } from "@/services/admin-auth/queries"
+import { useTheme } from "next-themes"
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -79,11 +80,13 @@ function RingCard({
   value,
   total,
   color,
+  isDark,
 }: {
   label: string
   value: number
   total: number
   color: string
+  isDark: boolean
 }) {
   const r = 24
   const circ = 2 * Math.PI * r
@@ -91,14 +94,14 @@ function RingCard({
   const offset = circ * (1 - pct / 100)
 
   return (
-    <div className="flex items-center gap-4 rounded-[18px] border border-gray-200 bg-white p-4 shadow-[0_8px_20px_rgba(16,24,40,0.05)] sm:p-5">
+    <div className="flex items-center gap-4 rounded-[18px] border border-gray-200 bg-white p-4 shadow-[0_8px_20px_rgba(16,24,40,0.05)] dark:border-gray-700 dark:bg-gray-900 sm:p-5">
       <svg width={64} height={64} viewBox="0 0 64 64" className="shrink-0">
         <circle
           cx={32}
           cy={32}
           r={r}
           fill="none"
-          stroke="#f3f4f6"
+          stroke={isDark ? "#374151" : "#f3f4f6"}
           strokeWidth={7}
         />
         <circle
@@ -119,14 +122,14 @@ function RingCard({
           y={32}
           textAnchor="middle"
           dominantBaseline="central"
-          style={{ fontSize: 13, fontWeight: 900, fill: "#111827" }}
+          style={{ fontSize: 13, fontWeight: 900, fill: isDark ? "#f9fafb" : "#111827" }}
         >
           {value}
         </text>
       </svg>
       <div>
-        <p className="text-xl font-black text-gray-900">{value}</p>
-        <p className="text-xs font-extrabold uppercase tracking-wide text-gray-500">
+        <p className="text-xl font-black text-gray-900 dark:text-white">{value}</p>
+        <p className="text-xs font-extrabold uppercase tracking-wide text-gray-500 dark:text-gray-400">
           {label}
         </p>
       </div>
@@ -167,10 +170,10 @@ function ReceiptPanel({ tx }: { tx: Transaction }) {
         <div
           className={`flex h-16 w-16 items-center justify-center rounded-full ${
             isSuccess
-              ? "bg-emerald-50"
+              ? "bg-emerald-50 dark:bg-emerald-900/20"
               : isPending
-                ? "bg-amber-50"
-                : "bg-red-50"
+                ? "bg-amber-50 dark:bg-amber-900/20"
+                : "bg-red-50 dark:bg-red-900/20"
           }`}
         >
           {icon}
@@ -178,17 +181,17 @@ function ReceiptPanel({ tx }: { tx: Transaction }) {
         <p className={`text-base font-extrabold ${headlineColor}`}>
           {headline}
         </p>
-        <p className="text-3xl font-black text-gray-900">
+        <p className="text-3xl font-black text-gray-900 dark:text-white">
           ₦{tx.amount.toLocaleString()}
         </p>
       </div>
 
-      <div className="mx-5 border-t border-dashed border-gray-200" />
+      <div className="mx-5 border-t border-dashed border-gray-200 dark:border-gray-700" />
 
       {/* Payment Details */}
       <div className="px-5 py-4">
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-sm font-extrabold text-gray-900">
+          <h3 className="text-sm font-extrabold text-gray-900 dark:text-white">
             Payment Details
           </h3>
           <ArrowUpRight size={15} className="text-gray-400" />
@@ -207,17 +210,17 @@ function ReceiptPanel({ tx }: { tx: Transaction }) {
         </div>
       </div>
 
-      <div className="mx-5 border-t border-dashed border-gray-200" />
+      <div className="mx-5 border-t border-dashed border-gray-200 dark:border-gray-700" />
 
       {/* Footer CTA */}
       <div className="px-5 py-4">
         <div className="mb-3 flex items-center justify-between">
-          <p className="text-xs font-extrabold text-gray-700">
+          <p className="text-xs font-extrabold text-gray-700 dark:text-gray-300">
             Trouble With Your Payment?
           </p>
           <ArrowUpRight size={15} className="text-gray-400" />
         </div>
-        <button className="w-full rounded-xl border border-gray-200 py-2.5 text-xs font-extrabold text-gray-700 transition hover:border-primary hover:text-primary">
+        <button className="w-full rounded-xl border border-gray-200 py-2.5 text-xs font-extrabold text-gray-700 transition hover:border-primary hover:text-primary dark:border-gray-600 dark:text-gray-300 dark:hover:border-primary dark:hover:text-primary">
           Get PDF Receipt
         </button>
       </div>
@@ -240,7 +243,7 @@ function Row({
         {label}
       </span>
       <span
-        className={`text-right text-xs font-extrabold text-gray-900 ${mono ? "break-all font-mono" : ""}`}
+        className={`text-right text-xs font-extrabold text-gray-900 dark:text-white ${mono ? "break-all font-mono" : ""}`}
       >
         {value}
       </span>
@@ -280,7 +283,7 @@ function Pagination({
       <button
         onClick={() => onChange(page - 1)}
         disabled={page === 0}
-        className="flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-extrabold text-gray-500 hover:bg-gray-100 disabled:opacity-40"
+        className="flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-extrabold text-gray-500 hover:bg-gray-100 disabled:opacity-40 dark:text-gray-400 dark:hover:bg-gray-700"
       >
         <ChevronLeft size={14} /> Prev
       </button>
@@ -297,7 +300,7 @@ function Pagination({
             className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs font-extrabold transition ${
               p === page
                 ? "bg-primary text-white shadow-sm"
-                : "text-gray-500 hover:bg-gray-100"
+                : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
             }`}
           >
             {(p as number) + 1}
@@ -308,7 +311,7 @@ function Pagination({
       <button
         onClick={() => onChange(page + 1)}
         disabled={page >= totalPages - 1}
-        className="flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-extrabold text-gray-500 hover:bg-gray-100 disabled:opacity-40"
+        className="flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-extrabold text-gray-500 hover:bg-gray-100 disabled:opacity-40 dark:text-gray-400 dark:hover:bg-gray-700"
       >
         Next <ChevronRight size={14} />
       </button>
@@ -330,6 +333,8 @@ export default function AdminTransactionsPage() {
   const [page, setPage] = useState(0)
   const [statusFilter, setStatusFilter] = useState("")
   const [selected, setSelected] = useState<Transaction | null>(null)
+  const { theme } = useTheme()
+  const isDark = theme === "dark"
 
   const isFiltered = !!statusFilter
 
@@ -364,10 +369,10 @@ export default function AdminTransactionsPage() {
     <div className="flex flex-col gap-5">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">
+        <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
           Transactions
         </h1>
-        <p className="mt-1 text-sm font-semibold text-gray-500">
+        <p className="mt-1 text-sm font-semibold text-gray-500 dark:text-gray-400">
           All payment activity across the platform
         </p>
       </div>
@@ -396,32 +401,35 @@ export default function AdminTransactionsPage() {
           value={loadingOverview ? 0 : (overview?.total_transactions ?? 0)}
           total={overview?.total_transactions ?? 1}
           color="#8900eb"
+          isDark={isDark}
         />
         <RingCard
           label="Pending"
           value={loadingOverview ? 0 : (overview?.pending_transactions ?? 0)}
           total={overview?.total_transactions ?? 1}
           color="#f59e0b"
+          isDark={isDark}
         />
         <RingCard
           label="Failed"
           value={loadingOverview ? 0 : (overview?.failed_transactions ?? 0)}
           total={overview?.total_transactions ?? 1}
           color="#ef4444"
+          isDark={isDark}
         />
       </div>
 
       {/* Table + Receipt */}
       <div className="flex min-w-0 gap-4">
         {/* Transaction table */}
-        <div className="min-w-0 flex-1 overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.07)]">
+        <div className="min-w-0 flex-1 overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.07)] dark:border-gray-700 dark:bg-gray-900">
           {/* Table header */}
-          <div className="flex flex-col gap-3 border-b border-gray-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 border-b border-gray-100 px-5 py-4 dark:border-gray-700 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-base font-extrabold text-gray-900">
+              <h2 className="text-base font-extrabold text-gray-900 dark:text-white">
                 Transaction Details
               </h2>
-              <p className="mt-0.5 text-xs font-semibold text-gray-500">
+              <p className="mt-0.5 text-xs font-semibold text-gray-500 dark:text-gray-400">
                 {totalElements} transaction{totalElements !== 1 ? "s" : ""}
                 {isFiltered ? ` · filtered by "${statusFilter}"` : ""}
               </p>
@@ -433,7 +441,7 @@ export default function AdminTransactionsPage() {
               <select
                 value={statusFilter}
                 onChange={(e) => handleStatusChange(e.target.value)}
-                className="rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs font-extrabold text-gray-700 outline-none focus:border-primary"
+                className="rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs font-extrabold text-gray-700 outline-none focus:border-primary dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
               >
                 {STATUS_FILTER_OPTIONS.map((o) => (
                   <option key={o.value} value={o.value}>
@@ -453,7 +461,7 @@ export default function AdminTransactionsPage() {
                     (h) => (
                       <th
                         key={h}
-                        className="bg-gray-50 px-5 py-3 text-left text-xs font-extrabold uppercase tracking-widest text-gray-400"
+                        className="bg-gray-50 px-5 py-3 text-left text-xs font-extrabold uppercase tracking-widest text-gray-400 dark:bg-gray-800 dark:text-gray-500"
                       >
                         {h}
                       </th>
@@ -486,28 +494,28 @@ export default function AdminTransactionsPage() {
                         onClick={() =>
                           setSelected(isActive ? null : tx)
                         }
-                        className={`cursor-pointer border-t border-gray-100 transition-colors ${
+                        className={`cursor-pointer border-t border-gray-100 transition-colors dark:border-gray-700 ${
                           isActive
-                            ? "bg-purple-50"
-                            : "hover:bg-gray-50"
+                            ? "bg-purple-50 dark:bg-purple-900/20"
+                            : "hover:bg-gray-50 dark:hover:bg-gray-800"
                         }`}
                       >
                         <td className="px-5 py-3.5">
-                          <p className="text-sm font-extrabold text-gray-900">
+                          <p className="text-sm font-extrabold text-gray-900 dark:text-white">
                             {tx.user_name.trim()}
                           </p>
                           <p className="text-xs text-gray-400">{tx.email}</p>
                         </td>
-                        <td className="px-5 py-3.5 text-xs font-semibold text-gray-700">
+                        <td className="px-5 py-3.5 text-xs font-semibold text-gray-700 dark:text-gray-300">
                           {tx.plan_name}
                         </td>
-                        <td className="px-5 py-3.5 text-sm font-extrabold text-gray-900">
+                        <td className="px-5 py-3.5 text-sm font-extrabold text-gray-900 dark:text-white">
                           ₦{tx.amount.toLocaleString()}
                         </td>
                         <td className="px-5 py-3.5">
                           <StatusBadge status={tx.status} />
                         </td>
-                        <td className="px-5 py-3.5 text-xs font-semibold text-gray-500">
+                        <td className="px-5 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400">
                           {formatDate(tx.date)}
                         </td>
                       </tr>
@@ -519,7 +527,7 @@ export default function AdminTransactionsPage() {
           </div>
 
           {/* Pagination */}
-          <div className="flex items-center justify-between border-t border-gray-100 px-5 py-3">
+          <div className="flex items-center justify-between border-t border-gray-100 px-5 py-3 dark:border-gray-700">
             <p className="text-xs font-semibold text-gray-400">
               Page {page + 1} of {totalPages}
             </p>
@@ -532,18 +540,18 @@ export default function AdminTransactionsPage() {
         </div>
 
         {/* Receipt panel */}
-        <div className="w-[300px] shrink-0 overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.07)]">
-          <div className="border-b border-gray-100 px-5 py-4">
-            <h2 className="text-base font-extrabold text-gray-900">Receipt</h2>
+        <div className="w-[300px] shrink-0 overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.07)] dark:border-gray-700 dark:bg-gray-900">
+          <div className="border-b border-gray-100 px-5 py-4 dark:border-gray-700">
+            <h2 className="text-base font-extrabold text-gray-900 dark:text-white">Receipt</h2>
           </div>
           {selected ? (
             <ReceiptPanel tx={selected} />
           ) : (
             <div className="flex flex-col items-center justify-center gap-3 px-6 py-16 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
                 <Receipt size={22} className="text-gray-400" />
               </div>
-              <p className="text-sm font-extrabold text-gray-500">
+              <p className="text-sm font-extrabold text-gray-500 dark:text-gray-400">
                 Select a transaction
               </p>
               <p className="text-xs font-semibold text-gray-400">
