@@ -1,5 +1,5 @@
 import { createQuery } from "../api/queries"
-import { PartnerDashboardData, Bank, BankAccount, BankVerification } from "@/types/partner"
+import { PartnerDashboardData, Bank, BankAccount, BankVerification, PaginatedReferredCustomer, PaginatedResponse } from "@/types/partner"
 
 export const keyPartnerDashboard = ["partner-dashboard"]
 export const keyPartnerBanks = ["partner-banks"]
@@ -40,4 +40,11 @@ export const useQueryPartnerBankAccount = createQuery<{ data: BankAccount }>({
 export const useQueryIncomingPayouts = createQuery<{ data: IncomingPayout[] }>({
   key: keyIncomingPayouts,
   url: "/partner/payout/incoming",
+})
+
+export const keyReferredCustomers = ["partner-referred-customers"]
+
+export const useQueryReferredCustomers = createQuery<PaginatedResponse<PaginatedReferredCustomer>>({
+  key: (params) => [...keyReferredCustomers, params],
+  url: "/partner/referred-customers",
 })

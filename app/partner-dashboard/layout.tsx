@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { LayoutDashboard, LogOut, Settings, Banknote, X, Menu } from "lucide-react"
+import { LayoutDashboard, LogOut, Settings, Banknote, Users, X, Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AnimatePresence, motion } from "framer-motion"
 import { useAuthContext } from "@/context"
@@ -12,6 +12,7 @@ import { useAuthContext } from "@/context"
 const navItems = [
   { label: "Overview", href: "/partner-dashboard", icon: LayoutDashboard },
   { label: "Payouts", href: "/partner-dashboard/payouts", icon: Banknote },
+  { label: "Referred Customers", href: "/partner-dashboard/referred-customers", icon: Users },
   { label: "Settings", href: "/partner-dashboard/settings", icon: Settings },
 ]
 
@@ -45,7 +46,7 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
 
       <nav className="flex flex-col gap-2">
         {navItems.map(({ label, href, icon: Icon }) => {
-          const active = pathname === href
+          const active = href === "/partner-dashboard" ? pathname === href : pathname.startsWith(href)
           return (
             <Link
               key={href}

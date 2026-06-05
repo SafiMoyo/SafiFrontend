@@ -7,6 +7,25 @@ export type ReferredCustomer = {
   signup_date: string
 }
 
+export type PaginatedReferredCustomer = {
+  id: number
+  first_name: string
+  last_name: string
+  email?: string
+  plan: string
+  commission_earned: number
+  payout_status: string
+  signup_date: string
+}
+
+export type PaginatedResponse<T> = {
+  content: T[]
+  page: number
+  size: number
+  total_elements: number
+  total_pages: number
+}
+
 export type PlanBreakdown = {
   monthly: number
   quarterly: number
