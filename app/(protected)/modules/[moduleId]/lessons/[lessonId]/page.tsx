@@ -143,6 +143,12 @@ export default function LessonPage({
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const [watchedRate, setWatchedRate] = useState(0)
 
+  // ── autoplay-next state ────────────────────────────────────────────────────
+  // null  = overlay hidden; 1–5 = countdown visible; 0 = fire navigation
+  const [autoplayCountdown, setAutoplayCountdown] = useState<number | null>(null)
+  const [isCheckingAutoplay, setIsCheckingAutoplay] = useState(false)
+  const autoplayTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
   // ── guards ─────────────────────────────────────────────────────────────────
 
   // No subscription → /modules
@@ -172,6 +178,14 @@ export default function LessonPage({
     lastTrackedSecondRef.current = 0
     lastRecordedRateRef.current = 0
     setWatchedRate(0)
+    // clear any running autoplay timer when navigating to a new lesson
+    return () => {
+      if (autoplayTimerRef.current) {
+        clearInterval(autoplayTimerRef.current)
+        autoplayTimerRef.current = null
+      }
+      setAutoplayCountdown(null)
+    }
   }, [lessonId])
 
   // ── seed watchedRate from persisted completion_rate ────────────────────────
@@ -192,6 +206,37 @@ export default function LessonPage({
       video.load()
     }
   }, [])
+
+  // ── autoplay-next helpers ──────────────────────────────────────────────────
+
+  const cancelAutoplay = useCallback(() => {
+    if (autoplayTimerRef.current) {
+      clearInterval(autoplayTimerRef.current)
+      autoplayTimerRef.current = null
+    }
+    setAutoplayCountdown(null)
+  }, [])
+
+  const startAutoplayCountdown = useCallback(() => {
+    setAutoplayCountdown(5)
+    let count = 5
+    autoplayTimerRef.current = setInterval(() => {
+      count -= 1
+      if (count <= 0) {
+        clearInterval(autoplayTimerRef.current!)
+        autoplayTimerRef.current = null
+        setAutoplayCountdown(0)
+      } else {
+        setAutoplayCountdown(count)
+      }
+    }, 1000)
+  }, [])
+
+  // navigate when countdown hits 0
+  useEffect(() => {
+    if (autoplayCountdown !== 0 || !nextLesson) return
+    router.push(`/modules/${moduleId}/lessons/${nextLesson.id}`)
+  }, [autoplayCountdown, nextLesson, moduleId, router])
 
   // ── playback handlers ──────────────────────────────────────────────────────
 
@@ -260,18 +305,35 @@ export default function LessonPage({
     [lesson]
   )
 
-  const handleVideoEnded = useCallback(() => {
+  const handleVideoEnded = useCallback(async () => {
     setWatchedRate(100)
-    if (!lesson || lastRecordedRateRef.current >= 100) return
 
-    recordLessonProgress({
-      lesson_id: lesson.id,
-      module_id: moduleId,
-      completion_rate: 100,
-    })
+    if (lesson && lastRecordedRateRef.current < 100) {
+      recordLessonProgress({
+        lesson_id: lesson.id,
+        module_id: moduleId,
+        completion_rate: 100,
+      })
+      lastRecordedRateRef.current = 100
+    }
 
-    lastRecordedRateRef.current = 100
-  }, [lesson, moduleId, recordLessonProgress])
+    if (!nextLesson) return
+
+    setIsCheckingAutoplay(true)
+    try {
+      const res = await fetchCanWatch(nextLesson.id, moduleId)
+      if (res.data.canWatch) {
+        startAutoplayCountdown()
+      } else {
+        setShowLimitModal(true)
+      }
+    } catch {
+      // fail open on API error — start the countdown anyway
+      startAutoplayCountdown()
+    } finally {
+      setIsCheckingAutoplay(false)
+    }
+  }, [lesson, moduleId, recordLessonProgress, nextLesson, startAutoplayCountdown])
 
   const handleGoBack = useCallback(() => {
     if (typeof window !== "undefined" && window.history.length > 1) {
@@ -394,7 +456,7 @@ export default function LessonPage({
         <LessonPaywall onSubscribe={handleSubscribe} />
       ) : (
         /* accessState === "granted" — canWatch === true */
-        <div className="mx-3 mb-4 h-[clamp(280px,65dvh,700px)] overflow-hidden rounded-2xl bg-black shadow-lg sm:mx-5">
+        <div className="relative mx-3 mb-4 h-[clamp(280px,65dvh,700px)] overflow-hidden rounded-2xl bg-black shadow-lg sm:mx-5">
           {lesson.video_url ? (
             <video
               ref={videoRef}
@@ -437,6 +499,60 @@ export default function LessonPage({
               </div>
             </div>
           )}
+
+          {/* ── Autoplay countdown overlay ─────────────────────────────────── */}
+          {(isCheckingAutoplay || (autoplayCountdown !== null && autoplayCountdown > 0)) && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+              <div className="flex flex-col items-center gap-5 text-center px-6">
+                {isCheckingAutoplay ? (
+                  <p className="text-base font-medium text-white/80">
+                    Checking next lesson…
+                  </p>
+                ) : (
+                  <>
+                    <p className="text-base font-medium text-white/80 tracking-wide">
+                      Your next video will play in
+                    </p>
+                    <span
+                      key={autoplayCountdown}
+                      className="text-7xl font-bold text-white tabular-nums leading-none"
+                      style={{ animation: "countdown-pop 0.3s ease-out" }}
+                    >
+                      {autoplayCountdown}
+                    </span>
+                    <div className="flex items-center gap-3 mt-1">
+                      <button
+                        type="button"
+                        onClick={cancelAutoplay}
+                        className="rounded-full border border-white/30 px-5 py-2 text-sm font-semibold text-white/80 hover:bg-white/10 transition"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          cancelAutoplay()
+                          if (nextLesson) {
+                            router.push(`/modules/${moduleId}/lessons/${nextLesson.id}`)
+                          }
+                        }}
+                        className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-gray-900 hover:bg-white/90 transition"
+                      >
+                        Play Now
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          <style>{`
+            @keyframes countdown-pop {
+              from { transform: scale(1.35); opacity: 0.6; }
+              to   { transform: scale(1);    opacity: 1; }
+            }
+          `}</style>
         </div>
       )}
 
