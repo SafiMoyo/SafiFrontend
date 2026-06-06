@@ -44,7 +44,7 @@ export const useQueryIncomingPayouts = createQuery<{ data: IncomingPayout[] }>({
 
 export const keyReferredCustomers = ["partner-referred-customers"]
 
-export const useQueryReferredCustomers = createQuery<PaginatedResponse<PaginatedReferredCustomer>>({
+export const useQueryReferredCustomers = createQuery<{ data: PaginatedResponse<PaginatedReferredCustomer> }>({
   key: (params) => [...keyReferredCustomers, params],
   url: "/partner/referred-customers",
 })

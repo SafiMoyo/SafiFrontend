@@ -30,6 +30,12 @@ function PayoutBadge({ status }: { status: string }) {
         Pending
       </span>
     )
+  if (s === "not_earned")
+    return (
+      <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-extrabold text-gray-500">
+        Not Earned
+      </span>
+    )
   return (
     <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-extrabold text-gray-500">
       {status}
@@ -38,8 +44,13 @@ function PayoutBadge({ status }: { status: string }) {
 }
 
 function PlanBadge({ plan }: { plan: string }) {
+  const isFree = plan.toUpperCase() === "FREE"
   return (
-    <span className="inline-flex items-center rounded-full bg-purple-50 px-3 py-1 text-xs font-extrabold text-primary">
+    <span
+      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-extrabold ${
+        isFree ? "bg-gray-100 text-gray-500" : "bg-purple-50 text-primary"
+      }`}
+    >
       {plan.charAt(0) + plan.slice(1).toLowerCase()}
     </span>
   )
@@ -53,12 +64,16 @@ export default function ReferredCustomersPage() {
     queryParams: { page: String(page), size: String(PAGE_SIZE) },
   })
 
-  const customers = data?.content ?? []
-  const totalPages = data?.total_pages ?? 0
-  const totalElements = data?.total_elements ?? 0
+  const paginated = data?.data
+  const customers = paginated?.content ?? []
+  const totalPages = paginated?.total_pages ?? 0
+  const totalElements = paginated?.total_elements ?? 0
 
-  function handleRowClick(customer: PaginatedReferredCustomer) {
-    router.push(`/partner-dashboard/referred-customers/${customer.id}`)
+  function handleRowClick(customer: PaginatedReferredCustomer, rowIndex: number) {
+    const globalIndex = page * PAGE_SIZE + rowIndex
+    router.push(
+      `/partner-dashboard/referred-customers/${globalIndex}?page=${page}&idx=${rowIndex}`
+    )
   }
 
   return (
@@ -72,12 +87,12 @@ export default function ReferredCustomersPage() {
 
       {isLoading && (
         <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_50px_rgba(16,24,40,0.08)]">
-          <div className="space-y-0 divide-y divide-gray-100">
-            {Array.from({ length: PAGE_SIZE }).map((_, i) => (
+          <div className="divide-y divide-gray-100">
+            {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className="flex items-center gap-4 px-5 py-4">
-                <div className="h-4 w-40 animate-pulse rounded-full bg-gray-100" />
-                <div className="h-4 w-20 animate-pulse rounded-full bg-gray-100" />
-                <div className="ml-auto h-4 w-24 animate-pulse rounded-full bg-gray-100" />
+                <div className="size-9 animate-pulse rounded-full bg-gray-100" />
+                <div className="h-4 w-36 animate-pulse rounded-full bg-gray-100" />
+                <div className="ml-auto h-4 w-20 animate-pulse rounded-full bg-gray-100" />
               </div>
             ))}
           </div>
@@ -133,10 +148,10 @@ export default function ReferredCustomersPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {customers.map((c) => (
+                  {customers.map((c, i) => (
                     <tr
-                      key={c.id}
-                      onClick={() => handleRowClick(c)}
+                      key={c.signup_date}
+                      onClick={() => handleRowClick(c, i)}
                       className="cursor-pointer border-t border-gray-100 transition-colors hover:bg-purple-50/40"
                     >
                       <td className="px-5 py-4">

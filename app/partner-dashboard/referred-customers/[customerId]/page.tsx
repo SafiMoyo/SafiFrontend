@@ -1,17 +1,17 @@
 "use client"
 
 import { use } from "react"
-import { useRouter } from "next/navigation"
-import { useQueryClient } from "@tanstack/react-query"
+import { useRouter, useSearchParams } from "next/navigation"
 import { ArrowLeft, User, CreditCard, DollarSign, Calendar, TrendingUp } from "lucide-react"
-import { keyReferredCustomers } from "@/services/partner/queries"
-import { PaginatedReferredCustomer, PaginatedResponse } from "@/types/partner"
+import { useQueryReferredCustomers } from "@/services/partner/queries"
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-NG", {
     day: "numeric",
     month: "short",
     year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   })
 }
 
@@ -37,6 +37,12 @@ function PayoutBadge({ status }: { status: string }) {
         Pending
       </span>
     )
+  if (s === "not_earned")
+    return (
+      <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1.5 text-sm font-extrabold text-gray-500">
+        Not Earned
+      </span>
+    )
   return (
     <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1.5 text-sm font-extrabold text-gray-500">
       {status}
@@ -44,7 +50,15 @@ function PayoutBadge({ status }: { status: string }) {
   )
 }
 
-function DetailRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: React.ReactNode }) {
+function DetailRow({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ElementType
+  label: string
+  value: React.ReactNode
+}) {
   return (
     <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-gray-50 p-4">
       <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-[#bb2efa] shadow-[0_6px_16px_rgba(137,0,235,0.20)]">
@@ -58,23 +72,31 @@ function DetailRow({ icon: Icon, label, value }: { icon: React.ElementType; labe
   )
 }
 
-export default function ReferredCustomerDetailPage({ params }: { params: Promise<{ customerId: string }> }) {
+export default function ReferredCustomerDetailPage({
+  params,
+}: {
+  params: Promise<{ customerId: string }>
+}) {
   const { customerId } = use(params)
   const router = useRouter()
-  const queryClient = useQueryClient()
+  const searchParams = useSearchParams()
 
-  const id = Number(customerId)
+  const pageParam = Number(searchParams.get("page") ?? "0")
+  const idxParam = Number(searchParams.get("idx") ?? customerId)
 
-  // Find customer across all cached pages
-  const cacheEntries = queryClient.getQueriesData<PaginatedResponse<PaginatedReferredCustomer>>({
-    queryKey: keyReferredCustomers,
+  const { data, isLoading } = useQueryReferredCustomers({
+    queryParams: { page: String(pageParam), size: "10" },
   })
 
-  let customer: PaginatedReferredCustomer | undefined
-  for (const [, data] of cacheEntries) {
-    if (!data) continue
-    const found = data.content.find((c) => c.id === id)
-    if (found) { customer = found; break }
+  const customer = data?.data?.content?.[idxParam]
+  const initial = customer?.first_name?.[0]?.toUpperCase() ?? "?"
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    )
   }
 
   if (!customer) {
@@ -100,8 +122,6 @@ export default function ReferredCustomerDetailPage({ params }: { params: Promise
     )
   }
 
-  const initial = customer.first_name?.[0]?.toUpperCase() ?? "?"
-
   return (
     <div className="mx-auto max-w-2xl space-y-5">
       <button
@@ -125,7 +145,13 @@ export default function ReferredCustomerDetailPage({ params }: { params: Promise
             <p className="mt-0.5 text-sm font-semibold text-gray-500">{customer.email}</p>
           )}
           <div className="mt-3 flex flex-wrap justify-center gap-2 sm:justify-start">
-            <span className="inline-flex items-center rounded-full bg-purple-50 px-3 py-1 text-xs font-extrabold text-primary">
+            <span
+              className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-extrabold ${
+                customer.plan.toUpperCase() === "FREE"
+                  ? "bg-gray-100 text-gray-500"
+                  : "bg-purple-50 text-primary"
+              }`}
+            >
               {customer.plan.charAt(0) + customer.plan.slice(1).toLowerCase()} Plan
             </span>
             <PayoutBadge status={customer.payout_status} />
