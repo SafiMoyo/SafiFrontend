@@ -200,8 +200,9 @@ export default function AdminUserDetailPage() {
 
   const [modal, setModal] = useState<ModalType>(null)
   const [isDeactivated, setIsDeactivated] = useState<boolean | null>(null)
+  const [logPage, setLogPage] = useState(0)
 
-  const { data: res, isLoading } = useAdminUserDetail(userId)
+  const { data: res, isLoading } = useAdminUserDetail(userId, logPage)
   const user = res?.data
 
   useEffect(() => {
@@ -501,20 +502,27 @@ export default function AdminUserDetailPage() {
 
           {/* Activity Log */}
           <div className="flex flex-col gap-4 rounded-3xl border border-gray-200 bg-white p-6 shadow-[0_18px_50px_rgba(16,24,40,0.07)] dark:border-gray-700 dark:bg-gray-900">
-            <h3 className="text-sm font-extrabold uppercase tracking-widest text-gray-900 dark:text-white">
-              Activity Log
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-extrabold uppercase tracking-widest text-gray-900 dark:text-white">
+                Activity Log
+              </h3>
+              {user.activity_log.total_elements > 0 && (
+                <span className="text-xs font-semibold text-gray-400">
+                  {user.activity_log.total_elements} total
+                </span>
+              )}
+            </div>
             <div>
               <p className="mb-3 text-sm font-extrabold text-gray-700 dark:text-gray-300">
                 Recent Activities
               </p>
-              {user.activity_log.length === 0 ? (
+              {user.activity_log.content.length === 0 ? (
                 <p className="text-xs font-semibold text-gray-400">
                   No activity recorded.
                 </p>
               ) : (
                 <div className="flex flex-col gap-2">
-                  {user.activity_log.map((entry, i) => (
+                  {user.activity_log.content.map((entry, i) => (
                     <div
                       key={i}
                       className="flex items-start gap-3 rounded-xl border border-gray-100 p-3 dark:border-gray-700"
@@ -533,6 +541,31 @@ export default function AdminUserDetailPage() {
                       </span>
                     </div>
                   ))}
+                </div>
+              )}
+
+              {/* Pagination */}
+              {user.activity_log.total_pages > 1 && (
+                <div className="mt-4 flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => setLogPage((p) => Math.max(0, p - 1))}
+                    disabled={logPage === 0}
+                    className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 transition hover:bg-gray-50 disabled:opacity-40 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-xs font-semibold text-gray-500">
+                    Page {logPage + 1} of {user.activity_log.total_pages}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setLogPage((p) => Math.min(user.activity_log.total_pages - 1, p + 1))}
+                    disabled={logPage >= user.activity_log.total_pages - 1}
+                    className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 transition hover:bg-gray-50 disabled:opacity-40 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
+                  >
+                    Next
+                  </button>
                 </div>
               )}
             </div>

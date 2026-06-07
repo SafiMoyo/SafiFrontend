@@ -172,6 +172,14 @@ export type ActivityLogEntry = {
   timestamp: string
 }
 
+export type PaginatedActivityLog = {
+  content: ActivityLogEntry[]
+  page: number
+  size: number
+  total_elements: number
+  total_pages: number
+}
+
 export type AdminUserDetail = {
   user_id: number
   first_name: string
@@ -189,7 +197,7 @@ export type AdminUserDetail = {
   profile_picture?: string
   current_enrollments: Enrollment[]
   completed_modules: Enrollment[]
-  activity_log: ActivityLogEntry[]
+  activity_log: PaginatedActivityLog
 }
 
 export type AuditLogEntry = {
@@ -225,11 +233,17 @@ export const useAdminAllUsers = (page: number, size = 10, status?: string) =>
         .then((r) => r.data),
   })
 
-export const useAdminUserDetail = (userId: number) =>
+export const useAdminUserDetail = (
+  userId: number,
+  logPage = 0,
+  logSize = 5,
+) =>
   useQuery<{ data: AdminUserDetail }>({
-    queryKey: ["admin-user-detail", userId],
+    queryKey: ["admin-user-detail", userId, logPage, logSize],
     queryFn: () =>
-      adminAxios.get(`/admin/users/${userId}`).then((r) => r.data),
+      adminAxios
+        .get(`/admin/users/${userId}`, { params: { log_page: logPage, log_size: logSize } })
+        .then((r) => r.data),
     enabled: !!userId,
   })
 
