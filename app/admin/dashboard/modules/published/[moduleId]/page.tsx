@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import {
   ArrowLeft, BookOpen, Film, Lock, Unlock, Clock,
-  AlertCircle, ListOrdered, Pencil, Trash2, ImageIcon, X, AlertTriangle,
+  AlertCircle, ListOrdered, Pencil, Trash2, ImageIcon, X, AlertTriangle, Copy, Check,
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -358,6 +358,14 @@ export default function ModuleDetailPage({ params }: { params: Promise<{ moduleI
 
   const [editModuleOpen, setEditModuleOpen] = useState(false)
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+  const [copiedId, setCopiedId] = useState(false)
+
+  function handleCopyModuleId() {
+    navigator.clipboard.writeText(moduleId).then(() => {
+      setCopiedId(true)
+      setTimeout(() => setCopiedId(false), 2000)
+    })
+  }
 
   const mod = findModule(modulesData, moduleId)
   const lessons = lessonsData?.data ?? []
@@ -424,9 +432,20 @@ export default function ModuleDetailPage({ params }: { params: Promise<{ moduleI
                   </div>
                 </div>
                 {mod.module_description && <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{mod.module_description}</p>}
-                <div className="mt-4 flex items-center gap-4 text-xs text-gray-400">
+                <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-gray-400">
                   <span className="flex items-center gap-1"><ListOrdered size={13} /> Sequence {mod.sequence_num}</span>
                   <span className="flex items-center gap-1"><BookOpen size={13} /> {mod.no_of_lessons} {mod.no_of_lessons === 1 ? "lesson" : "lessons"}</span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="text-gray-400">Module ID:</span>
+                    <span className="font-mono text-gray-600 dark:text-gray-300">{moduleId}</span>
+                    <button
+                      onClick={handleCopyModuleId}
+                      title="Copy Module ID"
+                      className="flex items-center justify-center rounded-md p-0.5 text-gray-400 hover:bg-purple-50 hover:text-primary dark:hover:bg-purple-900/20"
+                    >
+                      {copiedId ? <Check size={13} className="text-green-500" /> : <Copy size={13} />}
+                    </button>
+                  </span>
                 </div>
               </>
             ) : (
