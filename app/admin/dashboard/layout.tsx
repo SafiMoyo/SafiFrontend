@@ -15,6 +15,7 @@ import {
   CheckCircle,
   FileStack,
   CreditCard,
+  Settings,
   LogOut,
   X,
   Menu,
@@ -35,6 +36,7 @@ const NAV_ITEMS = [
   { label: "Published Modules", href: "/admin/dashboard/modules/published", icon: CheckCircle },
   { label: "Unpublished Modules", href: "/admin/dashboard/modules/unpublished", icon: FileStack },
   { label: "Subscriptions", href: "/admin/dashboard/subscriptions", icon: CreditCard },
+  { label: "Settings", href: "/admin/dashboard/settings", icon: Settings },
 ]
 
 function isActive(href: string, pathname: string) {

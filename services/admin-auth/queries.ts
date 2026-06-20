@@ -368,6 +368,20 @@ export const useAdminSubscriptionPlans = () =>
     queryFn: () => adminAxios.get("/admin/subscription-plans").then((r) => r.data),
   })
 
+// ── Commission Rate ───────────────────────────────────────────────────────────
+
+export type CommissionRate = {
+  id: number
+  rate: number
+  updated_at: string
+}
+
+export const useAdminCommissionRate = () =>
+  useQuery<{ status: boolean; message: string; data: CommissionRate }>({
+    queryKey: ["admin-commission-rate"],
+    queryFn: () => adminAxios.get("/admin/comission-rate").then((r) => r.data),
+  })
+
 // ── Modules ───────────────────────────────────────────────────────────────────
 
 export type AdminModule = {

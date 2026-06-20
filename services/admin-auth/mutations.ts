@@ -182,6 +182,46 @@ export const useAdminDeleteSubscriptionPlan = () => {
   })
 }
 
+// ── Commission Rate ───────────────────────────────────────────────────────────
+
+export const useAdminSetCommissionRate = () => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (rate: number) =>
+      adminAxios.put("/admin/comission-rate", { rate }).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-commission-rate"] })
+    },
+  })
+}
+
+// ── Payment Verification ──────────────────────────────────────────────────────
+
+export type PaymentVerificationResult = {
+  reference: string
+  action: string
+  message: string
+  email: string
+  duration: string
+  local_status: string
+  flutterwave_status: string
+  user_id: number
+  user_name: string
+  plan_type: string
+  amount_paid: number
+  activated_at: string
+  expires_at: string
+  created_at: string
+}
+
+export const useAdminVerifyPayment = () =>
+  useMutation({
+    mutationFn: (reference: string) =>
+      adminAxios
+        .post(`/admin/payments/${reference}/verify`)
+        .then((r) => r.data as { status: boolean; message: string; data: PaymentVerificationResult }),
+  })
+
 // ── Courses ───────────────────────────────────────────────────────────────────
 
 export type CreateModulePayload = {
