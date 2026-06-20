@@ -379,7 +379,7 @@ export type CommissionRate = {
 export const useAdminCommissionRate = () =>
   useQuery<{ status: boolean; message: string; data: CommissionRate }>({
     queryKey: ["admin-commission-rate"],
-    queryFn: () => adminAxios.get("/admin/comission-rate").then((r) => r.data),
+    queryFn: () => adminAxios.get("/admin/commission-rate").then((r) => r.data),
   })
 
 // ── Modules ───────────────────────────────────────────────────────────────────

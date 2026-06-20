@@ -188,7 +188,7 @@ export const useAdminSetCommissionRate = () => {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (rate: number) =>
-      adminAxios.put("/admin/comission-rate", { rate }).then((r) => r.data),
+      adminAxios.put("/admin/commission-rate", { rate }).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-commission-rate"] })
     },
