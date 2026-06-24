@@ -56,7 +56,6 @@ export const useAdminLoginWithDeviceToken =
     method: "POST",
   })
 
-// ── User management ───────────────────────────────────────────────────────────
 
 export const useAdminResetUserPassword = () => {
   const qc = useQueryClient()
@@ -380,6 +379,17 @@ export const useAdminPublishLesson = () => {
       adminAxios.put(`/admin/lessons/${lessonId}/publish`).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-unpublished-modules"] })
+    },
+  })
+}
+
+export const useAdminDeleteLesson = () => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ lessonId }: { lessonId: number; moduleId: string }) =>
+      adminAxios.delete(`/admin/delete-lesson/${lessonId}`).then((r) => r.data),
+    onSuccess: (_data, { moduleId }) => {
+      qc.invalidateQueries({ queryKey: ["admin-module-lessons", moduleId] })
     },
   })
 }

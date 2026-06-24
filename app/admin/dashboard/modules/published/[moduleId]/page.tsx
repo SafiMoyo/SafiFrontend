@@ -21,7 +21,7 @@ import {
   type AdminModule, type AdminLesson, type PublishedModulesResponse,
 } from "@/services/admin-auth/queries"
 import {
-  useAdminEditModule, useAdminEditLesson, useAdminDeleteModule,
+  useAdminEditModule, useAdminEditLesson, useAdminDeleteModule, useAdminDeleteLesson,
 } from "@/services/admin-auth/mutations"
 import { validateCoverImage, validateLessonVideo } from "@/lib/validate-media"
 import { toast } from "sonner"
@@ -296,6 +296,14 @@ function EditLessonModal({ lesson, moduleId, open, onClose }: { lesson: AdminLes
 
 function LessonCard({ lesson, moduleId }: { lesson: AdminLesson; index: number; moduleId: string }) {
   const [editOpen, setEditOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const deleteLesson = useAdminDeleteLesson()
+
+  function handleDeleteLesson() {
+    deleteLesson.mutate({ lessonId: lesson.id, moduleId }, {
+      onSuccess: () => { toast.success("Lesson deleted."); setDeleteOpen(false) },
+    })
+  }
 
   return (
     <>
@@ -336,12 +344,40 @@ function LessonCard({ lesson, moduleId }: { lesson: AdminLesson; index: number; 
             className="flex size-8 items-center justify-center rounded-full text-gray-400 hover:bg-purple-50 hover:text-primary dark:hover:bg-purple-900/20" title="Edit lesson">
             <Pencil size={15} />
           </button>
+          <button onClick={() => setDeleteOpen(true)}
+            className="flex size-8 items-center justify-center rounded-full text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20" title="Delete lesson">
+            <Trash2 size={15} />
+          </button>
         </div>
       </div>
 
       {editOpen && (
         <EditLessonModal lesson={lesson} moduleId={moduleId} open={editOpen} onClose={() => setEditOpen(false)} />
       )}
+
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent className="max-w-sm bg-white p-6 dark:bg-gray-900" showCloseButton={false}>
+          <div className="flex flex-col items-center gap-3 text-center">
+            <div className="flex size-14 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+              <AlertTriangle size={26} className="text-red-500" />
+            </div>
+            <h3 className="text-base font-black text-gray-900 dark:text-white">Are you sure you want to delete?</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="font-bold text-gray-800 dark:text-gray-200">{lesson.lesson_title}</span> will be permanently removed. This cannot be undone.
+            </p>
+          </div>
+          <div className="mt-5 space-y-3">
+            <Button type="button" variant="destructive" className="h-12 w-full rounded-full font-bold"
+              loading={deleteLesson.isPending} onClick={handleDeleteLesson}>
+              Delete Lesson
+            </Button>
+            <Button type="button" variant="ghost" className="h-12 w-full rounded-full font-bold text-gray-500 dark:text-gray-400"
+              disabled={deleteLesson.isPending} onClick={() => setDeleteOpen(false)}>
+              Cancel
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
