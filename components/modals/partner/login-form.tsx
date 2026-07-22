@@ -37,7 +37,7 @@ export function PartnerLoginForm({ onForgotPassword, onAuthSuccess }: Props) {
 
   const { mutate, isPending } = useLoginUser({
     onSuccess: (response) => {
-      persistAuthSession(parseAuthPayload(response), false)
+      persistAuthSession(parseAuthPayload(response))
       const data = extractResponseData(response)
       const user = data.user as UserType | undefined
       const userRole = user?.user_role

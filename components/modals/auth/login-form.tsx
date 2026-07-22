@@ -28,7 +28,7 @@ export function LogInForm({ onForgotPassword, onAuthSuccess }: Props) {
   const [form, setForm] = useState<LoginFormState>({
     email: "",
     password: "",
-    remember: false,
+    remember: true,
     showPassword: false,
   })
   const { setLoggedIn, setActiveUser } = useContext(AuthContext)

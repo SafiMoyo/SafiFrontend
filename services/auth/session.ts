@@ -66,7 +66,7 @@ export const getAuthStorage = (): Storage | null => {
 
 export const persistAuthSession = (
   payload: ParsedAuthPayload,
-  remember = false
+  remember = true
 ) => {
   if (typeof window === "undefined") return
 
