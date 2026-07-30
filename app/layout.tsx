@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import Providers from "./providers"
 import { PWARegister } from "@/components/pwa-register"
+import { Analytics } from "@vercel/analytics/next"
 
 export const metadata: Metadata = {
   title: "Safi – Learn Smarter with AI",
@@ -48,6 +49,7 @@ export default function RootLayout({
       <body className="font-nunito overflow-x-hidden bg-gray-100">
         <PWARegister />
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   )
