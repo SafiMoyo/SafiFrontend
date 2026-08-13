@@ -79,11 +79,19 @@ export default function DashboardPage() {
     [modulesData]
   )
 
-  const otherModules = useMemo(
-    () =>
-      modulesData.filter((module) => module.id !== freeModule?.id).slice(0, 3),
-    [modulesData, freeModule?.id]
+  const sortedModules = useMemo(
+    () => [...modulesData].sort((a, b) => a.sequence_num - b.sequence_num),
+    [modulesData]
   )
+
+  // Repeating pattern of 4: [wide featured, small, small, small]
+  const moduleGroups = useMemo(() => {
+    const groups: ModuleType[][] = []
+    for (let i = 0; i < sortedModules.length; i += 4) {
+      groups.push(sortedModules.slice(i, i + 4))
+    }
+    return groups
+  }, [sortedModules])
 
   return (
     <div className="flex min-h-screen flex-col bg-purple-100/40">
@@ -118,90 +126,92 @@ export default function DashboardPage() {
       <div className="mt-6 px-5">
         <h3 className="mb-3 font-bold text-gray-800">Start learning</h3>
 
-        {/* Featured card */}
-        {isLoading || !freeModule ? (
-          <div className="overflow-hidden rounded-2xl">
-            <div className="h-84 w-full animate-pulse bg-gray-200" />
-            <div className="flex items-center justify-between bg-[#D68BF7] px-4 py-3">
-              <div className="h-4 w-40 animate-pulse rounded bg-black/20" />
-              <div className="h-4 w-16 animate-pulse rounded bg-black/20" />
+        <div className="space-y-6 pb-24">
+          {isLoading || moduleGroups.length === 0 ? (
+            <div className="overflow-hidden rounded-2xl">
+              <div className="h-84 w-full animate-pulse bg-gray-200" />
+              <div className="flex items-center justify-between bg-[#D68BF7] px-4 py-3">
+                <div className="h-4 w-40 animate-pulse rounded bg-black/20" />
+                <div className="h-4 w-16 animate-pulse rounded bg-black/20" />
+              </div>
             </div>
-          </div>
-        ) : (
-          <Link
-            href={moduleHref(freeModule)}
-            className="block overflow-hidden rounded-2xl"
-          >
-            <div className="relative h-84 w-full">
-              <Image
-                src={getImageUrl(
-                  freeModule.cover_image_url,
-                  freeModule.id,
-                  800,
-                  320
-                )}
-                alt={freeModule.module_title ?? "Module"}
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-            {/* Card footer */}
-            <div className="flex items-center justify-between bg-[#D68BF7] px-4 py-3">
-              <span className="font-semibold text-black">
-                {freeModule.module_title}
-              </span>
-              <span className="text-sm text-black/90">
-                10 lessons
-              </span>
-            </div>
-          </Link>
-        )}
-
-        {/* View all lessons */}
-        <Link
-          href={"/modules"}
-          className="mt-3 flex items-center gap-2 text-sm font-semibold text-primary"
-        >
-          <LibraryBig size={18} />
-          View all modules
-        </Link>
-
-        {/* 3 small lesson cards */}
-        <div className="mt-6 flex gap-2 overflow-x-auto pb-24 sm:grid sm:grid-cols-3 sm:overflow-x-visible">
-          {isLoading ? (
-            <div className="w-full rounded-xl bg-white px-3 py-4 text-center text-xs text-gray-500 sm:col-span-3">
-              Loading modules...
-            </div>
-          ) : otherModules.length > 0 ? (
-            otherModules.map((module) => (
-              <Link
-                key={module.id}
-                href={moduleHref(module)}
-                className="min-w-[calc(50%-4px)] flex-shrink-0 overflow-hidden rounded-xl sm:min-w-0"
-              >
-                <Image
-                  src={getImageUrl(module.cover_image_url, module.id, 400, 200)}
-                  alt={module.module_title}
-                  width={400}
-                  height={200}
-                  className="h-40 w-full object-cover sm:h-72"
-                />
-                {/* Footer */}
-                <div className="bg-[#E4D6B3] px-2 py-2">
-                  <p className="truncate text-sm font-bold text-black">
-                    {module.module_title}
-                  </p>
-                  <p className="text-[10px] text-gray-500">
-                    10 lessons
-                  </p>
-                </div>
-              </Link>
-            ))
           ) : (
-            <div className="w-full rounded-xl bg-white px-3 py-4 text-center text-xs text-gray-500 sm:col-span-3">
-              No additional modules available yet.
-            </div>
+            moduleGroups.map(([featured, ...rest], groupIndex) => (
+              <div key={featured.id}>
+                {/* Wide featured card: sequence_num 1, 5, 9, ... */}
+                <Link
+                  href={moduleHref(featured)}
+                  className="block overflow-hidden rounded-2xl"
+                >
+                  <div className="relative h-84 w-full">
+                    <Image
+                      src={getImageUrl(
+                        featured.cover_image_url,
+                        featured.id,
+                        800,
+                        320
+                      )}
+                      alt={featured.module_title ?? "Module"}
+                      fill
+                      className="object-cover"
+                      priority={groupIndex === 0}
+                    />
+                  </div>
+                  {/* Card footer */}
+                  <div className="flex items-center justify-between bg-[#D68BF7] px-4 py-3">
+                    <span className="font-semibold text-black">
+                      {featured.module_title}
+                    </span>
+                    <span className="text-sm text-black/90">10 lessons</span>
+                  </div>
+                </Link>
+
+                {groupIndex === 0 && (
+                  <Link
+                    href={"/modules"}
+                    className="mt-3 flex items-center gap-2 text-sm font-semibold text-primary"
+                  >
+                    <LibraryBig size={18} />
+                    View all modules
+                  </Link>
+                )}
+
+                {/* Small cards under the featured one: sequence_num 2,3,4 / 6,7,8 / ... */}
+                {rest.length > 0 && (
+                  <div className="mt-6 flex gap-2 overflow-x-auto sm:grid sm:grid-cols-3 sm:overflow-x-visible">
+                    {rest.map((module) => (
+                      <Link
+                        key={module.id}
+                        href={moduleHref(module)}
+                        className="min-w-[calc(50%-4px)] flex-shrink-0 overflow-hidden rounded-xl sm:min-w-0"
+                      >
+                        <Image
+                          src={getImageUrl(
+                            module.cover_image_url,
+                            module.id,
+                            400,
+                            200
+                          )}
+                          alt={module.module_title}
+                          width={400}
+                          height={200}
+                          className="h-40 w-full object-cover sm:h-72"
+                        />
+                        {/* Footer */}
+                        <div className="bg-[#E4D6B3] px-2 py-2">
+                          <p className="truncate text-sm font-bold text-black">
+                            {module.module_title}
+                          </p>
+                          <p className="text-[10px] text-gray-500">
+                            10 lessons
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))
           )}
         </div>
       </div>
