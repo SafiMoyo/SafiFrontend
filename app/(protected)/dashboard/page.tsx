@@ -162,7 +162,10 @@ export default function DashboardPage() {
                     <span className="font-semibold text-black">
                       {featured.module_title}
                     </span>
-                    <span className="text-sm text-black/90">10 lessons</span>
+                    <span className="text-sm text-black/90">
+                      {featured.no_of_lessons}{" "}
+                      {featured.no_of_lessons === 1 ? "lesson" : "lessons"}
+                    </span>
                   </div>
                 </Link>
 
@@ -203,7 +206,8 @@ export default function DashboardPage() {
                             {module.module_title}
                           </p>
                           <p className="text-[10px] text-gray-500">
-                            10 lessons
+                            {module.no_of_lessons}{" "}
+                            {module.no_of_lessons === 1 ? "lesson" : "lessons"}
                           </p>
                         </div>
                       </Link>
