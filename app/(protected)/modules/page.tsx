@@ -18,6 +18,13 @@ export default function ModulesPage() {
   const { data, isLoading } = useQueryModules({})
   const modulesData = useMemo(() => data?.data ?? [], [data?.data])
 
+  // Module 5 is opened directly from the dashboard's featured card and
+  // should not appear in the "view all modules" list.
+  const visibleModules = useMemo(
+    () => modulesData.filter((module) => module.sequence_num !== 5),
+    [modulesData]
+  )
+
   const hasActiveSubscription =
     activeUser?.subscription?.subscription_status === SubscriptionStatus.ACTIVE
 
@@ -83,13 +90,13 @@ export default function ModulesPage() {
       <div className="mx-auto w-full max-w-7xl flex-1 px-4 py-5">
         {isLoading ? (
           <ModuleListSkeleton />
-        ) : modulesData.length === 0 ? (
+        ) : visibleModules.length === 0 ? (
           <div className="mt-12 text-center text-sm text-gray-500">
             No modules available yet.
           </div>
         ) : (
           <div className="flex flex-col gap-5">
-            {modulesData.map((module) => {
+            {visibleModules.map((module) => {
               const lockState = moduleLocks[String(module.id)]
               const isLocked = lockState?.isLocked ?? false
 
