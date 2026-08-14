@@ -29,34 +29,21 @@ export default function ModulesPage() {
     activeUser?.subscription?.subscription_status === SubscriptionStatus.ACTIVE
 
   const moduleLocks = useMemo(() => {
-    const sorted = [...modulesData].sort(
-      (a, b) => a.sequence_num - b.sequence_num
-    )
     const lockMap: Record<
       string,
       {
         isLocked: boolean
         isSubscriptionLocked: boolean
-        isSequenceLocked: boolean
       }
     > = {}
-    const completedById: Record<string, boolean> = {}
 
-    sorted.forEach((module) => {
-      completedById[String(module.id)] = module.module_progress >= 100
-    })
-
-    sorted.forEach((module, index) => {
+    modulesData.forEach((module) => {
       const isFree = module.module_tier === SubscriptionStatus.FREE
       const subscriptionLocked = !isFree && !hasActiveSubscription
-      const prev = sorted[index - 1]
-      const previousCompleted = prev ? completedById[String(prev.id)] : true
-      const isSequenceLocked = !previousCompleted
 
       lockMap[String(module.id)] = {
-        isLocked: subscriptionLocked || isSequenceLocked,
+        isLocked: subscriptionLocked,
         isSubscriptionLocked: subscriptionLocked,
-        isSequenceLocked,
       }
     })
 
