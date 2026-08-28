@@ -159,7 +159,7 @@ export default function ModulePage({
         <Image src="/images/logo.svg" alt="Safi" width={80} height={28} />
         <button
           type="button"
-          onClick={() => router.push("/modules")}
+          onClick={() => router.push("/dashboard")}
           className="flex items-center gap-1 text-sm font-semibold text-gray-700 transition hover:text-primary"
         >
           <ChevronLeft size={16} />

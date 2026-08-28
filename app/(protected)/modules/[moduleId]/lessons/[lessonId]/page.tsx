@@ -336,10 +336,6 @@ export default function LessonPage({
   }, [lesson, moduleId, recordLessonProgress, nextLesson, startAutoplayCountdown])
 
   const handleGoBack = useCallback(() => {
-    if (typeof window !== "undefined" && window.history.length > 1) {
-      router.back()
-      return
-    }
     router.push(`/modules/${moduleId}`)
   }, [moduleId, router])
 
